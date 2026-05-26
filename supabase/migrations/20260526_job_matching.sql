@@ -56,21 +56,27 @@ CREATE INDEX IF NOT EXISTS idx_job_matches_resume
   ON public.job_matches(resume_id);
 
 -- ─── Applications ─────────────────────────────────────────────────────────────
-CREATE TYPE IF NOT EXISTS public.application_status AS ENUM (
-  'matched',        -- in match list, not yet applied
-  'redirected',     -- user clicked Apply, tab opened, awaiting their confirmation
-  'applied',        -- user confirmed they completed the external application
-  'viewed',         -- employer viewed (future: via provider API)
-  'interview',      -- interview scheduled
-  'rejected',       -- rejected
-  'offer'           -- offer received
-);
+DO $$ BEGIN
+  CREATE TYPE public.application_status AS ENUM (
+    'matched',
+    'redirected',
+    'applied',
+    'viewed',
+    'interview',
+    'rejected',
+    'offer'
+  );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
-CREATE TYPE IF NOT EXISTS public.application_type AS ENUM (
-  'native',          -- submitted through a native internal flow (not used currently)
-  'external_redirect', -- redirect to employer/ATS URL
-  'provider_api'     -- submitted via provider API (not used currently)
-);
+DO $$ BEGIN
+  CREATE TYPE public.application_type AS ENUM (
+    'native',
+    'external_redirect',
+    'provider_api'
+  );
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 CREATE TABLE IF NOT EXISTS public.applications (
   id                UUID DEFAULT gen_random_uuid() PRIMARY KEY,
