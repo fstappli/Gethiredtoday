@@ -22,6 +22,9 @@ import {
   Sparkles,
   X,
   Upload,
+  Briefcase,
+  RefreshCw,
+  ExternalLink,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -340,6 +343,17 @@ export default function DashboardPage() {
 
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [appliedCount, setAppliedCount] = useState<number>(0);
+  const [jobMatches, setJobMatches] = useState<{
+    id: string;
+    match_score: number;
+    matched_reasons: string[];
+    application_status: string | null;
+    jobs: { id: string; title: string; company: string | null; location: string | null; redirect_url: string; work_type: string | null; contract_type: string | null; category: string | null } | null;
+  }[]>([]);
+  const [loadingMatches, setLoadingMatches] = useState(false);
+  const [hasFinalizedResume, setHasFinalizedResume] = useState(false);
+  const [refreshingMatches, setRefreshingMatches] = useState(false);
 
   // Pick up any cross-page toast (e.g. "Login successful!" set by /login).
   useEffect(() => {
@@ -416,6 +430,43 @@ export default function DashboardPage() {
     fetchResumes();
     fetchCoverLetters();
   }, [fetchResumes, fetchCoverLetters]);
+
+  useEffect(() => {
+    // Fetch applied count for KPI
+    fetch('/api/jobs/applications?status=applied,viewed,interview,offer,rejected')
+      .then((r) => r.json())
+      .then((d) => setAppliedCount(d.counts?.applied ?? 0))
+      .catch(() => {});
+
+    // Fetch job matches
+    setLoadingMatches(true);
+    fetch('/api/jobs/matches')
+      .then((r) => r.json())
+      .then((d) => {
+        setHasFinalizedResume(Boolean(d.has_finalized_resume));
+        setJobMatches(d.matches ?? []);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingMatches(false));
+  }, []);
+
+  const handleRefreshMatches = async () => {
+    setRefreshingMatches(true);
+    try {
+      const res = await fetch('/api/jobs/matches/refresh', { method: 'POST' });
+      const data = await res.json();
+      showToast(data.message ?? 'Matches refreshed.');
+      if (!data.unconfigured) {
+        const matchRes = await fetch('/api/jobs/matches');
+        const matchData = await matchRes.json();
+        setJobMatches(matchData.matches ?? []);
+      }
+    } catch {
+      showToast('Failed to refresh matches.');
+    } finally {
+      setRefreshingMatches(false);
+    }
+  };
 
   const handleDeleteResume = async (id: string) => {
     if (!confirm('Delete this resume?')) return;
@@ -543,10 +594,6 @@ export default function DashboardPage() {
   }));
   const displayCoverLetters = coverLetters;
 
-  const bestAts = displayResumes.length > 0
-    ? Math.max(...displayResumes.filter((r) => r.ats_score != null).map((r) => r.ats_score ?? 0))
-    : 0;
-
   const stats = [
     {
       label: 'Total Resumes',
@@ -554,13 +601,15 @@ export default function DashboardPage() {
       icon: FileText,
       iconBg: '#f0fdfa',
       iconColor: '#4AB7A6',
+      href: undefined as string | undefined,
     },
     {
-      label: 'Best ATS Score',
-      value: bestAts > 0 ? `${bestAts}%` : '—',
-      icon: Target,
+      label: 'Jobs Applied',
+      value: appliedCount,
+      icon: Briefcase,
       iconBg: '#f0fdf4',
       iconColor: '#16a34a',
+      href: '/dashboard/applied-jobs',
     },
     {
       label: 'Cover Letters',
@@ -568,6 +617,7 @@ export default function DashboardPage() {
       icon: Mail,
       iconBg: '#eff6ff',
       iconColor: '#2563eb',
+      href: undefined as string | undefined,
     },
     {
       label: 'Profile Complete',
@@ -575,6 +625,7 @@ export default function DashboardPage() {
       icon: User,
       iconBg: '#faf5ff',
       iconColor: '#7c3aed',
+      href: undefined as string | undefined,
     },
   ];
 
@@ -620,11 +671,8 @@ export default function DashboardPage() {
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
           {stats.map((stat) => {
             const Icon = stat.icon;
-            return (
-              <div
-                key={stat.label}
-                className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-sm"
-              >
+            const inner = (
+              <>
                 <div
                   className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0"
                   style={{ backgroundColor: stat.iconBg }}
@@ -635,6 +683,22 @@ export default function DashboardPage() {
                   <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
                   <p className="text-xs text-slate-500">{stat.label}</p>
                 </div>
+              </>
+            );
+            return stat.href ? (
+              <Link
+                key={stat.label}
+                href={stat.href}
+                className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-sm hover:border-[#4AB7A6] hover:shadow-md transition-all"
+              >
+                {inner}
+              </Link>
+            ) : (
+              <div
+                key={stat.label}
+                className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-sm"
+              >
+                {inner}
               </div>
             );
           })}
@@ -646,6 +710,155 @@ export default function DashboardPage() {
       <div className="flex gap-6 px-6 lg:px-8 py-8">
         {/* Main scrollable content */}
         <div className="flex-1 min-w-0 space-y-10">
+          {/* Jobs matched to your resume */}
+          <section>
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
+                <Briefcase className="w-5 h-5 shrink-0" style={{ color: '#4AB7A6' }} />
+                Jobs matched to your resume
+              </h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleRefreshMatches}
+                  disabled={refreshingMatches}
+                  className="flex items-center gap-1.5 text-sm text-[#4AB7A6] hover:text-[#3da090] font-medium disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${refreshingMatches ? 'animate-spin' : ''}`} />
+                  {refreshingMatches ? 'Refreshing…' : 'Refresh matches'}
+                </button>
+                <Link href="/dashboard/find-jobs" className="text-sm text-slate-500 hover:text-slate-700">
+                  Find more →
+                </Link>
+              </div>
+            </div>
+
+            {loadingMatches ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="h-28 bg-slate-100 rounded-xl animate-pulse" />
+                ))}
+              </div>
+            ) : !hasFinalizedResume ? (
+              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center">
+                <Briefcase className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="font-semibold text-slate-700 mb-2">No resume selected for matching</h3>
+                <p className="text-sm text-slate-500 mb-4">
+                  Choose a resume to use for job matching. We&apos;ll find jobs that fit your skills and experience.
+                </p>
+                {displayResumes.length > 0 ? (
+                  <div className="flex flex-wrap gap-2 justify-center mt-2">
+                    {displayResumes.slice(0, 3).map((r) => (
+                      <button
+                        key={r.id}
+                        onClick={async () => {
+                          await fetch('/api/resume/finalize', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ resume_id: r.id }),
+                          });
+                          setHasFinalizedResume(true);
+                          showToast(`"${r.title}" set as your job-search resume.`);
+                          handleRefreshMatches();
+                        }}
+                        className="text-sm px-4 py-2 border border-slate-200 rounded-full hover:border-[#4AB7A6] hover:text-[#4AB7A6] transition-colors"
+                      >
+                        Use &ldquo;{r.title}&rdquo;
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <Button onClick={handleNewResume} className="bg-[#4AB7A6] hover:bg-[#3da090] text-white rounded-full">
+                    Build your resume
+                  </Button>
+                )}
+              </div>
+            ) : jobMatches.length === 0 ? (
+              <div className="border-2 border-dashed border-slate-200 rounded-2xl p-8 text-center">
+                <Briefcase className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <h3 className="font-semibold text-slate-700 mb-2">No matches yet</h3>
+                <p className="text-sm text-slate-500 mb-4">
+                  Click &ldquo;Refresh matches&rdquo; to find jobs that fit your resume, or{' '}
+                  <Link href="/dashboard/find-jobs" className="text-[#4AB7A6] hover:underline">browse all jobs</Link>.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {jobMatches.slice(0, 6).map((match) => {
+                  const job = match.jobs;
+                  if (!job) return null;
+                  const appStatus = match.application_status as string | null;
+                  return (
+                    <div key={match.id} className="border border-slate-200 rounded-xl p-4 hover:shadow-sm transition-shadow">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="font-medium text-slate-900 text-sm line-clamp-1">{job.title}</h3>
+                        <span
+                          className="shrink-0 text-xs font-bold rounded-full px-2 py-0.5 border"
+                          style={
+                            match.match_score >= 80
+                              ? { backgroundColor: '#f0fdf4', color: '#15803d', borderColor: '#bbf7d0' }
+                              : match.match_score >= 60
+                              ? { backgroundColor: '#fffbeb', color: '#b45309', borderColor: '#fde68a' }
+                              : { backgroundColor: '#fff7ed', color: '#c2410c', borderColor: '#fed7aa' }
+                          }
+                        >
+                          {match.match_score}%
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-500 mb-2">
+                        {job.company ?? '—'}{job.location ? ` · ${job.location}` : ''}
+                      </p>
+                      {match.matched_reasons && match.matched_reasons.length > 0 && (
+                        <p className="text-xs text-slate-400 mb-3 line-clamp-1">{match.matched_reasons[0]}</p>
+                      )}
+                      <div className="flex items-center justify-between">
+                        {appStatus && (appStatus === 'applied' || appStatus === 'interview' || appStatus === 'offer') ? (
+                          <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 border border-green-200 rounded-full px-2 py-0.5">
+                            <CheckCircle2 className="w-3 h-3" />
+                            Applied
+                          </span>
+                        ) : (
+                          <button
+                            onClick={async () => {
+                              const res = await fetch('/api/jobs/apply', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ job_id: job.id }),
+                              });
+                              const data = await res.json();
+                              window.open(data.redirect_url ?? job.redirect_url, '_blank', 'noopener,noreferrer');
+                              showToast('Opening job — did you finish applying?');
+                              setAppliedCount((c) => c + 0);
+                            }}
+                            className="flex items-center gap-1 text-xs text-[#4AB7A6] hover:text-[#3da090] font-medium"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                            Apply
+                          </button>
+                        )}
+                        <a
+                          href={job.redirect_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-slate-400 hover:text-slate-600"
+                        >
+                          View job →
+                        </a>
+                      </div>
+                    </div>
+                  );
+                })}
+                {jobMatches.length > 6 && (
+                  <Link
+                    href="/dashboard/find-jobs"
+                    className="border-2 border-dashed border-slate-200 rounded-xl p-4 flex items-center justify-center text-sm text-slate-400 hover:border-[#4AB7A6] hover:text-[#4AB7A6] transition-colors"
+                  >
+                    +{jobMatches.length - 6} more matches →
+                  </Link>
+                )}
+              </div>
+            )}
+          </section>
+
           {/* My Resumes — the "Create New" button was removed from this header
               because we already have a primary "Build New Resume" CTA at the
               top of the page plus the dashed "+ New Resume" card at the end

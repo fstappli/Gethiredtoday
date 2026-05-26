@@ -11,6 +11,9 @@ import {
   BookOpen,
   Settings,
   CreditCard,
+  Briefcase,
+  CheckCircle2,
+  Zap,
 } from 'lucide-react';
 import Logo from '@/components/logo';
 
@@ -24,6 +27,14 @@ const navSections = [
       { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, exact: true },
       { href: '/dashboard/resumes', label: 'My Resumes', icon: FileText },
       { href: '/dashboard/cover-letters', label: 'Cover Letters', icon: Mail },
+    ],
+  },
+  {
+    label: 'JOB SEARCH',
+    items: [
+      { href: '/dashboard/find-jobs', label: 'Find Jobs', icon: Briefcase },
+      { href: '/dashboard/applied-jobs', label: 'Applied Jobs', icon: CheckCircle2 },
+      { href: '/dashboard/auto-apply', label: 'Auto-Apply', icon: Zap },
     ],
   },
   {
