@@ -86,11 +86,12 @@ export function useJobSearch(): UseJobSearchReturn {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // true on mount so skeleton shows immediately
   const [loadingMore, setLoadingMore] = useState(false);
   const [unconfigured, setUnconfigured] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const abortRef = useRef<AbortController | null>(null);
+  const isMounted = useRef(false);
 
   const fetchJobs = useCallback(async (f: JobSearchFilters, p: number, append = false) => {
     abortRef.current?.abort();
@@ -121,8 +122,18 @@ export function useJobSearch(): UseJobSearchReturn {
     }
   }, []);
 
-  // Sync URL and trigger fetch on filter change (debounced)
+  // On mount: fetch immediately with no debounce
   useEffect(() => {
+    fetchJobs(filters, 1, false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // intentionally run only once on mount
+
+  // On subsequent filter changes: debounce + sync URL
+  useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return; // skip first run — already handled by mount effect above
+    }
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       const params = filtersToParams(filters, 1);
