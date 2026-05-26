@@ -90,7 +90,6 @@ export async function searchJobs(
     results_per_page: String(PAGE_SIZE),
     what: filters.query || '',
     where: filters.location || '',
-    content_type: 'application/json',
   });
 
   if (filters.radius_km) params.set('distance', String(Math.round(filters.radius_km)));
@@ -119,7 +118,10 @@ export async function searchJobs(
 
   try {
     const url = `${BASE_URL}/${country}/search/${page}?${params}`;
-    const res = await fetch(url, { next: { revalidate: 300 } }); // 5-min cache
+    const res = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 300 },
+    });
 
     if (!res.ok) {
       console.error('Adzuna API error:', res.status, await res.text());
@@ -148,7 +150,8 @@ export async function fetchCategories(country = 'us'): Promise<AdzunaCategory[]>
   try {
     const params = new URLSearchParams({ app_id: appId!, app_key: appKey! });
     const res = await fetch(`${BASE_URL}/${country}/categories?${params}`, {
-      next: { revalidate: 3600 }, // 1-hour cache
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 3600 },
     });
 
     if (!res.ok) return [];
