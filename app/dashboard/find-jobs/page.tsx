@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle, Globe, Zap } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle, Globe, Zap, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { JobCard, JobCardSkeleton } from '@/components/jobs/job-card';
@@ -298,6 +298,32 @@ function FindJobsContent() {
 
   const [categories, setCategories] = useState<{ label: string; tag: string }[]>([]);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+  const [activeResume, setActiveResume] = useState<{ id: string; title: string; jobTitle: string } | null>(null);
+  const resumeInitialized = useRef(false);
+
+  // On mount: fetch the active (finalized) resume and pre-populate the search query
+  useEffect(() => {
+    if (resumeInitialized.current) return;
+    resumeInitialized.current = true;
+
+    fetch('/api/resume')
+      .then((r) => r.json())
+      .then((d) => {
+        const resumes: Array<{ id: string; title: string; finalized_at?: string | null; data?: Record<string, unknown> }> = d.resumes ?? [];
+        const active = resumes.find((r) => r.finalized_at);
+        if (!active) return;
+        // Extract the most recent job title from work experience
+        const workExp = (active.data?.work_experience as Array<{ job_title?: string }> | undefined) ?? [];
+        const jobTitle = workExp[0]?.job_title ?? '';
+        setActiveResume({ id: active.id, title: active.title, jobTitle });
+        // Only pre-populate if no query is already set from the URL
+        if (!filters.query && jobTitle) {
+          setFilter('query', jobTitle);
+        }
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     fetch('/api/jobs/categories')
@@ -402,6 +428,19 @@ function FindJobsContent() {
         )}
 
         {unconfigured && <div className="mt-4"><UnconfiguredBanner /></div>}
+
+        {/* Active resume context banner */}
+        {activeResume && (
+          <div className="mt-3 flex items-center gap-2 flex-wrap">
+            <div className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-full text-xs font-medium text-teal-800">
+              <FileText className="w-3.5 h-3.5 shrink-0" style={{ color: '#4AB7A6' }} />
+              Showing jobs matched to: <span className="font-semibold ml-0.5">{activeResume.title}</span>
+            </div>
+            <a href="/dashboard" className="text-xs text-slate-400 hover:text-[#4AB7A6] transition-colors">
+              Change resume →
+            </a>
+          </div>
+        )}
 
         {/* Auto-Apply promo banner */}
         <div className="mt-4 flex items-center gap-3 p-3 rounded-xl" style={{ background: "linear-gradient(135deg, #f0fdf9 0%, #e6f7f5 100%)", border: "1px solid #99f6e4" }}>

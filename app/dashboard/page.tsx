@@ -59,6 +59,7 @@ interface ResumeRow {
   updated_at: string;
   ats_score: number | null;
   template_id: string;
+  finalized_at?: string | null;
   data?: import('@/types').ResumeData;
 }
 
@@ -354,6 +355,8 @@ export default function DashboardPage() {
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [hasFinalizedResume, setHasFinalizedResume] = useState(false);
   const [refreshingMatches, setRefreshingMatches] = useState(false);
+  const [showResumePicker, setShowResumePicker] = useState(false);
+  const [settingActiveId, setSettingActiveId] = useState<string | null>(null);
 
   // Pick up any cross-page toast (e.g. "Login successful!" set by /login).
   useEffect(() => {
@@ -465,6 +468,27 @@ export default function DashboardPage() {
       showToast('Failed to refresh matches.');
     } finally {
       setRefreshingMatches(false);
+    }
+  };
+
+  const handleSetActiveResume = async (resume: ResumeRow) => {
+    setSettingActiveId(resume.id);
+    try {
+      await fetch('/api/resume/finalize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resume_id: resume.id }),
+      });
+      // Optimistically mark finalized_at
+      setResumes((prev) =>
+        prev.map((r) => ({ ...r, finalized_at: r.id === resume.id ? new Date().toISOString() : null }))
+      );
+      setHasFinalizedResume(true);
+      setShowResumePicker(false);
+      showToast(`"${resume.title}" set as your active resume.`);
+      handleRefreshMatches();
+    } finally {
+      setSettingActiveId(null);
     }
   };
 
@@ -592,6 +616,7 @@ export default function DashboardPage() {
     ...r,
     ats_score: r.data ? scoreResume(r.data) : r.ats_score,
   }));
+  const activeResume = displayResumes.find((r) => r.finalized_at) ?? null;
   const displayCoverLetters = coverLetters;
 
   const stats = [
@@ -712,7 +737,7 @@ export default function DashboardPage() {
         <div className="flex-1 min-w-0 space-y-10">
           {/* Jobs matched to your resume */}
           <section>
-            <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center justify-between mb-3">
               <h2 className="text-xl font-semibold text-slate-900 flex items-center gap-2">
                 <Briefcase className="w-5 h-5 shrink-0" style={{ color: '#4AB7A6' }} />
                 Jobs matched to your resume
@@ -724,13 +749,57 @@ export default function DashboardPage() {
                   className="flex items-center gap-1.5 text-sm text-[#4AB7A6] hover:text-[#3da090] font-medium disabled:opacity-50"
                 >
                   <RefreshCw className={`w-3.5 h-3.5 ${refreshingMatches ? 'animate-spin' : ''}`} />
-                  {refreshingMatches ? 'Refreshing…' : 'Refresh matches'}
+                  {refreshingMatches ? 'Refreshing…' : 'Refresh'}
                 </button>
                 <Link href="/dashboard/find-jobs" className="text-sm text-slate-500 hover:text-slate-700">
                   Find more →
                 </Link>
               </div>
             </div>
+
+            {/* Active resume chip */}
+            {activeResume && (
+              <div className="flex items-center gap-2 mb-4">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-full text-sm">
+                  <FileText className="w-3.5 h-3.5 shrink-0" style={{ color: '#4AB7A6' }} />
+                  <span className="font-medium text-slate-800 max-w-[180px] truncate">{activeResume.title}</span>
+                </div>
+                <button
+                  onClick={() => setShowResumePicker((v) => !v)}
+                  className="text-xs font-medium text-slate-500 hover:text-[#4AB7A6] transition-colors"
+                >
+                  {showResumePicker ? 'Cancel' : 'Change resume'}
+                </button>
+              </div>
+            )}
+
+            {/* Inline resume picker */}
+            {showResumePicker && (
+              <div className="mb-4 p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Select a resume for job matching</p>
+                <div className="flex flex-wrap gap-2">
+                  {displayResumes.map((r) => (
+                    <button
+                      key={r.id}
+                      disabled={settingActiveId === r.id}
+                      onClick={() => handleSetActiveResume(r)}
+                      className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-full border transition-colors ${
+                        r.finalized_at
+                          ? 'border-[#4AB7A6] bg-teal-50 text-teal-700 font-semibold'
+                          : 'border-slate-200 text-slate-700 hover:border-[#4AB7A6] hover:text-[#4AB7A6]'
+                      }`}
+                    >
+                      {settingActiveId === r.id
+                        ? <Loader2 className="w-3 h-3 animate-spin" />
+                        : r.finalized_at
+                        ? <CheckCircle2 className="w-3 h-3" />
+                        : null}
+                      {r.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {loadingMatches ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -750,18 +819,11 @@ export default function DashboardPage() {
                     {displayResumes.slice(0, 3).map((r) => (
                       <button
                         key={r.id}
-                        onClick={async () => {
-                          await fetch('/api/resume/finalize', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ resume_id: r.id }),
-                          });
-                          setHasFinalizedResume(true);
-                          showToast(`"${r.title}" set as your job-search resume.`);
-                          handleRefreshMatches();
-                        }}
-                        className="text-sm px-4 py-2 border border-slate-200 rounded-full hover:border-[#4AB7A6] hover:text-[#4AB7A6] transition-colors"
+                        disabled={settingActiveId === r.id}
+                        onClick={() => handleSetActiveResume(r)}
+                        className="flex items-center gap-1.5 text-sm px-4 py-2 border border-slate-200 rounded-full hover:border-[#4AB7A6] hover:text-[#4AB7A6] transition-colors disabled:opacity-60"
                       >
+                        {settingActiveId === r.id && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                         Use &ldquo;{r.title}&rdquo;
                       </button>
                     ))}
