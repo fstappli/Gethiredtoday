@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
+import { searchJobsJobicy } from '@/lib/jobs/jobicy';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import type { JobSearchFilters, EmploymentType } from '@/types/jobs';
+
+// Countries routed to Jobicy (free, remote-only) instead of Adzuna
+const JOBICY_COUNTRIES = new Set(['ae']);
 
 export const dynamic = 'force-dynamic';
 
 export async function GET(req: NextRequest) {
   try {
-    if (!isAdzunaConfigured()) {
-      return NextResponse.json({ jobs: [], total: 0, page: 1, page_size: 20, unconfigured: true });
-    }
-
     const { searchParams } = req.nextUrl;
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10));
 
@@ -35,7 +35,15 @@ export async function GET(req: NextRequest) {
       country:          searchParams.get('country') ?? 'us',
     };
 
-    const result = await searchJobs(filters, page);
+    const useJobicy = JOBICY_COUNTRIES.has(filters.country ?? 'us');
+
+    if (!useJobicy && !isAdzunaConfigured()) {
+      return NextResponse.json({ jobs: [], total: 0, page: 1, page_size: 20, unconfigured: true });
+    }
+
+    const result = useJobicy
+      ? await searchJobsJobicy(filters, page)
+      : await searchJobs(filters, page);
 
     // Cache jobs in DB so the apply flow can look them up (fire-and-forget)
     if (result.jobs.length > 0) {

@@ -1,12 +1,22 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { JobCard, JobCardSkeleton } from '@/components/jobs/job-card';
 import { useJobSearch } from '@/hooks/use-job-search';
 import type { EmploymentType } from '@/types/jobs';
+
+const COUNTRIES = [
+  { value: 'us', label: '🇺🇸 United States' },
+  { value: 'gb', label: '🇬🇧 United Kingdom' },
+  { value: 'ae', label: '🇦🇪 UAE (Remote)' },
+  { value: 'ca', label: '🇨🇦 Canada' },
+  { value: 'au', label: '🇦🇺 Australia' },
+  { value: 'in', label: '🇮🇳 India' },
+  { value: 'de', label: '🇩🇪 Germany' },
+];
 
 const EMPLOYMENT_TYPES: { value: EmploymentType; label: string }[] = [
   { value: 'full_time', label: 'Full-time' },
@@ -27,6 +37,27 @@ function UnconfiguredBanner() {
           environment variables to enable live job search.
         </p>
       </div>
+    </div>
+  );
+}
+
+// ─── Country selector ─────────────────────────────────────────────────────────
+
+function CountrySelect({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="relative shrink-0">
+      <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="appearance-none pl-9 pr-7 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4AB7A6]/30 focus:border-[#4AB7A6] bg-white cursor-pointer"
+        aria-label="Select country"
+      >
+        {COUNTRIES.map((c) => (
+          <option key={c.value} value={c.value}>{c.label}</option>
+        ))}
+      </select>
+      <span className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">▾</span>
     </div>
   );
 }
@@ -329,6 +360,11 @@ function FindJobsContent() {
           <LocationInput
             value={filters.location ?? ''}
             onChange={(v) => setFilter('location', v)}
+          />
+
+          <CountrySelect
+            value={filters.country ?? 'us'}
+            onChange={(v) => setFilter('country', v)}
           />
 
           {/* Mobile filter toggle */}
