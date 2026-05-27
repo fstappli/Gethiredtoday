@@ -1,41 +1,39 @@
 import { NextResponse } from 'next/server';
-import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const appId = process.env.ADZUNA_APP_ID;
-  const appKey = process.env.ADZUNA_APP_KEY;
+  const appId = process.env.ADZUNA_APP_ID ?? '';
+  const appKey = process.env.ADZUNA_APP_KEY ?? '';
 
-  const envStatus = {
-    ADZUNA_APP_ID: appId ? `set (${appId.slice(0, 4)}...)` : 'MISSING',
-    ADZUNA_APP_KEY: appKey ? `set (${appKey.slice(0, 4)}...)` : 'MISSING',
-    isAdzunaConfigured: isAdzunaConfigured(),
-  };
+  // Reproduce exactly what searchJobs() does with default filters
+  const params = new URLSearchParams({
+    app_id: appId,
+    app_key: appKey,
+    results_per_page: '20',
+    what: '',
+    where: '',
+  });
 
-  // Test 1: direct fetch to Adzuna
-  let directFetch: Record<string, unknown> = {};
+  const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?${params}`;
+
+  let fetchResult: Record<string, unknown> = {};
   try {
-    const url = `https://api.adzuna.com/v1/api/jobs/us/search/1?app_id=${appId}&app_key=${appKey}&results_per_page=3&what=&where=`;
     const res = await fetch(url, { headers: { Accept: 'application/json' }, cache: 'no-store' });
     const text = await res.text();
-    directFetch = { status: res.status, ok: res.ok, bodyPreview: text.slice(0, 200) };
-  } catch (e) {
-    directFetch = { error: String(e) };
-  }
-
-  // Test 2: via searchJobs()
-  let searchJobsResult: Record<string, unknown> = {};
-  try {
-    const result = await searchJobs({ country: 'us' }, 1);
-    searchJobsResult = {
-      jobCount: result.jobs.length,
-      total: result.total,
-      firstJob: result.jobs[0]?.title ?? null,
+    let parsed: unknown = null;
+    try { parsed = JSON.parse(text); } catch {}
+    fetchResult = {
+      url: url.replace(appKey, 'REDACTED'),
+      status: res.status,
+      ok: res.ok,
+      resultsCount: (parsed as { results?: unknown[] })?.results?.length ?? 'parse error',
+      total: (parsed as { count?: number })?.count ?? 0,
+      bodyPreview: text.slice(0, 300),
     };
   } catch (e) {
-    searchJobsResult = { error: String(e) };
+    fetchResult = { url: url.replace(appKey, 'REDACTED'), error: String(e) };
   }
 
-  return NextResponse.json({ envStatus, directFetch, searchJobsResult });
+  return NextResponse.json({ fetchResult });
 }
