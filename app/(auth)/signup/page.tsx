@@ -155,6 +155,7 @@ function SignupForm() {
     register,
     handleSubmit,
     watch,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
