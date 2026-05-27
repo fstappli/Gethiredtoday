@@ -8,6 +8,7 @@ import {
   FileText,
   Layout,
   ChevronRight,
+  Zap,
 } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -92,6 +93,7 @@ const proFeatures = [
   { label: "AI bullet writer", included: true },
   { label: "ATS checker & score", included: true },
   { label: "Cover letter builder", included: true },
+  { label: "Auto-apply to 50 jobs/day", included: true },
   { label: "Priority support", included: true },
   { label: "New templates monthly", included: true },
 ];
@@ -293,6 +295,63 @@ function FeatureVisualATSScore() {
   );
 }
 
+function FeatureVisualAutoApply() {
+  const jobs = [
+    { company: "Stripe",   title: "Product Manager",         match: 96, applied: true  },
+    { company: "Airbnb",   title: "Senior Product Manager",  match: 91, applied: true  },
+    { company: "Shopify",  title: "Growth PM",               match: 88, applied: true  },
+    { company: "Linear",   title: "PM — Developer Tools",    match: 85, applied: false },
+    { company: "Vercel",   title: "Product Manager",         match: 82, applied: false },
+  ];
+  return (
+    <div className="rounded-2xl p-6" style={{ backgroundColor: "#ffffff", border: "1.5px solid #4AB7A6" }}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Zap className="w-4 h-4" style={{ color: "#4AB7A6" }} />
+          <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#4AB7A6" }}>
+            Auto-Apply — Active
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-green-400" style={{ animation: "pulse 2s cubic-bezier(0.4,0,0.6,1) infinite" }} />
+          <span className="text-xs font-semibold text-green-600">Running</span>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-2 mb-4">
+        {[
+          { label: "Applied Today", value: "12" },
+          { label: "This Week",     value: "47" },
+          { label: "Match Rate",    value: "94%" },
+        ].map((stat) => (
+          <div key={stat.label} className="rounded-xl p-2.5 text-center" style={{ backgroundColor: "#f0fdf9" }}>
+            <div className="text-lg font-bold" style={{ color: "#4AB7A6" }}>{stat.value}</div>
+            <div className="text-[10px] text-slate-500 mt-0.5 leading-tight">{stat.label}</div>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-2">
+        {jobs.map((job) => (
+          <div key={job.company} className="flex items-center gap-2.5 p-2.5 rounded-xl" style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0" }}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center text-[11px] font-bold text-white flex-shrink-0" style={{ backgroundColor: "#4AB7A6" }}>
+              {job.company[0]}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold truncate" style={{ color: "#0f172a" }}>{job.title}</p>
+              <p className="text-[10px] text-slate-400">{job.company} · {job.match}% match</p>
+            </div>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0" style={{
+              backgroundColor: job.applied ? "#f0fdf9" : "#f1f5f9",
+              color: job.applied ? "#4AB7A6" : "#64748b",
+            }}>
+              {job.applied ? "✓ Applied" : "Queued"}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function FeatureVisualTemplates() {
   const colors = ["#4AB7A6", "#334155", "#1d4ed8", "#7c3aed"];
   return (
@@ -324,6 +383,10 @@ function FeatureVisualTemplates() {
 ───────────────────────────────────────────────────────────────────────────── */
 
 const faqs = [
+  {
+    q: "How does Auto-Apply work?",
+    a: "After building your resume, go to the Auto-Apply section in your dashboard. Set your target job title, preferred location, and minimum match score. HiredTodayApp will automatically find matching openings every day and submit applications on your behalf — up to 50 jobs per day. You get full visibility into every application and can pause or stop anytime.",
+  },
   {
     q: "Is it really free?",
     a: "Yes. You can build, edit, and preview your resume for free with no credit card required. The free plan includes 1 resume and basic templates. Pro unlocks unlimited resumes, all templates, PDF/Word download, and full AI writing.",
@@ -428,8 +491,9 @@ export default function HomePage() {
                   className="text-xl leading-relaxed mb-8 max-w-lg"
                   style={{ color: "#64748b" }}
                 >
-                  HiredTodayApp&apos;s AI writes tailored bullet points, builds your full resume from scratch,
-                  and checks every line for ATS compatibility — so your application actually reaches a human.
+                  HiredTodayApp&apos;s AI builds your resume, scores it for ATS, and then{" "}
+                  <span className="font-semibold" style={{ color: "#0f172a" }}>automatically applies to matching jobs every day</span>{" "}
+                  — so your resume works for you 24/7 while you focus on interviews.
                 </p>
 
                 {/* CTAs */}
@@ -461,7 +525,7 @@ export default function HomePage() {
 
                 {/* Trust strip */}
                 <div className="flex flex-wrap gap-x-6 gap-y-2 mb-8">
-                  {["No credit card needed", "ATS-optimized", "PDF download"].map((item) => (
+                  {["No credit card needed", "ATS-optimized", "Auto-apply included"].map((item) => (
                     <span key={item} className="flex items-center gap-1.5 text-sm font-medium" style={{ color: "#475569" }}>
                       <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} strokeWidth={3} />
                       {item}
@@ -544,14 +608,14 @@ export default function HomePage() {
                 HOW IT WORKS
               </div>
               <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: "#0f172a" }}>
-                Create a Job-Ready Resume in 3 Simple Steps
+                From Zero to Hired in 4 Simple Steps
               </h2>
               <p className="text-lg max-w-xl mx-auto" style={{ color: "#64748b" }}>
-                No design skills needed. No confusing forms. Just a smarter way to land interviews.
+                Build your resume, pass ATS, then let AI apply to jobs for you — automatically.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
               {/* Step 1 */}
               <div
@@ -658,19 +722,14 @@ export default function HomePage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold mb-2" style={{ color: "#0f172a" }}>
-                    Download &amp; Get Hired
+                    Download &amp; Pass ATS
                   </h3>
                   <p className="text-sm leading-relaxed" style={{ color: "#64748b" }}>
-                    Export your resume as a pixel-perfect PDF, optimized to pass ATS filters used
-                    by 99% of Fortune 500 companies.
+                    Export a pixel-perfect PDF scored for ATS compliance. Our checker flags every issue before you apply.
                   </p>
                 </div>
-                {/* Download mock */}
                 <div className="flex items-center gap-3 mt-auto p-3 rounded-xl" style={{ backgroundColor: "#f0fdf9", border: "1px solid #ccfbef" }}>
-                  <div
-                    className="w-10 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ backgroundColor: "#ffffff", border: "1px solid #ccfbef" }}
-                  >
+                  <div className="w-10 h-12 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#ffffff", border: "1px solid #ccfbef" }}>
                     <FileText className="w-5 h-5" style={{ color: "#4AB7A6" }} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -685,6 +744,47 @@ export default function HomePage() {
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+
+              {/* Step 4 */}
+              <div
+                className="bg-white rounded-2xl p-8 flex flex-col gap-5 relative overflow-hidden"
+                style={{ border: "2px solid #4AB7A6", boxShadow: "0 4px 24px rgba(74,183,166,0.15)" }}
+              >
+                <div className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: "#4AB7A6" }}>
+                  NEW
+                </div>
+                <div className="flex items-start gap-4">
+                  <span className="text-6xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.15 }}>
+                    4
+                  </span>
+                  <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#f0fdf9" }}>
+                    <Zap className="w-6 h-6" style={{ color: "#4AB7A6" }} />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2" style={{ color: "#0f172a" }}>
+                    Auto-Apply to Jobs
+                  </h3>
+                  <p className="text-sm leading-relaxed" style={{ color: "#64748b" }}>
+                    Turn on Auto-Apply and HiredTodayApp submits applications to matching jobs for you — every day, automatically, while you sleep.
+                  </p>
+                </div>
+                <div className="mt-auto space-y-1.5">
+                  {[
+                    { co: "Stripe",  role: "Product Manager",  pct: 96 },
+                    { co: "Airbnb",  role: "Senior PM",         pct: 91 },
+                    { co: "Shopify", role: "Growth PM",         pct: 88 },
+                  ].map((j) => (
+                    <div key={j.co} className="flex items-center gap-2 p-2 rounded-lg" style={{ backgroundColor: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                      <div className="w-5 h-5 rounded-md flex items-center justify-center text-[9px] font-bold text-white flex-shrink-0" style={{ backgroundColor: "#4AB7A6" }}>
+                        {j.co[0]}
+                      </div>
+                      <p className="text-[11px] font-medium flex-1 truncate" style={{ color: "#0f172a" }}>{j.role}</p>
+                      <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: "#f0fdf9", color: "#4AB7A6" }}>✓ {j.pct}%</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
@@ -788,6 +888,53 @@ export default function HomePage() {
                     Check My Resume
                     <ArrowRight className="w-4 h-4" />
                   </Link>
+                </div>
+              </div>
+
+              {/* Feature D — Auto-Apply — visual right, text left */}
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="text-xs font-bold uppercase tracking-widest" style={{ color: "#4AB7A6" }}>
+                      AUTO-APPLY
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: "#4AB7A6" }}>
+                      NEW
+                    </span>
+                  </div>
+                  <h3 className="text-3xl font-bold mb-4" style={{ color: "#0f172a" }}>
+                    Your Resume, Working 24/7
+                  </h3>
+                  <p className="leading-relaxed mb-6" style={{ color: "#64748b" }}>
+                    Stop spending hours manually applying to jobs. With Auto-Apply, your resume works around the clock.
+                    Set your job title, preferred location, and minimum match score — HiredTodayApp finds relevant openings
+                    and applies on your behalf, every single day. Wake up to new applications already submitted.
+                  </p>
+                  <ul className="space-y-2.5 mb-8">
+                    {[
+                      "Apply to up to 50 jobs per day automatically",
+                      "Only applies to jobs that match your criteria",
+                      "Set a minimum match-score threshold",
+                      "Full visibility into every application",
+                      "Pause or stop anytime",
+                    ].map((item) => (
+                      <li key={item} className="flex items-center gap-2.5 text-sm font-medium" style={{ color: "#0f172a" }}>
+                        <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                  <Link
+                    href="/builder/wizard"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold hover:gap-2.5 transition-all"
+                    style={{ color: "#4AB7A6" }}
+                  >
+                    Enable Auto-Apply
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+                <div>
+                  <FeatureVisualAutoApply />
                 </div>
               </div>
 
@@ -1283,19 +1430,23 @@ export default function HomePage() {
         ════════════════════════════════════════════════════════════════ */}
         <section className="py-20 lg:py-28" style={{ backgroundColor: "#4AB7A6" }}>
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-sm font-semibold" style={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#ffffff" }}>
+              <Zap className="w-4 h-4" />
+              Auto-Apply to 50 jobs/day — included with Pro
+            </div>
             <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Your Next Job Is One Resume Away.
+              Build Once. Apply Everywhere. Automatically.
             </h2>
             <p className="text-lg text-white mb-10" style={{ opacity: 0.9 }}>
-              No credit card. No design skills. Start building instantly and download a polished,
-              ATS-ready resume in minutes.
+              Create your ATS-optimized resume in minutes, then turn on Auto-Apply and let
+              HiredTodayApp submit applications to matching jobs for you — every single day.
             </p>
             <Link
-              href="/builder/resume"
+              href="/builder/wizard"
               className="inline-flex items-center gap-2 px-10 py-4 rounded-full text-base font-bold transition-colors hover:bg-slate-100"
               style={{ backgroundColor: "#ffffff", color: "#4AB7A6" }}
             >
-              Build My Resume — Free →
+              Start Free — Enable Auto-Apply →
             </Link>
             <p className="text-sm mt-6 text-white" style={{ opacity: 0.7 }}>
               No credit card · Cancel anytime · 14-day money-back guarantee

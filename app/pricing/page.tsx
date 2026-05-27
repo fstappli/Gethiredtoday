@@ -37,6 +37,7 @@ const comparisonRows: ComparisonRow[] = [
   { feature: "AI Professional Summary", free: false,      pro: true              },
   { feature: "ATS Score & Checker",     free: "Basic",    pro: "Full 30-point"   },
   { feature: "Cover Letter Builder",    free: false,      pro: true              },
+  { feature: "Auto-Apply (50 jobs/day)", free: false,     pro: true              },
   { feature: "Keyword Targeting",       free: false,      pro: true              },
   { feature: "Priority Support",        free: false,      pro: true              },
   { feature: "New Templates Monthly",   free: false,      pro: true              },

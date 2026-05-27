@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, LayoutDashboard } from "lucide-react";
+import { Menu, X, LayoutDashboard, Zap } from "lucide-react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase";
 import Logo from "@/components/logo";
 
@@ -13,6 +13,7 @@ const navLinks = [
   { label: "Templates", href: "/resume-templates" },
   { label: "Examples", href: "/resume-examples" },
   { label: "ATS Checker", href: "/ats-checker" },
+  { label: "Auto-Apply", href: "/builder/wizard", badge: "NEW" },
   { label: "Pricing", href: "/pricing" },
 ];
 

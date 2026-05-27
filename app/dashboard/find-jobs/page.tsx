@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle, Globe } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle, Globe, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { JobCard, JobCardSkeleton } from '@/components/jobs/job-card';
