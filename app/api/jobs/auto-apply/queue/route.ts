@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
+import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
 import { extractResumeProfile, batchScoreJobs } from '@/lib/jobs/match';
 import type { ResumeData } from '@/types';
 
@@ -13,7 +14,7 @@ export async function POST() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (!isAdzunaConfigured()) {
+    if (!isAdzunaConfigured() && !isJSearchConfigured()) {
       return NextResponse.json({
         queued: 0,
         skipped: 0,
@@ -74,13 +75,24 @@ export async function POST() {
     const profile = extractResumeProfile(resume.data as ResumeData);
     const filterSettings = settings.filters ?? {};
 
-    // Fetch jobs
-    const result = await searchJobs({
+    // Fetch jobs from all sources in parallel for a bigger pool
+    const baseFilters = {
       query: profile.job_titles[0] ?? '',
       location: profile.location ?? '',
       country: 'us',
       ...filterSettings,
-    }, 1);
+    };
+    const [adzunaResult, jsearchResult] = await Promise.all([
+      isAdzunaConfigured() ? searchJobs(baseFilters, 1) : Promise.resolve({ jobs: [] }),
+      isJSearchConfigured() ? searchJobsJSearch(baseFilters, 1) : Promise.resolve({ jobs: [] }),
+    ]);
+    const seen = new Set<string>();
+    const allFetched = [...adzunaResult.jobs, ...jsearchResult.jobs].filter((j) => {
+      if (seen.has(j.id)) return false;
+      seen.add(j.id);
+      return true;
+    });
+    const result = { jobs: allFetched };
 
     if (result.jobs.length === 0) {
       return NextResponse.json({ queued: 0, skipped: 0, message: 'No jobs found.' });

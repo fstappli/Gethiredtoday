@@ -64,7 +64,7 @@ function inferIndustries(data: ResumeData): string[] {
 }
 
 export function extractResumeProfile(data: ResumeData): ResumeProfile {
-  const skills = (data.skills ?? []).map((s) => s.name.toLowerCase().trim()).filter(Boolean);
+  const skills = (data.skills ?? []).map((s) => normalizeSkill(s.name)).filter(Boolean);
 
   const jobs = (data.work_experience ?? []).filter((j) => j.job_title && j.company);
   const job_titles = jobs.map((j) => j.job_title.toLowerCase().trim());
@@ -106,10 +106,46 @@ const SENIOR_MAP: Record<SeniorityLevel, number> = {
   entry: 1, junior: 2, mid: 3, senior: 4, lead: 5, manager: 5, director: 6, executive: 7,
 };
 
+// Common skill aliases: normalize .js suffixes, abbreviations, etc.
+const SKILL_ALIASES: Record<string, string[]> = {
+  javascript: ['js', 'node', 'nodejs', 'node.js', 'es6', 'es2015', 'ecmascript'],
+  typescript: ['ts'],
+  react: ['react.js', 'reactjs', 'react native'],
+  vue: ['vue.js', 'vuejs'],
+  angular: ['angularjs', 'angular.js'],
+  python: ['py', 'django', 'flask', 'fastapi'],
+  java: ['spring', 'springboot', 'spring boot'],
+  css: ['scss', 'sass', 'tailwind', 'bootstrap'],
+  sql: ['mysql', 'postgresql', 'postgres', 'sqlite', 'mssql'],
+  aws: ['amazon web services', 'ec2', 's3', 'lambda'],
+  kubernetes: ['k8s'],
+  docker: ['containers', 'containerization'],
+  'machine learning': ['ml', 'deep learning', 'neural network', 'tensorflow', 'pytorch'],
+  'artificial intelligence': ['ai', 'nlp', 'computer vision'],
+  'project management': ['agile', 'scrum', 'kanban', 'jira'],
+};
+
+function normalizeSkill(skill: string): string {
+  return skill.toLowerCase().replace(/\.js$/i, '').replace(/[-_]/g, ' ').trim();
+}
+
+function skillMatchesText(skill: string, text: string): boolean {
+  const normalized = normalizeSkill(skill);
+  if (text.includes(normalized)) return true;
+  // Check aliases
+  for (const [canonical, aliases] of Object.entries(SKILL_ALIASES)) {
+    if (normalized === canonical || aliases.includes(normalized)) {
+      if (text.includes(canonical)) return true;
+      if (aliases.some((a) => text.includes(a))) return true;
+    }
+  }
+  return false;
+}
+
 function scoreSkillMatch(profileSkills: string[], jobText: string): { score: number; matched: string[] } {
-  if (!profileSkills.length) return { score: 0, matched: [] };
+  if (!profileSkills.length) return { score: 50, matched: [] }; // neutral when no skills listed
   const text = jobText.toLowerCase();
-  const matched = profileSkills.filter((s) => text.includes(s));
+  const matched = profileSkills.filter((s) => skillMatchesText(s, text));
   const ratio = matched.length / profileSkills.length;
   // Non-linear — 30% skill match = meaningful, 60%+ = excellent
   const score = Math.min(100, Math.round(Math.pow(ratio, 0.6) * 100));

@@ -1,9 +1,24 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
+import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
+import { searchJobsJobicy } from '@/lib/jobs/jobicy';
+import { searchJobsRemotive } from '@/lib/jobs/remotive';
 import { extractResumeProfile, batchScoreJobs } from '@/lib/jobs/match';
 import type { ResumeData } from '@/types';
 import type { Job } from '@/types/jobs';
+
+function inferCountry(location: string | null): string {
+  if (!location) return 'us';
+  const l = location.toLowerCase();
+  if (l.includes('dubai') || l.includes('uae') || l.includes('abu dhabi') || l.includes('sharjah')) return 'ae';
+  if (l.includes(' uk') || l.includes('london') || l.includes('manchester') || l.includes('united kingdom')) return 'gb';
+  if (l.includes('canada') || l.includes('toronto') || l.includes('vancouver') || l.includes('montreal')) return 'ca';
+  if (l.includes('australia') || l.includes('sydney') || l.includes('melbourne') || l.includes('brisbane')) return 'au';
+  if (l.includes('india') || l.includes('mumbai') || l.includes('bangalore') || l.includes('delhi')) return 'in';
+  if (l.includes('germany') || l.includes('berlin') || l.includes('munich') || l.includes('hamburg')) return 'de';
+  return 'us';
+}
 
 // POST /api/jobs/matches/refresh — run matching for user's finalized resume
 export async function POST() {
@@ -12,10 +27,10 @@ export async function POST() {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (!isAdzunaConfigured()) {
+    if (!isAdzunaConfigured() && !isJSearchConfigured()) {
       return NextResponse.json({
         matches_created: 0,
-        message: 'Job API not configured. Add ADZUNA_APP_ID and ADZUNA_APP_KEY environment variables.',
+        message: 'Job API not configured.',
         unconfigured: true,
       });
     }
@@ -36,25 +51,63 @@ export async function POST() {
 
     const resumeData = resume.data as ResumeData;
     const profile = extractResumeProfile(resumeData);
+    const country = inferCountry(profile.location);
+    const isUAE = country === 'ae';
 
-    // Build search queries from profile
-    const queries: string[] = [];
-    if (profile.job_titles.length > 0) queries.push(profile.job_titles[0]);
-    if (profile.skills.length > 0) queries.push(profile.skills.slice(0, 3).join(' '));
-    if (queries.length === 0) queries.push('');
+    // Build 3-4 diverse queries for breadth
+    const searchQueries: string[] = [];
+    if (profile.job_titles.length > 0) searchQueries.push(profile.job_titles[0]);
+    if (profile.job_titles.length > 1) searchQueries.push(profile.job_titles[1]);
+    if (profile.skills.length >= 3) searchQueries.push(profile.skills.slice(0, 3).join(' '));
+    if (profile.industries.length > 0) searchQueries.push(profile.industries[0]);
+    if (searchQueries.length === 0) searchQueries.push('');
 
-    // Fetch multiple pages for breadth
+    const filters = {
+      location: profile.location ?? '',
+      country,
+    };
+
+    // Fan out searches across all available sources in parallel
+    const searchPromises: Promise<Job[]>[] = [];
+
+    for (const query of searchQueries.slice(0, 3)) {
+      if (isUAE) {
+        // UAE: Jobicy + JSearch + Remotive
+        searchPromises.push(
+          searchJobsJobicy({ ...filters, query }).then((r) => r.jobs)
+        );
+        if (isJSearchConfigured()) {
+          searchPromises.push(
+            searchJobsJSearch({ ...filters, query }, 1).then((r) => r.jobs),
+            searchJobsJSearch({ ...filters, query }, 2).then((r) => r.jobs)
+          );
+        }
+        searchPromises.push(
+          searchJobsRemotive({ ...filters, query }).then((r) => r.jobs)
+        );
+      } else {
+        // Other countries: Adzuna pages 1+2 + JSearch
+        if (isAdzunaConfigured()) {
+          searchPromises.push(
+            searchJobs({ ...filters, query }, 1).then((r) => r.jobs),
+            searchJobs({ ...filters, query }, 2).then((r) => r.jobs)
+          );
+        }
+        if (isJSearchConfigured()) {
+          searchPromises.push(
+            searchJobsJSearch({ ...filters, query }, 1).then((r) => r.jobs)
+          );
+        }
+      }
+    }
+
+    const results = await Promise.allSettled(searchPromises);
     const allJobs = new Map<string, Job>();
-
-    for (const query of queries.slice(0, 2)) {
-      const result = await searchJobs({
-        query,
-        location: profile.location ?? '',
-        country: 'us',
-      }, 1);
-
-      for (const job of result.jobs) {
-        if (!allJobs.has(job.id)) allJobs.set(job.id, job);
+    for (const result of results) {
+      if (result.status === 'fulfilled') {
+        for (const job of result.value) {
+          if (!allJobs.has(job.id)) allJobs.set(job.id, job);
+        }
       }
     }
 
@@ -86,11 +139,11 @@ export async function POST() {
 
     await supabase.from('jobs').upsert(jobRows, { onConflict: 'id' });
 
-    // Score and filter
-    const scored = batchScoreJobs(profile, jobs).filter((r) => r.score >= 30);
+    // Score and filter — lower threshold to 20 to show more matches
+    const scored = batchScoreJobs(profile, jobs).filter((r) => r.score >= 20);
 
     if (scored.length === 0) {
-      return NextResponse.json({ matches_created: 0, message: 'No strong matches found. Try broadening your resume.' });
+      return NextResponse.json({ matches_created: 0, message: `Searched ${jobs.length} jobs but none matched your resume. Try adding more skills or job titles.` });
     }
 
     // Delete old matches for this resume+user
