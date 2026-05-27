@@ -1,13 +1,34 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
 import { searchJobsJobicy } from '@/lib/jobs/jobicy';
+import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
-import type { JobSearchFilters, EmploymentType } from '@/types/jobs';
+import type { Job, JobSearchFilters, EmploymentType } from '@/types/jobs';
 
 // Countries routed to Jobicy (free, remote-only) instead of Adzuna
 const JOBICY_COUNTRIES = new Set(['ae']);
 
 export const dynamic = 'force-dynamic';
+
+function mergeAndDeduplicate(primary: Job[], secondary: Job[]): Job[] {
+  const seen = new Set(
+    primary.map((j) => `${j.title?.toLowerCase()}|${j.company?.toLowerCase()}`)
+  );
+  const unique = secondary.filter((j) => {
+    const key = `${j.title?.toLowerCase()}|${j.company?.toLowerCase()}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  // Interleave: one from primary, one from secondary, alternating
+  const merged: Job[] = [];
+  const maxLen = Math.max(primary.length, unique.length);
+  for (let i = 0; i < maxLen; i++) {
+    if (i < primary.length) merged.push(primary[i]);
+    if (i < unique.length) merged.push(unique[i]);
+  }
+  return merged;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -41,9 +62,19 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ jobs: [], total: 0, page: 1, page_size: 20, unconfigured: true });
     }
 
-    const result = useJobicy
-      ? await searchJobsJobicy(filters, page)
-      : await searchJobs(filters, page);
+    // Run primary source and JSearch in parallel
+    const [primaryResult, jsearchResult] = await Promise.all([
+      useJobicy ? searchJobsJobicy(filters, page) : searchJobs(filters, page),
+      isJSearchConfigured() ? searchJobsJSearch(filters, page) : Promise.resolve({ jobs: [], total: 0, page, page_size: 10 }),
+    ]);
+
+    const mergedJobs = mergeAndDeduplicate(primaryResult.jobs, jsearchResult.jobs);
+    const result = {
+      jobs: mergedJobs,
+      total: primaryResult.total + jsearchResult.total,
+      page,
+      page_size: primaryResult.page_size,
+    };
 
     // Cache jobs in DB so the apply flow can look them up (fire-and-forget)
     if (result.jobs.length > 0) {

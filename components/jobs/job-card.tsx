@@ -17,6 +17,26 @@ interface JobCardProps {
   onSave?: (jobId: string) => void;
 }
 
+const SOURCE_BADGES: Record<string, { label: string; className: string }> = {
+  linkedin:    { label: 'LinkedIn',    className: 'bg-[#e8f0fe] text-[#1a56db] border-[#c3d4f9]' },
+  indeed:      { label: 'Indeed',      className: 'bg-[#fff7e6] text-[#b45309] border-[#fcd34d]' },
+  glassdoor:   { label: 'Glassdoor',   className: 'bg-[#ecfdf5] text-[#065f46] border-[#6ee7b7]' },
+  ziprecruiter:{ label: 'ZipRecruiter',className: 'bg-[#faf5ff] text-[#6b21a8] border-[#d8b4fe]' },
+};
+
+function SourceBadge({ source }: { source: string }) {
+  const badge = SOURCE_BADGES[source];
+  if (!badge) return null;
+  return (
+    <Badge
+      variant="outline"
+      className={`text-xs rounded-full px-2.5 py-0.5 font-medium border ${badge.className}`}
+    >
+      {badge.label}
+    </Badge>
+  );
+}
+
 function workTypeLabel(type: Job['work_type']): string {
   if (type === 'remote') return 'Remote';
   if (type === 'hybrid') return 'Hybrid';
@@ -135,6 +155,7 @@ export function JobCard({
             </div>
 
             <div className="flex items-center gap-2 mt-2.5 flex-wrap">
+              <SourceBadge source={job.source} />
               {wt && (
                 <Badge variant="secondary" className="text-xs rounded-full px-2.5 py-0.5 bg-[#f0fdfa] text-[#0f766e] border-[#99f6e4]">
                   {wt}
