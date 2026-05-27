@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
 import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
 import { searchJobsJobicy } from '@/lib/jobs/jobicy';
@@ -137,7 +138,9 @@ export async function POST() {
       raw: {},
     }));
 
-    await supabase.from('jobs').upsert(jobRows, { onConflict: 'id' });
+    // Must use admin client — jobs table requires service_role to write (RLS)
+    const admin = createAdminSupabaseClient();
+    await admin.from('jobs').upsert(jobRows, { onConflict: 'id' });
 
     // Score and filter — lower threshold to 20 to show more matches
     const scored = batchScoreJobs(profile, jobs).filter((r) => r.score >= 20);

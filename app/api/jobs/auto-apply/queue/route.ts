@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
 import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
 import { extractResumeProfile, batchScoreJobs } from '@/lib/jobs/match';
@@ -98,8 +99,9 @@ export async function POST() {
       return NextResponse.json({ queued: 0, skipped: 0, message: 'No jobs found.' });
     }
 
-    // Cache jobs
-    await supabase.from('jobs').upsert(
+    // Cache jobs — must use admin client (jobs table RLS requires service_role)
+    const admin = createAdminSupabaseClient();
+    await admin.from('jobs').upsert(
       result.jobs.map((j) => ({
         id: j.id, source: j.source, title: j.title, company: j.company, location: j.location,
         country: j.country, description: j.description, redirect_url: j.redirect_url,

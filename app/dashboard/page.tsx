@@ -471,6 +471,19 @@ export default function DashboardPage() {
     }
   };
 
+  const handleRemoveActiveResume = async () => {
+    try {
+      await fetch('/api/resume/finalize', { method: 'DELETE' });
+      setResumes((prev) => prev.map((r) => ({ ...r, finalized_at: null })));
+      setHasFinalizedResume(false);
+      setJobMatches([]);
+      setShowResumePicker(false);
+      showToast('Resume removed from job matching.');
+    } catch {
+      showToast('Failed to remove resume.');
+    }
+  };
+
   const handleSetActiveResume = async (resume: ResumeRow) => {
     setSettingActiveId(resume.id);
     try {
@@ -759,7 +772,7 @@ export default function DashboardPage() {
 
             {/* Active resume chip */}
             {activeResume && (
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-4 flex-wrap">
                 <div className="flex items-center gap-2 px-3 py-1.5 bg-teal-50 border border-teal-200 rounded-full text-sm">
                   <FileText className="w-3.5 h-3.5 shrink-0" style={{ color: '#4AB7A6' }} />
                   <span className="font-medium text-slate-800 max-w-[180px] truncate">{activeResume.title}</span>
@@ -768,7 +781,13 @@ export default function DashboardPage() {
                   onClick={() => setShowResumePicker((v) => !v)}
                   className="text-xs font-medium text-slate-500 hover:text-[#4AB7A6] transition-colors"
                 >
-                  {showResumePicker ? 'Cancel' : 'Change resume'}
+                  {showResumePicker ? 'Cancel' : 'Change'}
+                </button>
+                <button
+                  onClick={handleRemoveActiveResume}
+                  className="text-xs font-medium text-red-400 hover:text-red-600 transition-colors"
+                >
+                  Remove
                 </button>
               </div>
             )}
