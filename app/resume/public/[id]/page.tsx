@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { ResumeData, WorkExperience, Education, Skill } from '@/types';
+import Logo from '@/components/logo';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,7 +58,7 @@ export default async function PublicResumePage({ params }: { params: Promise<{ i
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4">
       <div className="max-w-3xl mx-auto mb-4 flex items-center justify-between text-xs text-slate-500">
-        <Link href="/" className="font-semibold" style={{ color: accent }}>HiredTodayApp</Link>
+        <Logo href="/" size="sm" />
         <span>Viewing a shared resume</span>
       </div>
 
@@ -200,7 +201,7 @@ export default async function PublicResumePage({ params }: { params: Promise<{ i
       </article>
 
       <div className="max-w-3xl mx-auto mt-6 text-center text-xs text-slate-400">
-        Built with <Link href="/" className="font-semibold hover:underline" style={{ color: accent }}>HiredTodayApp</Link>
+        Built with <Logo href="/" size="sm" />
       </div>
     </div>
   );

@@ -410,7 +410,7 @@ function FindJobsContent() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold" style={{ color: "#0f172a" }}>
-              Auto-Apply is now available — let HiredTodayApp apply to matching jobs for you automatically.
+              Auto-Apply is now available — let GetHiredToday apply to matching jobs for you automatically.
             </p>
             <p className="text-xs mt-0.5" style={{ color: "#475569" }}>
               Build your resume, set your criteria, and apply to up to 50 jobs per day without lifting a finger.

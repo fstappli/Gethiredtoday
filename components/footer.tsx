@@ -77,7 +77,7 @@ export default function Footer() {
         {/* Bottom bar */}
         <div className="border-t border-gray-800 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-xs text-gray-500">
-            &copy; 2026 HiredTodayApp. All rights reserved.
+            &copy; 2026 GetHiredToday. All rights reserved.
           </p>
           <div className="flex items-center gap-6">
             <Link href="/privacy" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">

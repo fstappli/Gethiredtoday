@@ -17,6 +17,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { TemplatePreview, type TemplateLayout } from '@/components/template-preview';
+import Logo from '@/components/logo';
 
 type ExperienceLevel = 'no-experience' | 'less-3' | '3-5' | '5-10' | '10-plus';
 type StartType = 'fresh' | 'upload';
@@ -602,9 +603,7 @@ function WizardInner() {
       {/* Top bar */}
       <header className="border-b border-slate-100 bg-white sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold" style={{ color: '#4AB7A6' }}>
-            HiredTodayApp
-          </Link>
+          <Logo href="/" size="md" />
           {/* Step indicator */}
           <div className="hidden md:flex items-center gap-3">
             {stepLabels.map((label, i) => {

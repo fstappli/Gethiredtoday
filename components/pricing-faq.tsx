@@ -25,7 +25,7 @@ const faqs = [
     a: "Yes — 14 days, no questions asked. If you're not completely satisfied within 14 days of upgrading to Pro, contact our support team and we'll issue a full refund immediately.",
   },
   {
-    q: "Why is HiredTodayApp priced at $9.99/month?",
+    q: "Why is GetHiredToday priced at $9.99/month?",
     a: "We believe everyone deserves access to great career tools without paying premium SaaS prices. Our AI runs on modern cloud infrastructure that costs pennies per session — we pass those savings through. $9.99/month covers unlimited resumes, unlimited cover letters, AI writing, PDF + Word download, and our 30-point ATS checker. No hidden fees, cancel anytime.",
   },
 ];

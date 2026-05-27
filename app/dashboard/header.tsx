@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { isProActive } from '@/lib/subscription';
+import Logo from '@/components/logo';
 
 const mobileNavItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -102,9 +103,9 @@ export default function DashboardHeader() {
         </button>
 
         {/* Mobile logo (hidden on desktop — sidebar has it) */}
-        <Link href="/dashboard" className="lg:hidden flex-1">
-          <span className="text-lg font-bold" style={{ color: '#4AB7A6' }}>HiredTodayApp</span>
-        </Link>
+        <div className="lg:hidden flex-1">
+          <Logo href="/dashboard" size="sm" />
+        </div>
 
         {/* Spacer on desktop */}
         <div className="hidden lg:flex flex-1" />
@@ -213,9 +214,7 @@ export default function DashboardHeader() {
           <div className="absolute left-0 top-0 bottom-0 w-64 bg-white shadow-xl flex flex-col">
             {/* Drawer header */}
             <div className="h-14 flex items-center justify-between px-5 border-b border-gray-100">
-              <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
-                <span className="text-xl font-bold" style={{ color: '#4AB7A6' }}>HiredTodayApp</span>
-              </Link>
+              <Logo href="/dashboard" size="md" />
               <button
                 onClick={() => setMobileOpen(false)}
                 className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-colors"

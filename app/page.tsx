@@ -55,7 +55,7 @@ const testimonials = [
     role: "Software Engineer",
     hiredAt: "Stripe",
     quote:
-      "I had been applying for 2 months with zero responses. After rebuilding my resume with HiredTodayApp's AI, I got 5 interview calls in my first week. The ATS checker showed me I was missing keywords that every recruiter looks for.",
+      "I had been applying for 2 months with zero responses. After rebuilding my resume with GetHiredToday's AI, I got 5 interview calls in my first week. The ATS checker showed me I was missing keywords that every recruiter looks for.",
   },
   {
     initials: "LK",
@@ -73,7 +73,7 @@ const testimonials = [
     role: "Product Manager",
     hiredAt: "Shopify",
     quote:
-      "As a recent graduate, I had no idea how to write a resume. HiredTodayApp walked me through every section and the AI filled in what I was missing. For $9.99 a month, it's the best money I've ever spent on my career.",
+      "As a recent graduate, I had no idea how to write a resume. GetHiredToday walked me through every section and the AI filled in what I was missing. For $9.99 a month, it's the best money I've ever spent on my career.",
   },
 ];
 
@@ -385,19 +385,19 @@ function FeatureVisualTemplates() {
 const faqs = [
   {
     q: "How does Auto-Apply work?",
-    a: "After building your resume, go to the Auto-Apply section in your dashboard. Set your target job title, preferred location, and minimum match score. HiredTodayApp will automatically find matching openings every day and submit applications on your behalf — up to 50 jobs per day. You get full visibility into every application and can pause or stop anytime.",
+    a: "After building your resume, go to the Auto-Apply section in your dashboard. Set your target job title, preferred location, and minimum match score. GetHiredToday will automatically find matching openings every day and submit applications on your behalf — up to 50 jobs per day. You get full visibility into every application and can pause or stop anytime.",
   },
   {
     q: "Is it really free?",
     a: "Yes. You can build, edit, and preview your resume for free with no credit card required. The free plan includes 1 resume and basic templates. Pro unlocks unlimited resumes, all templates, PDF/Word download, and full AI writing.",
   },
   {
-    q: "Is HiredTodayApp ATS compatible?",
+    q: "Is GetHiredToday ATS compatible?",
     a: "Absolutely. Every template is built with ATS requirements in mind — clean formatting, proper section headings, and machine-readable structure. Our built-in ATS Checker also scans your content for keyword gaps before you apply.",
   },
   {
     q: "How is this different from using a general AI chatbot?",
-    a: "A general-purpose AI chatbot gives you raw text — you still have to format it, organize sections, check ATS compliance, and design the layout yourself. HiredTodayApp does all of that automatically: AI writing + professional formatting + ATS checking + PDF export, in one place.",
+    a: "A general-purpose AI chatbot gives you raw text — you still have to format it, organize sections, check ATS compliance, and design the layout yourself. GetHiredToday does all of that automatically: AI writing + professional formatting + ATS checking + PDF export, in one place.",
   },
   {
     q: "Does it work for any industry?",
@@ -491,7 +491,7 @@ export default function HomePage() {
                   className="text-xl leading-relaxed mb-8 max-w-lg"
                   style={{ color: "#64748b" }}
                 >
-                  HiredTodayApp&apos;s AI builds your resume, scores it for ATS, and then{" "}
+                  GetHiredToday&apos;s AI builds your resume, scores it for ATS, and then{" "}
                   <span className="font-semibold" style={{ color: "#0f172a" }}>automatically applies to matching jobs every day</span>{" "}
                   — so your resume works for you 24/7 while you focus on interviews.
                 </p>
@@ -768,7 +768,7 @@ export default function HomePage() {
                     Auto-Apply to Jobs
                   </h3>
                   <p className="text-sm leading-relaxed" style={{ color: "#64748b" }}>
-                    Turn on Auto-Apply and HiredTodayApp submits applications to matching jobs for you — every day, automatically, while you sleep.
+                    Turn on Auto-Apply and GetHiredToday submits applications to matching jobs for you — every day, automatically, while you sleep.
                   </p>
                 </div>
                 <div className="mt-auto space-y-1.5">
@@ -907,7 +907,7 @@ export default function HomePage() {
                   </h3>
                   <p className="leading-relaxed mb-6" style={{ color: "#64748b" }}>
                     Stop spending hours manually applying to jobs. With Auto-Apply, your resume works around the clock.
-                    Set your job title, preferred location, and minimum match score — HiredTodayApp finds relevant openings
+                    Set your job title, preferred location, and minimum match score — GetHiredToday finds relevant openings
                     and applies on your behalf, every single day. Wake up to new applications already submitted.
                   </p>
                   <ul className="space-y-2.5 mb-8">
@@ -1145,7 +1145,7 @@ export default function HomePage() {
                 Real People. Real Jobs. Real Results.
               </h2>
               <p className="text-lg" style={{ color: "#64748b" }}>
-                Here&apos;s what job seekers are saying after using HiredTodayApp.
+                Here&apos;s what job seekers are saying after using GetHiredToday.
               </p>
             </div>
 
@@ -1402,7 +1402,7 @@ export default function HomePage() {
               {[
                 { stat: "75%", label: "Resumes rejected by ATS before a human sees them" },
                 { stat: "6 sec", label: "Average time a recruiter spends on a resume" },
-                { stat: "3 min", label: "Time to build an ATS-ready resume with HiredTodayApp" },
+                { stat: "3 min", label: "Time to build an ATS-ready resume with GetHiredToday" },
               ].map((item) => (
                 <div key={item.label} className="rounded-2xl p-6" style={{ backgroundColor: "#1e293b" }}>
                   <div className="text-4xl font-bold mb-2" style={{ color: "#4AB7A6" }}>{item.stat}</div>
@@ -1439,7 +1439,7 @@ export default function HomePage() {
             </h2>
             <p className="text-lg text-white mb-10" style={{ opacity: 0.9 }}>
               Create your ATS-optimized resume in minutes, then turn on Auto-Apply and let
-              HiredTodayApp submit applications to matching jobs for you — every single day.
+              GetHiredToday submit applications to matching jobs for you — every single day.
             </p>
             <Link
               href="/builder/wizard"

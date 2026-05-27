@@ -4,15 +4,15 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
 export const metadata = {
-  title: "About - HiredTodayApp",
-  description: "Learn about HiredTodayApp's mission to help job seekers build better resumes with AI.",
+  title: "About - GetHiredToday",
+  description: "Learn about GetHiredToday's mission to help job seekers build better resumes with AI.",
 };
 
 const values = [
   {
     icon: Sparkles,
     title: "AI That Actually Helps",
-    description: "We built HiredTodayApp because generic resume advice fails people. Our AI is trained to write real, specific, impactful content — not filler.",
+    description: "We built GetHiredToday because generic resume advice fails people. Our AI is trained to write real, specific, impactful content — not filler.",
   },
   {
     icon: Target,
@@ -43,7 +43,7 @@ export default function AboutPage() {
               We&apos;re on a mission to help everyone land their dream job
             </h1>
             <p className="text-xl text-gray-600 leading-relaxed">
-              HiredTodayApp was built by job seekers, for job seekers. We know how painful the resume process can be — so we built the tool we always wished existed.
+              GetHiredToday was built by job seekers, for job seekers. We know how painful the resume process can be — so we built the tool we always wished existed.
             </p>
           </div>
         </section>
@@ -57,7 +57,7 @@ export default function AboutPage() {
                 Applying for jobs is one of the most stressful experiences in a person&apos;s career. You spend hours crafting the perfect resume, only to get silence. You don&apos;t know if the ATS rejected it before a human even saw it. You don&apos;t know if your bullet points are strong enough.
               </p>
               <p>
-                We built HiredTodayApp to fix that. Our AI analyzes job descriptions, suggests powerful bullet points, scores your resume for ATS compatibility, and helps you write a cover letter tailored to each application — all in minutes.
+                We built GetHiredToday to fix that. Our AI analyzes job descriptions, suggests powerful bullet points, scores your resume for ATS compatibility, and helps you write a cover letter tailored to each application — all in minutes.
               </p>
               <p>
                 Your resume is your professional life story — we help you tell it in the most compelling way possible. No fabricated metrics, no invented achievements, no keyword-stuffing that breaks down in interviews. Just your real work, written clearly enough to get past the robots and into a recruiter&apos;s hands.
@@ -88,7 +88,7 @@ export default function AboutPage() {
         <section className="bg-white py-20">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to build your resume?</h2>
-            <p className="text-gray-500 mb-8">Join thousands of job seekers using HiredTodayApp to land interviews faster.</p>
+            <p className="text-gray-500 mb-8">Join thousands of job seekers using GetHiredToday to land interviews faster.</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/builder/resume/new" className="btn-teal inline-flex items-center gap-2">
                 Build Your Resume Free

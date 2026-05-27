@@ -89,7 +89,7 @@ export default async function ExamplePage({ params }: Props) {
     "headline": ex.metaTitle,
     "description": ex.metaDescription,
     "url": `https://hiredtodayapp.com/resume-examples/${ex.slug}`,
-    "publisher": { "@type": "Organization", "name": "HiredTodayApp", "url": "https://hiredtodayapp.com" },
+    "publisher": { "@type": "Organization", "name": "GetHiredToday", "url": "https://hiredtodayapp.com" },
   };
 
   return (

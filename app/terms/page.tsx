@@ -3,8 +3,8 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 
 export const metadata = {
-  title: "Terms of Service - HiredTodayApp",
-  description: "Terms and conditions governing the use of HiredTodayApp.",
+  title: "Terms of Service - GetHiredToday",
+  description: "Terms and conditions governing the use of GetHiredToday.",
 };
 
 export default function TermsPage() {
@@ -21,12 +21,12 @@ export default function TermsPage() {
           <div className="prose prose-gray max-w-none space-y-8 text-gray-700 leading-relaxed">
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">1. Acceptance of Terms</h2>
-              <p>By creating an account or using HiredTodayApp (&quot;the Service&quot;), you agree to these Terms of Service. If you do not agree, do not use the Service.</p>
+              <p>By creating an account or using GetHiredToday (&quot;the Service&quot;), you agree to these Terms of Service. If you do not agree, do not use the Service.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Description of Service</h2>
-              <p>HiredTodayApp is an AI-powered resume and cover letter builder. We offer both a free tier and a paid Pro subscription ($9.99/month) with expanded features including unlimited resumes, PDF downloads, ATS analysis, and AI content generation.</p>
+              <p>GetHiredToday is an AI-powered resume and cover letter builder. We offer both a free tier and a paid Pro subscription ($9.99/month) with expanded features including unlimited resumes, PDF downloads, ATS analysis, and AI content generation.</p>
             </section>
 
             <section>
@@ -53,7 +53,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">5. Your Content</h2>
-              <p>You retain ownership of all resume content you create. By using the Service, you grant HiredTodayApp a limited license to store and process your content solely to provide the Service. We do not claim ownership of your resumes or cover letters.</p>
+              <p>You retain ownership of all resume content you create. By using the Service, you grant GetHiredToday a limited license to store and process your content solely to provide the Service. We do not claim ownership of your resumes or cover letters.</p>
             </section>
 
             <section>
@@ -68,17 +68,17 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">7. AI-Generated Content</h2>
-              <p>AI suggestions are generated automatically and may not always be accurate or appropriate. You are responsible for reviewing and editing all AI-generated content before using it in job applications. HiredTodayApp is not liable for any outcomes resulting from the use of AI-generated content.</p>
+              <p>AI suggestions are generated automatically and may not always be accurate or appropriate. You are responsible for reviewing and editing all AI-generated content before using it in job applications. GetHiredToday is not liable for any outcomes resulting from the use of AI-generated content.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">8. Disclaimers</h2>
-              <p>The Service is provided &quot;as is&quot; without warranties of any kind. We do not guarantee that using HiredTodayApp will result in employment. ATS scores and suggestions are estimates based on AI analysis and are not guarantees of recruiter or system compatibility.</p>
+              <p>The Service is provided &quot;as is&quot; without warranties of any kind. We do not guarantee that using GetHiredToday will result in employment. ATS scores and suggestions are estimates based on AI analysis and are not guarantees of recruiter or system compatibility.</p>
             </section>
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">9. Limitation of Liability</h2>
-              <p>To the maximum extent permitted by law, HiredTodayApp is not liable for indirect, incidental, or consequential damages. Our total liability is limited to the amount you paid us in the 12 months preceding the claim.</p>
+              <p>To the maximum extent permitted by law, GetHiredToday is not liable for indirect, incidental, or consequential damages. Our total liability is limited to the amount you paid us in the 12 months preceding the claim.</p>
             </section>
 
             <section>
