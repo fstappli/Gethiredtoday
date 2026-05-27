@@ -347,7 +347,19 @@ export default function ResumeBuilderPage() {
             languages: chosen.data.languages ?? [],
             volunteer_work: chosen.data.volunteer_work ?? [],
             projects: chosen.data.projects ?? [],
-            custom_sections: chosen.data.custom_sections ?? [],
+            custom_sections: (chosen.data.custom_sections ?? []).map((s: Record<string, unknown>) => ({
+              id: (s.id as string | undefined) ?? generateId(),
+              title: (s.title as string | undefined) ?? '',
+              items: Array.isArray(s.items)
+                ? (s.items as Record<string, unknown>[]).map((it) => ({
+                    id: (it.id as string | undefined) ?? generateId(),
+                    title: (it.title as string | undefined) ?? '',
+                    subtitle: (it.subtitle as string | undefined) ?? '',
+                    date: (it.date as string | undefined) ?? '',
+                    description: (it.description as string | undefined) ?? '',
+                  }))
+                : [],
+            })),
           });
         }
         if (chosen.template_id)  setTemplate(chosen.template_id as Template);
@@ -2152,7 +2164,7 @@ function CustomSectionEditor({
     setResumeData((prev) => ({
       ...prev,
       custom_sections: prev.custom_sections?.map((s) =>
-        s.id === sectionId ? { ...s, items: [...s.items, item] } : s
+        s.id === sectionId ? { ...s, items: [...(s.items ?? []), item] } : s
       ) ?? [],
     }));
   };
@@ -2161,7 +2173,7 @@ function CustomSectionEditor({
     setResumeData((prev) => ({
       ...prev,
       custom_sections: prev.custom_sections?.map((s) =>
-        s.id === sectionId ? { ...s, items: s.items.filter((it) => it.id !== itemId) } : s
+        s.id === sectionId ? { ...s, items: (s.items ?? []).filter((it) => it.id !== itemId) } : s
       ) ?? [],
     }));
   };
@@ -2178,7 +2190,7 @@ function CustomSectionEditor({
         s.id === sectionId
           ? {
               ...s,
-              items: s.items.map((it) => (it.id === itemId ? { ...it, [field]: value } : it)),
+              items: (s.items ?? []).map((it) => (it.id === itemId ? { ...it, [field]: value } : it)),
             }
           : s
       ) ?? [],
@@ -2209,7 +2221,7 @@ function CustomSectionEditor({
             </div>
 
             <div className="space-y-3">
-              {section.items.map((item) => (
+              {(section.items ?? []).map((item) => (
                 <div key={item.id} className="border border-gray-100 rounded-lg p-3 space-y-2 bg-white">
                   <div className="flex justify-end">
                     <button onClick={() => removeItem(section.id, item.id)} className="text-gray-400 hover:text-red-500">
