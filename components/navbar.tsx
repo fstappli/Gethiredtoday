@@ -7,7 +7,8 @@ import { Menu, X, LayoutDashboard, Zap } from "lucide-react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase";
 import Logo from "@/components/logo";
 
-const navLinks = [
+interface NavLink { label: string; href: string; badge?: string; }
+const navLinks: NavLink[] = [
   { label: "Resume Builder", href: "/builder/resume" },
   { label: "Cover Letter", href: "/builder/cover-letter" },
   { label: "Templates", href: "/resume-templates" },
@@ -77,23 +78,25 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="px-3 py-2 text-sm font-medium rounded-lg transition-colors"
+                  className="px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
                   style={{
                     color: isActive ? "#4AB7A6" : "#475569",
                     backgroundColor: isActive ? "#f0fdf9" : "transparent",
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = "#4AB7A6";
-                    }
+                    if (!isActive) e.currentTarget.style.color = "#4AB7A6";
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.color = "#475569";
-                    }
+                    if (!isActive) e.currentTarget.style.color = "#475569";
                   }}
                 >
+                  {link.badge === "NEW" && <Zap className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#4AB7A6" }} />}
                   {link.label}
+                  {link.badge && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white leading-none" style={{ backgroundColor: "#4AB7A6" }}>
+                      {link.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}
@@ -157,13 +160,19 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="block px-4 py-3 text-sm font-medium rounded-xl transition-colors"
+                  className="flex items-center gap-2 px-4 py-3 text-sm font-medium rounded-xl transition-colors"
                   style={{
                     color: isActive ? "#4AB7A6" : "#475569",
                     backgroundColor: isActive ? "#f0fdf9" : "transparent",
                   }}
                 >
+                  {link.badge === "NEW" && <Zap className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#4AB7A6" }} />}
                   {link.label}
+                  {link.badge && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white leading-none" style={{ backgroundColor: "#4AB7A6" }}>
+                      {link.badge}
+                    </span>
+                  )}
                 </Link>
               );
             })}

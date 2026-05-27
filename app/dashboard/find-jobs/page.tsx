@@ -402,6 +402,28 @@ function FindJobsContent() {
         )}
 
         {unconfigured && <div className="mt-4"><UnconfiguredBanner /></div>}
+
+        {/* Auto-Apply promo banner */}
+        <div className="mt-4 flex items-center gap-3 p-3 rounded-xl" style={{ background: "linear-gradient(135deg, #f0fdf9 0%, #e6f7f5 100%)", border: "1px solid #99f6e4" }}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#4AB7A6" }}>
+            <Zap className="w-4 h-4 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold" style={{ color: "#0f172a" }}>
+              Auto-Apply is now available — let HiredTodayApp apply to matching jobs for you automatically.
+            </p>
+            <p className="text-xs mt-0.5" style={{ color: "#475569" }}>
+              Build your resume, set your criteria, and apply to up to 50 jobs per day without lifting a finger.
+            </p>
+          </div>
+          <a
+            href="/dashboard/auto-apply"
+            className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full text-white transition-opacity hover:opacity-90"
+            style={{ backgroundColor: "#4AB7A6" }}
+          >
+            Enable →
+          </a>
+        </div>
       </div>
 
       <div className="flex gap-0 lg:gap-8 px-6 lg:px-8 py-6">
