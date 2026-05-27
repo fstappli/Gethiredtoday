@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
 import { searchJobsJobicy } from '@/lib/jobs/jobicy';
 import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
+import { searchJobsRemotive } from '@/lib/jobs/remotive';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import type { Job, JobSearchFilters, EmploymentType } from '@/types/jobs';
 
@@ -10,22 +11,23 @@ const JOBICY_COUNTRIES = new Set(['ae']);
 
 export const dynamic = 'force-dynamic';
 
-function mergeAndDeduplicate(primary: Job[], secondary: Job[]): Job[] {
-  const seen = new Set(
-    primary.map((j) => `${j.title?.toLowerCase()}|${j.company?.toLowerCase()}`)
+function mergeAndDeduplicate(...sources: Job[][]): Job[] {
+  const seen = new Set<string>();
+  // Interleave across all sources round-robin, deduplicating as we go
+  const deduped = sources.map((src) =>
+    src.filter((j) => {
+      const key = `${j.title?.toLowerCase()}|${j.company?.toLowerCase()}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
   );
-  const unique = secondary.filter((j) => {
-    const key = `${j.title?.toLowerCase()}|${j.company?.toLowerCase()}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-  // Interleave: one from primary, one from secondary, alternating
   const merged: Job[] = [];
-  const maxLen = Math.max(primary.length, unique.length);
+  const maxLen = Math.max(...deduped.map((s) => s.length), 0);
   for (let i = 0; i < maxLen; i++) {
-    if (i < primary.length) merged.push(primary[i]);
-    if (i < unique.length) merged.push(unique[i]);
+    for (const src of deduped) {
+      if (i < src.length) merged.push(src[i]);
+    }
   }
   return merged;
 }
@@ -62,16 +64,20 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ jobs: [], total: 0, page: 1, page_size: 20, unconfigured: true });
     }
 
-    // Run primary source and JSearch in parallel
-    const [primaryResult, jsearchResult] = await Promise.all([
+    const empty = { jobs: [] as Job[], total: 0, page, page_size: 10 };
+
+    // Run all sources in parallel
+    const [primaryResult, jsearchResult, remotiveResult] = await Promise.all([
       useJobicy ? searchJobsJobicy(filters, page) : searchJobs(filters, page),
-      isJSearchConfigured() ? searchJobsJSearch(filters, page) : Promise.resolve({ jobs: [], total: 0, page, page_size: 10 }),
+      isJSearchConfigured() ? searchJobsJSearch(filters, page) : Promise.resolve(empty),
+      // Remotive: free remote-jobs API, always run for UAE, skip for other countries
+      useJobicy ? searchJobsRemotive(filters) : Promise.resolve(empty),
     ]);
 
-    const mergedJobs = mergeAndDeduplicate(primaryResult.jobs, jsearchResult.jobs);
+    const mergedJobs = mergeAndDeduplicate(primaryResult.jobs, jsearchResult.jobs, remotiveResult.jobs);
     const result = {
       jobs: mergedJobs,
-      total: primaryResult.total + jsearchResult.total,
+      total: primaryResult.total + jsearchResult.total + remotiveResult.total,
       page,
       page_size: primaryResult.page_size,
     };

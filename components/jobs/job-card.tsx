@@ -22,6 +22,7 @@ const SOURCE_BADGES: Record<string, { label: string; className: string }> = {
   indeed:      { label: 'Indeed',      className: 'bg-[#fff7e6] text-[#b45309] border-[#fcd34d]' },
   glassdoor:   { label: 'Glassdoor',   className: 'bg-[#ecfdf5] text-[#065f46] border-[#6ee7b7]' },
   ziprecruiter:{ label: 'ZipRecruiter',className: 'bg-[#faf5ff] text-[#6b21a8] border-[#d8b4fe]' },
+  remotive:    { label: 'Remotive',    className: 'bg-[#fff1f2] text-[#be123c] border-[#fda4af]' },
 };
 
 function SourceBadge({ source }: { source: string }) {

@@ -85,17 +85,22 @@ export async function searchJobsJSearch(
 
   const country = filters.country ?? 'us';
 
-  // JSearch requires a non-empty query
+  // JSearch requires a non-empty query; for UAE default to major cities
   let query = filters.query?.trim() ?? '';
-  if (filters.location) query += ` in ${filters.location}`;
+  if (filters.location) {
+    query += ` in ${filters.location}`;
+  } else if (country === 'ae') {
+    query += query ? ' in Dubai UAE' : 'jobs in Dubai UAE Abu Dhabi';
+  }
   if (!query) query = 'jobs';
 
   const params = new URLSearchParams({
     query,
     page: String(page),
     num_pages: '1',
-    country: country.toUpperCase(),
   });
+  // Only pass country code for well-supported countries; UAE works better via location in query
+  if (country !== 'ae') params.set('country', country.toUpperCase());
 
   if (filters.remote) params.set('remote_jobs_only', 'true');
 
