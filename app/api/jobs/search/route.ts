@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
+import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import type { JobSearchFilters, EmploymentType } from '@/types/jobs';
 
 export const dynamic = 'force-dynamic';
@@ -7,13 +8,7 @@ export const dynamic = 'force-dynamic';
 export async function GET(req: NextRequest) {
   try {
     if (!isAdzunaConfigured()) {
-      return NextResponse.json({
-        jobs: [],
-        total: 0,
-        page: 1,
-        page_size: 20,
-        unconfigured: true,
-      });
+      return NextResponse.json({ jobs: [], total: 0, page: 1, page_size: 20, unconfigured: true });
     }
 
     const { searchParams } = req.nextUrl;
@@ -41,6 +36,32 @@ export async function GET(req: NextRequest) {
     };
 
     const result = await searchJobs(filters, page);
+
+    // Cache jobs in DB so the apply flow can look them up (fire-and-forget)
+    if (result.jobs.length > 0) {
+      const admin = createAdminSupabaseClient();
+      const rows = result.jobs.map((j) => ({
+        id: j.id,
+        source: j.source,
+        title: j.title,
+        company: j.company,
+        location: j.location,
+        country: j.country,
+        description: j.description,
+        redirect_url: j.redirect_url,
+        category: j.category,
+        contract_type: j.contract_type,
+        work_type: j.work_type,
+        salary_min: j.salary_min,
+        salary_max: j.salary_max,
+        currency: j.currency,
+        posted_at: j.posted_at,
+        fetched_at: j.fetched_at,
+        raw: {},
+      }));
+      admin.from('jobs').upsert(rows, { onConflict: 'id' }).then(() => {});
+    }
+
     return NextResponse.json(result);
   } catch (err) {
     console.error('GET /api/jobs/search error:', err);

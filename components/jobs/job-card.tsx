@@ -1,6 +1,7 @@
 'use client';
 
-import { Building2, MapPin, Clock, Banknote, Bookmark } from 'lucide-react';
+import Link from 'next/link';
+import { Building2, MapPin, Clock, Banknote, Bookmark, ExternalLink } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ApplyButton } from './apply-button';
@@ -14,7 +15,6 @@ interface JobCardProps {
   applicationStatus?: ApplicationStatus | null;
   onStatusChange?: (status: ApplicationStatus) => void;
   onSave?: (jobId: string) => void;
-  skeleton?: boolean;
 }
 
 function workTypeLabel(type: Job['work_type']): string {
@@ -37,8 +37,7 @@ function contractLabel(type: string | null): string {
 
 function formatSalary(min: number | null, max: number | null, currency: string): string {
   if (!min && !max) return '';
-  const fmt = (n: number) =>
-    n >= 1000 ? `${Math.round(n / 1000)}k` : String(n);
+  const fmt = (n: number) => (n >= 1000 ? `${Math.round(n / 1000)}k` : String(n));
   const sym = currency === 'GBP' ? '£' : '$';
   if (min && max) return `${sym}${fmt(min)}–${sym}${fmt(max)}`;
   if (min) return `From ${sym}${fmt(min)}`;
@@ -50,8 +49,7 @@ function timeAgo(dateStr: string | null): string {
   if (!dateStr) return '';
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return '';
-  const diffMs = Date.now() - d.getTime();
-  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const days = Math.floor((Date.now() - d.getTime()) / (1000 * 60 * 60 * 24));
   if (days === 0) return 'Today';
   if (days === 1) return '1 day ago';
   if (days < 7) return `${days} days ago`;
@@ -92,16 +90,24 @@ export function JobCard({
   const ct = contractLabel(job.contract_type);
   const posted = timeAgo(job.posted_at);
 
+  const storeJob = () => {
+    try { sessionStorage.setItem(`job_${job.id}`, JSON.stringify(job)); } catch {}
+  };
+
   return (
     <Card className="border-slate-200 shadow-sm hover:shadow-md transition-shadow">
       <CardContent className="p-5">
         <div className="flex items-start gap-4">
-          {/* Job info */}
           <div className="flex-1 min-w-0">
+            {/* Title — links to detail page */}
             <div className="flex items-start justify-between gap-2 flex-wrap">
-              <h3 className="font-semibold text-slate-900 text-base leading-tight line-clamp-2">
+              <Link
+                href={`/dashboard/find-jobs/${job.id}`}
+                onClick={storeJob}
+                className="font-semibold text-slate-900 text-base leading-tight line-clamp-2 hover:text-[#4AB7A6] transition-colors"
+              >
                 {job.title}
-              </h3>
+              </Link>
               {matchScore != null && (
                 <ScoreBadge score={matchScore} reasons={matchReasons} size="sm" />
               )}
@@ -161,18 +167,29 @@ export function JobCard({
         </div>
 
         <div className="flex items-center justify-between mt-4 pt-3.5 border-t border-slate-100 gap-3">
-          <button
-            type="button"
-            onClick={() => onSave?.(job.id)}
-            className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#4AB7A6] transition-colors"
-            aria-label="Save job"
-          >
-            <Bookmark className="w-4 h-4" />
-            Save
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => onSave?.(job.id)}
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#4AB7A6] transition-colors"
+              aria-label="Save job"
+            >
+              <Bookmark className="w-4 h-4" />
+              Save
+            </button>
+            <Link
+              href={`/dashboard/find-jobs/${job.id}`}
+              onClick={storeJob}
+              className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-[#4AB7A6] transition-colors"
+            >
+              <ExternalLink className="w-4 h-4" />
+              Details
+            </Link>
+          </div>
           <ApplyButton
             jobId={job.id}
             redirectUrl={job.redirect_url}
+            job={job}
             existingStatus={applicationStatus}
             onStatusChange={onStatusChange}
             size="sm"

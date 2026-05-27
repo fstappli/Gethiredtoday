@@ -3,17 +3,25 @@
 import { useState } from 'react';
 import { ExternalLink, CheckCircle2, Loader2, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import type { ApplicationStatus } from '@/types/jobs';
+import type { ApplicationStatus, Job } from '@/types/jobs';
 
 interface ApplyButtonProps {
   jobId: string;
   redirectUrl: string;
+  job?: Job;
   existingStatus?: ApplicationStatus | null;
   onStatusChange?: (status: ApplicationStatus) => void;
   size?: 'sm' | 'default';
 }
 
-export function ApplyButton({ jobId, redirectUrl, existingStatus, onStatusChange, size = 'default' }: ApplyButtonProps) {
+export function ApplyButton({
+  jobId,
+  redirectUrl,
+  job,
+  existingStatus,
+  onStatusChange,
+  size = 'default',
+}: ApplyButtonProps) {
   const [status, setStatus] = useState<ApplicationStatus | null>(existingStatus ?? null);
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -21,26 +29,35 @@ export function ApplyButton({ jobId, redirectUrl, existingStatus, onStatusChange
 
   const handleApply = async () => {
     if (status === 'applied') return;
+
+    // Open employer URL immediately — never block the user on our API
+    window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+    setStatus('redirected');
+    onStatusChange?.('redirected');
+    setShowConfirm(true);
+
+    // Track in background (best-effort)
     setLoading(true);
     try {
       const res = await fetch('/api/jobs/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ job_id: jobId }),
+        body: JSON.stringify({
+          job_id: jobId,
+          redirect_url: redirectUrl,
+          job_data: job ?? null,
+        }),
       });
       const data = await res.json();
-      if (!res.ok && !data.duplicate) {
-        console.error('Apply failed:', data.error);
-        return;
+      if (res.ok || res.status === 201) {
+        setApplicationId(data.application?.id ?? null);
+        if (data.duplicate && data.application?.status) {
+          setStatus(data.application.status);
+          onStatusChange?.(data.application.status);
+        }
       }
-      setApplicationId(data.application?.id ?? null);
-      const newStatus: ApplicationStatus = data.duplicate ? data.application?.status : 'redirected';
-      setStatus(newStatus);
-      onStatusChange?.(newStatus);
-
-      // Open employer URL in new tab
-      window.open(redirectUrl, '_blank', 'noopener,noreferrer');
-      setShowConfirm(true);
+    } catch {
+      // Tracking failed silently — apply already worked for user
     } finally {
       setLoading(false);
     }
