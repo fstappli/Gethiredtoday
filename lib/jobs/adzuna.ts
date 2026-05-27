@@ -4,8 +4,8 @@ const BASE_URL = 'https://api.adzuna.com/v1/api/jobs';
 const PAGE_SIZE = 20;
 
 function getCredentials() {
-  const appId = process.env.ADZUNA_APP_ID;
-  const appKey = process.env.ADZUNA_APP_KEY;
+  const appId = process.env.ADZUNA_APP_ID?.trim();
+  const appKey = process.env.ADZUNA_APP_KEY?.trim();
   return { appId, appKey, configured: !!(appId && appKey) };
 }
 
