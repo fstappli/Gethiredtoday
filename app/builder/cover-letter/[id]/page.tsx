@@ -203,6 +203,7 @@ export default function CoverLetterBuilderPage() {
         });
         if (!res.ok) throw new Error("Failed to create");
         const { coverLetter } = await res.json();
+        if (!coverLetter?.id) throw new Error("Invalid response from server");
         router.replace(`/builder/cover-letter/${coverLetter.id}`);
       } else {
         const res = await fetch(`/api/cover-letter/${id}`, {
@@ -286,6 +287,7 @@ export default function CoverLetterBuilderPage() {
       pdf.save(`${title || "cover-letter"}.pdf`);
     } catch (err) {
       console.error("PDF generation failed", err);
+      setError("PDF generation failed. Please try again.");
     } finally {
       setDownloadingPdf(false);
     }

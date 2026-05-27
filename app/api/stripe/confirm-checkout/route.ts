@@ -54,10 +54,10 @@ export async function POST(req: Request) {
     }
 
     // Only mark as active if the payment actually succeeded.
+    // 'open' means pending payment — never treat it as paid.
     const paid =
       session.payment_status === 'paid' ||
-      session.status === 'complete' ||
-      session.status === 'open'; // for subscription mode, "complete" is the success state
+      session.status === 'complete';
 
     if (!paid) {
       return NextResponse.json({

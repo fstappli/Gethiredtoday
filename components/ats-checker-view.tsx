@@ -271,7 +271,7 @@ export default function AtsCheckerView() {
       }
 
       const data = await res.json();
-      if (!data || typeof data.overall_score !== "number") {
+      if (!data || typeof data.overall_score !== "number" || !data.sections) {
         setError("The analyzer returned an unexpected response. Please try again.");
         return;
       }

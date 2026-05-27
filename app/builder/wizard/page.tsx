@@ -588,7 +588,10 @@ function WizardInner() {
         router.push(`/builder/resume/${resume.id}?wizard=1&template=${templateId}`);
         return;
       }
-    } catch {}
+      setUploadError('Failed to create resume. Please try again.');
+    } catch {
+      setUploadError('Failed to create resume. Please check your connection and try again.');
+    }
     setCreating(false);
   };
 

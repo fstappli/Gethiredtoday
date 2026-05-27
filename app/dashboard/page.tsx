@@ -935,7 +935,6 @@ export default function DashboardPage() {
                       showToast('Opening builder to download PDF...');
                       setTimeout(() => setDownloadingId(null), 1200);
                     }}
-                    onDownloadWord={handleDownloadWord}
                     onShare={(id) => handleShare(id, 'cover-letter')}
                   />
                 ))}
@@ -1293,7 +1292,6 @@ function CoverLetterCard({
   onDelete,
   onDuplicate,
   onDownloadPdf,
-  onDownloadWord,
   onShare,
 }: {
   coverLetter: ExtendedCoverLetterRow;
@@ -1301,7 +1299,6 @@ function CoverLetterCard({
   onDelete: (id: string) => void;
   onDuplicate: (cl: CoverLetterRow) => void;
   onDownloadPdf: (id: string) => void;
-  onDownloadWord: () => void;
   onShare: (id: string) => void;
 }) {
   const isDownloading = downloadingId === coverLetter.id;
@@ -1348,15 +1345,6 @@ function CoverLetterCard({
             ) : (
               <FileDown className="w-3.5 h-3.5" />
             )}
-          </button>
-
-          {/* Word download */}
-          <button
-            title="Download Word (.docx)"
-            onClick={onDownloadWord}
-            className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-teal-50 flex items-center justify-center text-slate-400 hover:text-teal-600 transition-all border border-slate-200 hover:border-teal-300"
-          >
-            <FileText className="w-3.5 h-3.5" />
           </button>
 
           {/* Share */}

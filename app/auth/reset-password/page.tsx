@@ -41,14 +41,17 @@ export default function ResetPasswordPage() {
   // The client SDK handles exchanging it automatically on load.
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setSessionReady(true);
-      } else {
-        // No session — the link may have expired or already been used
+    supabase.auth.getSession()
+      .then(({ data: { session } }) => {
+        if (session) {
+          setSessionReady(true);
+        } else {
+          router.replace("/forgot-password");
+        }
+      })
+      .catch(() => {
         router.replace("/forgot-password");
-      }
-    });
+      });
   }, [router]);
 
   const {

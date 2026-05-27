@@ -38,6 +38,14 @@ export async function GET(
   }
 }
 
+// PATCH /api/cover-letter/[id] — partial update (same as PUT, used by share modal)
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  return PUT(req, { params });
+}
+
 // PUT /api/cover-letter/[id] — update a cover letter
 export async function PUT(
   req: NextRequest,

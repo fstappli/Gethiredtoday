@@ -87,6 +87,8 @@ export default function AutoApplyPage() {
         const { settings: s } = await res.json();
         setSettings(s);
         showToast('Settings saved.');
+      } else {
+        showToast('Failed to save settings. Please try again.');
       }
     } finally {
       setSaving(false);
@@ -95,22 +97,30 @@ export default function AutoApplyPage() {
 
   const handlePause = async () => {
     const isPaused = Boolean(settings?.paused_at);
-    await fetch('/api/jobs/auto-apply/settings', {
+    const res = await fetch('/api/jobs/auto-apply/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ paused_at: isPaused ? null : new Date().toISOString() }),
     });
-    await loadData();
-    showToast(isPaused ? 'Auto-apply resumed.' : 'Auto-apply paused.');
+    if (res.ok) {
+      await loadData();
+      showToast(isPaused ? 'Auto-apply resumed.' : 'Auto-apply paused.');
+    } else {
+      showToast('Failed to update. Please try again.');
+    }
   };
 
   const handleRunNow = async () => {
     setRunning(true);
     try {
       const res = await fetch('/api/jobs/auto-apply/queue', { method: 'POST' });
-      const data = await res.json();
-      showToast(data.message ?? `Queued ${data.queued ?? 0} jobs.`);
-      await loadData();
+      if (res.ok) {
+        const data = await res.json();
+        showToast(data.message ?? `Queued ${data.queued ?? 0} jobs.`);
+        await loadData();
+      } else {
+        showToast('Failed to queue jobs. Please try again.');
+      }
     } finally {
       setRunning(false);
     }

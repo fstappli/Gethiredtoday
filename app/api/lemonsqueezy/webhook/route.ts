@@ -28,11 +28,16 @@ function verifySignature(rawBody: string, signature: string, secret: string): bo
 
 export async function POST(req: Request) {
   const rawBody = await req.text();
-  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET ?? '';
+  const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
 
-  // Gumroad signs with X-Gumroad-Signature header (optional but recommended)
+  if (!secret) {
+    console.error('LEMONSQUEEZY_WEBHOOK_SECRET is not set — rejecting webhook');
+    return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
+  }
+
+  // Gumroad signs with X-Gumroad-Signature header
   const signature = req.headers.get('x-gumroad-signature') ?? '';
-  if (secret && signature && !verifySignature(rawBody, signature, secret)) {
+  if (!signature || !verifySignature(rawBody, signature, secret)) {
     console.error('Webhook signature verification failed');
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }

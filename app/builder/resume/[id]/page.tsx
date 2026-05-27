@@ -470,11 +470,15 @@ export default function ResumeBuilderPage() {
         if (draftStorageKey && typeof window !== 'undefined') {
           try { window.localStorage.removeItem(draftStorageKey); } catch { /* ignore */ }
         }
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } else {
+        setAiError('Save failed — your changes are kept locally. Please try again.');
+        setTimeout(() => setAiError(null), 5000);
       }
-      setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
     } catch {
-      // silently fail
+      setAiError('Save failed — your changes are kept locally. Please try again.');
+      setTimeout(() => setAiError(null), 5000);
     }
   };
 

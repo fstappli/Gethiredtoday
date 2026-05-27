@@ -322,9 +322,13 @@ function ResumeEditorInner() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ jobTitle, experience }),
       });
+      if (!res.ok) throw new Error("AI summary failed");
       const data = await res.json();
       if (data.summary) update("summary", data.summary);
-    } catch {}
+    } catch {
+      setSaveMsg("AI generation failed. Please try again.");
+      setTimeout(() => setSaveMsg(null), 3000);
+    }
     setAiLoading(null);
   };
 
@@ -342,11 +346,15 @@ function ResumeEditorInner() {
           responsibilities: exp.description || exp.job_title,
         }),
       });
+      if (!res.ok) throw new Error("AI bullets failed");
       const data = await res.json();
       if (Array.isArray(data.bullets)) {
         updateExp(expId, "achievements", data.bullets);
       }
-    } catch {}
+    } catch {
+      setSaveMsg("AI generation failed. Please try again.");
+      setTimeout(() => setSaveMsg(null), 3000);
+    }
     setAiLoading(null);
   };
 

@@ -93,7 +93,8 @@ export default function ResumesPage() {
     if (!confirm('Delete this resume? This cannot be undone.')) return;
     setResumes((prev) => prev.filter((r) => r.id !== id));
     try {
-      await fetch(`/api/resume/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/resume/${id}`, { method: 'DELETE' });
+      if (!res.ok) fetchResumes();
     } catch {
       fetchResumes();
     }

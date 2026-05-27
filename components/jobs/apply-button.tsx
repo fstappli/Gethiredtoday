@@ -29,6 +29,7 @@ export function ApplyButton({
 
   const handleApply = async () => {
     if (status === 'applied') return;
+    if (!redirectUrl) return;
 
     // Open employer URL immediately — never block the user on our API
     window.open(redirectUrl, '_blank', 'noopener,noreferrer');
@@ -132,7 +133,7 @@ export function ApplyButton({
         variant="outline"
         className="border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100"
         onClick={() => {
-          window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+          if (redirectUrl) window.open(redirectUrl, '_blank', 'noopener,noreferrer');
           setShowConfirm(true);
         }}
       >

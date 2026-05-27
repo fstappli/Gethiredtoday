@@ -14,8 +14,11 @@ export async function POST(req: Request) {
 
     const isYearly = plan === 'yearly';
     const priceId = isYearly
-      ? process.env.STRIPE_YEARLY_PRICE_ID!
-      : process.env.STRIPE_PRICE_ID!;
+      ? process.env.STRIPE_YEARLY_PRICE_ID
+      : process.env.STRIPE_PRICE_ID;
+    if (!priceId) {
+      return NextResponse.json({ error: 'Stripe price not configured' }, { status: 500 });
+    }
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],

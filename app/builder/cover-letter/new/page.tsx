@@ -1,19 +1,21 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
 
-export default function NewCoverLetterPage() {
+function NewCoverLetterContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
+    const templateId = searchParams.get("template") || "professional";
     fetch("/api/cover-letter", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         title: "Untitled Cover Letter",
-        template_id: "professional",
+        template_id: templateId,
         data: {},
         contact: {},
       }),
@@ -27,7 +29,7 @@ export default function NewCoverLetterPage() {
         }
       })
       .catch(() => router.replace("/dashboard"));
-  }, [router]);
+  }, [router, searchParams]);
 
   return (
     <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -36,5 +38,17 @@ export default function NewCoverLetterPage() {
         <p className="text-sm font-medium">Creating cover letter…</p>
       </div>
     </div>
+  );
+}
+
+export default function NewCoverLetterPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen flex items-center justify-center bg-gray-50">
+        <Loader2 className="w-7 h-7 animate-spin" style={{ color: "#4AB7A6" }} />
+      </div>
+    }>
+      <NewCoverLetterContent />
+    </Suspense>
   );
 }

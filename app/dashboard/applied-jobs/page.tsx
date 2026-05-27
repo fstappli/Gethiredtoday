@@ -183,15 +183,17 @@ export default function AppliedJobsPage() {
                     </div>
                   </div>
 
-                  <a
-                    href={(job as { redirect_url?: string }).redirect_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="shrink-0 p-2 text-slate-400 hover:text-[#4AB7A6] transition-colors"
-                    aria-label="View job posting"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </a>
+                  {(job as { redirect_url?: string }).redirect_url && (
+                    <a
+                      href={(job as { redirect_url?: string }).redirect_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 p-2 text-slate-400 hover:text-[#4AB7A6] transition-colors"
+                      aria-label="View job posting"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </a>
+                  )}
                 </div>
               );
             })}

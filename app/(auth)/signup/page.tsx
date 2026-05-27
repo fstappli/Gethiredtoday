@@ -203,12 +203,14 @@ function SignupForm() {
         const res = await fetch('/api/stripe/create-checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: values.email }),
+          body: JSON.stringify({ email: values.email, userId: data.user.id }),
         });
-        const json = await res.json();
-        if (json.url) {
-          window.location.href = json.url;
-          return;
+        if (res.ok) {
+          const json = await res.json();
+          if (json.url) {
+            window.location.href = json.url;
+            return;
+          }
         }
       } catch {
         // Fall through to dashboard if checkout fails
@@ -265,12 +267,15 @@ function SignupForm() {
 
   const handleGoogleSignUp = async () => {
     const supabase = createClient();
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
       },
     });
+    if (error) {
+      setError('root', { message: error.message || 'Google sign-up failed. Please try again.' });
+    }
   };
 
   if (success) {
