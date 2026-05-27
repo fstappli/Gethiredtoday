@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
       .from('applications')
       .select(`
         id, status, application_type, applied_at, redirected_at, source, created_at, updated_at,
-        jobs (
+        job:jobs (
           id, title, company, location, redirect_url, category, contract_type, work_type, salary_min, salary_max, currency
         )
       `)
