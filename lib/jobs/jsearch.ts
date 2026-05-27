@@ -94,10 +94,13 @@ export async function searchJobsJSearch(
   }
   if (!query) query = 'jobs';
 
+  // UAE gets more pages since Adzuna doesn't cover it — need more JSearch results
+  const numPages = country === 'ae' ? '3' : '1';
+
   const params = new URLSearchParams({
     query,
     page: String(page),
-    num_pages: '1',
+    num_pages: numPages,
   });
   // Only pass country code for well-supported countries; UAE works better via location in query
   if (country !== 'ae') params.set('country', country.toUpperCase());
@@ -133,8 +136,7 @@ export async function searchJobsJSearch(
     }
 
     const jobs = data.data.map((j) => jsearchJobToJob(j, country));
-    // JSearch doesn't expose a total count — estimate based on pages
-    return { jobs, total: jobs.length > 0 ? jobs.length * 10 : 0, page, page_size: PAGE_SIZE };
+    return { jobs, total: jobs.length > 0 ? jobs.length * 5 : 0, page, page_size: jobs.length || PAGE_SIZE };
   } catch (err) {
     console.error('JSearch fetch error:', err);
     return { jobs: [], total: 0, page, page_size: PAGE_SIZE };

@@ -11,7 +11,7 @@ import type { EmploymentType } from '@/types/jobs';
 const COUNTRIES = [
   { value: 'us', label: '🇺🇸 United States' },
   { value: 'gb', label: '🇬🇧 United Kingdom' },
-  { value: 'ae', label: '🇦🇪 UAE (Remote)' },
+  { value: 'ae', label: '🇦🇪 UAE' },
   { value: 'ca', label: '🇨🇦 Canada' },
   { value: 'au', label: '🇦🇺 Australia' },
   { value: 'in', label: '🇮🇳 India' },
