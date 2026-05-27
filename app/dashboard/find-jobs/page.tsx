@@ -343,7 +343,6 @@ function FindJobsContent() {
   // Active filter chips
   const chips: { label: string; clear: () => void }[] = [];
   if (filters.query) chips.push({ label: `"${filters.query}"`, clear: () => clearFilter('query') });
-  if (filters.location) chips.push({ label: filters.location, clear: () => clearFilter('location') });
   if (filters.remote) chips.push({ label: 'Remote', clear: () => setFilter('remote', false) });
   if (filters.hybrid) chips.push({ label: 'Hybrid', clear: () => setFilter('hybrid', false) });
   if (filters.on_site) chips.push({ label: 'On-site', clear: () => setFilter('on_site', false) });
@@ -382,11 +381,6 @@ function FindJobsContent() {
               className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4AB7A6]/30 focus:border-[#4AB7A6]"
             />
           </div>
-
-          <LocationInput
-            value={filters.location ?? ''}
-            onChange={(v) => setFilter('location', v)}
-          />
 
           <CountrySelect
             value={filters.country ?? 'us'}

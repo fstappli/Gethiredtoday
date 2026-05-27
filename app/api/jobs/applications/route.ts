@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import type { ApplicationStatus } from '@/types/jobs';
 
 const APPLIED_STATUSES: ApplicationStatus[] = ['applied', 'viewed', 'interview', 'offer', 'rejected'];
@@ -18,7 +19,9 @@ export async function GET(req: NextRequest) {
       ? (statusParam.split(',').filter((s) => validStatuses.includes(s as ApplicationStatus)) as ApplicationStatus[])
       : [];
 
-    let query = supabase
+    // Use admin client so the joined jobs table is always readable regardless of RLS
+    const admin = createAdminSupabaseClient();
+    let query = admin
       .from('applications')
       .select(`
         id, status, application_type, applied_at, redirected_at, source, created_at, updated_at,
