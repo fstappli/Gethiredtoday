@@ -1,16 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
 import type { JobSearchFilters, EmploymentType } from '@/types/jobs';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
     if (!isAdzunaConfigured()) {
       return NextResponse.json({
         jobs: [],
@@ -46,32 +41,6 @@ export async function GET(req: NextRequest) {
     };
 
     const result = await searchJobs(filters, page);
-
-    // Cache matching jobs in DB for later reference (fire-and-forget)
-    if (result.jobs.length > 0) {
-      const rows = result.jobs.map((j) => ({
-        id: j.id,
-        source: j.source,
-        title: j.title,
-        company: j.company,
-        location: j.location,
-        country: j.country,
-        description: j.description,
-        redirect_url: j.redirect_url,
-        category: j.category,
-        contract_type: j.contract_type,
-        work_type: j.work_type,
-        salary_min: j.salary_min,
-        salary_max: j.salary_max,
-        currency: j.currency,
-        posted_at: j.posted_at,
-        fetched_at: j.fetched_at,
-        raw: {},
-      }));
-
-      supabase.from('jobs').upsert(rows, { onConflict: 'id' }).then(() => {});
-    }
-
     return NextResponse.json(result);
   } catch (err) {
     console.error('GET /api/jobs/search error:', err);

@@ -17,7 +17,7 @@ interface AdzunaJob {
   description: string;
   redirect_url: string;
   category: { label: string; tag: string };
-  contract_type?: string;
+  contract_time?: string; // Adzuna uses contract_time not contract_type
   salary_min?: number;
   salary_max?: number;
   created: string;
@@ -63,7 +63,7 @@ function adzunaJobToJob(j: AdzunaJob, country: string): Job {
     description: j.description ?? null,
     redirect_url: j.redirect_url,
     category: j.category?.label ?? null,
-    contract_type: normalizeContractType(j.contract_type),
+    contract_type: normalizeContractType(j.contract_time),
     work_type: inferWorkType(j.title, j.description ?? ''),
     salary_min: j.salary_min ?? null,
     salary_max: j.salary_max ?? null,
@@ -120,7 +120,7 @@ export async function searchJobs(
     const url = `${BASE_URL}/${country}/search/${page}?${params}`;
     const res = await fetch(url, {
       headers: { Accept: 'application/json' },
-      next: { revalidate: 300 },
+      cache: 'no-store',
     });
 
     if (!res.ok) {

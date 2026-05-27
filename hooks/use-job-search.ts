@@ -104,7 +104,10 @@ export function useJobSearch(): UseJobSearchReturn {
     try {
       const params = filtersToParams(f, p);
       const res = await fetch(`/api/jobs/search?${params}`, { signal: ctrl.signal });
-      if (!res.ok) return;
+      if (!res.ok) {
+        console.error('Job search API error:', res.status);
+        return;
+      }
       const data = await res.json();
       setUnconfigured(Boolean(data.unconfigured));
       setTotal(data.total ?? 0);
