@@ -76,11 +76,23 @@ export async function POST() {
     const profile = extractResumeProfile(resume.data as ResumeData);
     const filterSettings = settings.filters ?? {};
 
+    // Infer country from resume location (same logic as matches/refresh)
+    const inferredCountry = (() => {
+      const l = (profile.location ?? '').toLowerCase();
+      if (l.includes('dubai') || l.includes('uae') || l.includes('abu dhabi')) return 'ae';
+      if (l.includes('london') || l.includes('united kingdom') || l.includes(' uk')) return 'gb';
+      if (l.includes('canada') || l.includes('toronto') || l.includes('vancouver')) return 'ca';
+      if (l.includes('australia') || l.includes('sydney') || l.includes('melbourne')) return 'au';
+      if (l.includes('india') || l.includes('mumbai') || l.includes('bangalore')) return 'in';
+      if (l.includes('germany') || l.includes('berlin') || l.includes('munich')) return 'de';
+      return 'us';
+    })();
+
     // Fetch jobs from all sources in parallel for a bigger pool
     const baseFilters = {
       query: profile.job_titles[0] ?? '',
       location: profile.location ?? '',
-      country: 'us',
+      country: inferredCountry,
       ...filterSettings,
     };
     const [adzunaResult, jsearchResult] = await Promise.all([

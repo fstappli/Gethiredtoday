@@ -155,10 +155,12 @@ function ShareModal({ id, type, onClose }: { id: string; type: 'resume' | 'cover
   const link = `https://hiredtodayapp.com/${type === 'resume' ? 'resume' : 'cover-letter'}/public/${id}`;
   const [copied, setCopied] = useState(false);
   const [status, setStatus] = useState<'enabling' | 'ready' | 'error'>('enabling');
+  const [retryCount, setRetryCount] = useState(0);
 
   // Flip is_public=true when the dialog opens so the link actually works.
   useEffect(() => {
     let cancelled = false;
+    setStatus('enabling');
     (async () => {
       try {
         const res = await fetch(`/api/${type === 'resume' ? 'resume' : 'cover-letter'}/${id}`, {
@@ -173,7 +175,7 @@ function ShareModal({ id, type, onClose }: { id: string; type: 'resume' | 'cover
       }
     })();
     return () => { cancelled = true; };
-  }, [id, type]);
+  }, [id, type, retryCount]);
 
   const handleCopy = async () => {
     try {
@@ -206,7 +208,15 @@ function ShareModal({ id, type, onClose }: { id: string; type: 'resume' | 'cover
           <p className="text-sm text-slate-500 mb-3">Anyone with this link can view your {type === 'resume' ? 'resume' : 'cover letter'}.</p>
         )}
         {status === 'error' && (
-          <p className="text-sm text-red-500 mb-3">Could not enable the public link. Please try again.</p>
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-red-500">Could not enable the public link.</p>
+            <button
+              onClick={() => setRetryCount((c) => c + 1)}
+              className="text-sm font-medium text-[#4AB7A6] hover:underline ml-3"
+            >
+              Retry
+            </button>
+          </div>
         )}
         <div className="flex gap-2 items-stretch">
           <input
@@ -352,8 +362,8 @@ export default function DashboardPage() {
     application_status: string | null;
     jobs: { id: string; title: string; company: string | null; location: string | null; redirect_url: string; work_type: string | null; contract_type: string | null; category: string | null } | null;
   }[]>([]);
-  const [loadingMatches, setLoadingMatches] = useState(false);
-  const [hasFinalizedResume, setHasFinalizedResume] = useState(false);
+  const [loadingMatches, setLoadingMatches] = useState(true);
+  const [hasFinalizedResume, setHasFinalizedResume] = useState<boolean | null>(null); // null = not yet loaded
   const [refreshingMatches, setRefreshingMatches] = useState(false);
   const [showResumePicker, setShowResumePicker] = useState(false);
   const [settingActiveId, setSettingActiveId] = useState<string | null>(null);
@@ -820,7 +830,7 @@ export default function DashboardPage() {
               </div>
             )}
 
-            {loadingMatches ? (
+            {(loadingMatches || hasFinalizedResume === null) ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="h-28 bg-slate-100 rounded-xl animate-pulse" />
