@@ -18,6 +18,7 @@ function inferCountry(location: string | null): string {
   if (l.includes('australia') || l.includes('sydney') || l.includes('melbourne') || l.includes('brisbane')) return 'au';
   if (l.includes('india') || l.includes('mumbai') || l.includes('bangalore') || l.includes('delhi')) return 'in';
   if (l.includes('germany') || l.includes('berlin') || l.includes('munich') || l.includes('hamburg')) return 'de';
+  if (l.includes('pakistan') || l.includes('karachi') || l.includes('lahore') || l.includes('islamabad') || l.includes('rawalpindi')) return 'pk';
   return 'us';
 }
 

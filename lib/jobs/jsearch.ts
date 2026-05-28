@@ -85,17 +85,19 @@ export async function searchJobsJSearch(
 
   const country = filters.country ?? 'us';
 
-  // JSearch requires a non-empty query; for UAE default to major cities
+  // JSearch requires a non-empty query; for UAE/PK default to major cities
   let query = filters.query?.trim() ?? '';
   if (filters.location) {
     query += ` in ${filters.location}`;
   } else if (country === 'ae') {
     query += query ? ' in Dubai UAE' : 'jobs in Dubai UAE Abu Dhabi';
+  } else if (country === 'pk') {
+    query += query ? ' in Pakistan' : 'jobs in Karachi Lahore Islamabad Pakistan';
   }
   if (!query) query = 'jobs';
 
-  // UAE gets more pages since Adzuna doesn't cover it — need more JSearch results
-  const numPages = country === 'ae' ? '3' : '1';
+  // UAE/PK get more pages since Adzuna doesn't cover them
+  const numPages = (country === 'ae' || country === 'pk') ? '3' : '1';
 
   const params = new URLSearchParams({
     query,

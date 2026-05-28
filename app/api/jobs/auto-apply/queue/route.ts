@@ -85,6 +85,7 @@ export async function POST() {
       if (l.includes('australia') || l.includes('sydney') || l.includes('melbourne')) return 'au';
       if (l.includes('india') || l.includes('mumbai') || l.includes('bangalore')) return 'in';
       if (l.includes('germany') || l.includes('berlin') || l.includes('munich')) return 'de';
+      if (l.includes('pakistan') || l.includes('karachi') || l.includes('lahore') || l.includes('islamabad')) return 'pk';
       return 'us';
     })();
 

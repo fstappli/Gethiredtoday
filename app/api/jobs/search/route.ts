@@ -6,8 +6,8 @@ import { searchJobsRemotive } from '@/lib/jobs/remotive';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import type { Job, JobSearchFilters, EmploymentType } from '@/types/jobs';
 
-// Countries routed to Jobicy (free, remote-only) instead of Adzuna
-const JOBICY_COUNTRIES = new Set(['ae']);
+// Countries NOT supported by Adzuna — routed to JSearch/Jobicy/Remotive instead
+const NON_ADZUNA_COUNTRIES = new Set(['ae', 'pk']);
 
 export const dynamic = 'force-dynamic';
 
@@ -58,9 +58,12 @@ export async function GET(req: NextRequest) {
       country:          searchParams.get('country') ?? 'us',
     };
 
-    const useJobicy = JOBICY_COUNTRIES.has(filters.country ?? 'us');
+    const country = filters.country ?? 'us';
+    const skipAdzuna = NON_ADZUNA_COUNTRIES.has(country);
+    const isUAE = country === 'ae';
+    const isPK = country === 'pk';
 
-    if (!useJobicy && !isAdzunaConfigured()) {
+    if (!skipAdzuna && !isAdzunaConfigured() && !isJSearchConfigured()) {
       return NextResponse.json({ jobs: [], total: 0, page: 1, page_size: 20, unconfigured: true });
     }
 
@@ -68,10 +71,13 @@ export async function GET(req: NextRequest) {
 
     // Run all sources in parallel
     const [primaryResult, jsearchResult, remotiveResult] = await Promise.all([
-      useJobicy ? searchJobsJobicy(filters, page) : searchJobs(filters, page),
+      // UAE → Jobicy; Pakistan → JSearch only (no Jobicy/Adzuna); others → Adzuna
+      isUAE ? searchJobsJobicy(filters, page)
+        : isPK ? Promise.resolve(empty)
+        : (isAdzunaConfigured() ? searchJobs(filters, page) : Promise.resolve(empty)),
       isJSearchConfigured() ? searchJobsJSearch(filters, page) : Promise.resolve(empty),
-      // Remotive: free remote-jobs API, always run for UAE, skip for other countries
-      useJobicy ? searchJobsRemotive(filters) : Promise.resolve(empty),
+      // Remotive: only for UAE and Pakistan (Adzuna countries get it for free elsewhere)
+      (isUAE || isPK) ? searchJobsRemotive(filters) : Promise.resolve(empty),
     ]);
 
     const mergedJobs = mergeAndDeduplicate(primaryResult.jobs, jsearchResult.jobs, remotiveResult.jobs);

@@ -16,6 +16,7 @@ const COUNTRIES = [
   { value: 'au', label: '🇦🇺 Australia' },
   { value: 'in', label: '🇮🇳 India' },
   { value: 'de', label: '🇩🇪 Germany' },
+  { value: 'pk', label: '🇵🇰 Pakistan' },
 ];
 
 const EMPLOYMENT_TYPES: { value: EmploymentType; label: string }[] = [
