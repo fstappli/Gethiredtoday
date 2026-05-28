@@ -59,6 +59,7 @@ export default function AppliedJobsPage() {
   const [counts, setCounts] = useState({ applied: 0, redirected: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ApplicationStatus | 'all'>('all');
+  const [applyingId, setApplyingId] = useState<string | null>(null);
 
   const fetchApplications = useCallback(async (status: ApplicationStatus | 'all') => {
     setLoading(true);
@@ -81,6 +82,32 @@ export default function AppliedJobsPage() {
   const handleTabChange = (tab: ApplicationStatus | 'all') => {
     setActiveTab(tab);
     fetchApplications(tab);
+  };
+
+  // Opens the employer URL and marks the application as applied
+  const handleApply = async (appId: string, redirectUrl: string) => {
+    setApplyingId(appId);
+    window.open(redirectUrl, '_blank', 'noopener,noreferrer');
+    try {
+      const res = await fetch('/api/jobs/apply/confirm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ application_id: appId, confirmed: true }),
+      });
+      if (res.ok) {
+        // Optimistically update status in the list
+        setApplications((prev) =>
+          prev.map((a) =>
+            a.id === appId
+              ? { ...a, status: 'applied' as ApplicationStatus, applied_at: new Date().toISOString() }
+              : a
+          )
+        );
+        setCounts((c) => ({ ...c, applied: c.applied + 1, redirected: Math.max(0, c.redirected - 1) }));
+      }
+    } finally {
+      setApplyingId(null);
+    }
   };
 
   return (
@@ -184,15 +211,29 @@ export default function AppliedJobsPage() {
                   </div>
 
                   {(job as { redirect_url?: string }).redirect_url && (
-                    <a
-                      href={(job as { redirect_url?: string }).redirect_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 p-2 text-slate-400 hover:text-[#4AB7A6] transition-colors"
-                      aria-label="View job posting"
-                    >
-                      <ExternalLink className="w-4 h-4" />
-                    </a>
+                    app.status === 'redirected' ? (
+                      <button
+                        onClick={() => handleApply(app.id, (job as { redirect_url: string }).redirect_url)}
+                        disabled={applyingId === app.id}
+                        className="shrink-0 flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full text-white transition-colors disabled:opacity-60"
+                        style={{ backgroundColor: '#4AB7A6' }}
+                      >
+                        {applyingId === app.id
+                          ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          : <ExternalLink className="w-3.5 h-3.5" />}
+                        Apply
+                      </button>
+                    ) : (
+                      <a
+                        href={(job as { redirect_url?: string }).redirect_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 p-2 text-slate-400 hover:text-[#4AB7A6] transition-colors"
+                        aria-label="View job posting"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )
                   )}
                 </div>
               );
