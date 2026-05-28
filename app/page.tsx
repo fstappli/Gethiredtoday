@@ -126,57 +126,53 @@ const blogPosts = [
    MOCK VISUALS
 ───────────────────────────────────────────────────────────────────────────── */
 
+/** Lightweight CSS-only resume card — replaces TemplatePreview in the hero to avoid a 54 KB render-blocking component above the fold. */
+function LightResumeCard({ accent, hassidebar }: { accent: string; hassidebar?: boolean }) {
+  return (
+    <div className="w-full h-full bg-white flex overflow-hidden">
+      {hassidebar && (
+        <div className="w-[32%] h-full flex-shrink-0 flex flex-col gap-2 p-3" style={{ backgroundColor: accent }}>
+          <div className="w-10 h-10 rounded-full bg-white/30 mt-1 mx-auto" />
+          <div className="h-1.5 rounded-full bg-white/40 mt-2" />
+          <div className="h-1 rounded-full bg-white/25 w-3/4" />
+          <div className="h-px bg-white/20 my-1" />
+          {[80, 65, 90, 55].map((w, i) => (
+            <div key={i} className="h-1 rounded-full bg-white/30" style={{ width: `${w}%` }} />
+          ))}
+        </div>
+      )}
+      <div className="flex-1 p-3 flex flex-col gap-1.5 min-w-0">
+        {!hassidebar && <div className="h-1 rounded-full w-1/3 mb-0.5" style={{ backgroundColor: accent }} />}
+        <div className="h-2 rounded-full bg-slate-800 w-2/3" />
+        <div className="h-1 rounded-full bg-slate-400 w-1/2" />
+        <div className="h-px bg-slate-100 my-1" style={{ borderTop: `1.5px solid ${accent}` }} />
+        {[100, 85, 70, 90, 60, 75, 55, 80].map((w, i) => (
+          <div key={i} className="h-1 rounded-full bg-slate-200" style={{ width: `${w}%`, opacity: i > 4 ? 0.6 : 1 }} />
+        ))}
+        <div className="flex gap-1 mt-1 flex-wrap">
+          {[accent, '#e2e8f0', '#e2e8f0'].map((bg, i) => (
+            <div key={i} className="h-2 rounded-full px-2" style={{ backgroundColor: bg, width: i === 0 ? 28 : 20 }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function HeroResumeCollage() {
-  const cards: { layout: TemplateLayout; accent: string; className: string; rotate: string }[] = [
-    {
-      layout: "sidebar",
-      accent: "#4AB7A6",
-      className: "absolute top-0 left-0 w-[58%] aspect-[3/4] z-20",
-      rotate: "rotate(-2deg)",
-    },
-    {
-      layout: "executive",
-      accent: "#0f172a",
-      className: "absolute top-4 right-0 w-[46%] aspect-[3/4] z-10",
-      rotate: "rotate(3deg)",
-    },
-    {
-      layout: "classic",
-      accent: "#0f172a",
-      className: "absolute bottom-0 left-[12%] w-[52%] aspect-[3/4] z-30",
-      rotate: "rotate(1deg)",
-    },
-    {
-      layout: "creative",
-      accent: "#34d399",
-      className: "absolute bottom-2 right-2 w-[44%] aspect-[3/4] z-20",
-      rotate: "rotate(-2deg)",
-    },
+  const cards = [
+    { accent: "#4AB7A6", hassidebar: true,  className: "absolute top-0 left-0 w-[58%] aspect-[3/4] z-20",    rotate: "rotate(-2deg)" },
+    { accent: "#1e293b", hassidebar: false, className: "absolute top-4 right-0 w-[46%] aspect-[3/4] z-10",   rotate: "rotate(3deg)" },
+    { accent: "#2563eb", hassidebar: false, className: "absolute bottom-0 left-[12%] w-[52%] aspect-[3/4] z-30", rotate: "rotate(1deg)" },
+    { accent: "#34d399", hassidebar: true,  className: "absolute bottom-2 right-2 w-[44%] aspect-[3/4] z-20",  rotate: "rotate(-2deg)" },
   ];
 
   return (
-    <div
-      className="relative w-full max-w-[560px] mx-auto aspect-[5/4] select-none"
-      aria-hidden="true"
-    >
+    <div className="relative w-full max-w-[560px] mx-auto aspect-[5/4] select-none" aria-hidden="true">
       {cards.map((card, i) => (
-        <div
-          key={i}
-          className={card.className}
-          style={{
-            transform: card.rotate,
-            transition: "transform 0.4s ease",
-          }}
-        >
-          <div
-            className="w-full h-full rounded-xl overflow-hidden bg-white"
-            style={{
-              border: "1px solid #e2e8f0",
-              boxShadow:
-                "0 24px 48px -12px rgba(15,23,42,0.18), 0 8px 16px -6px rgba(15,23,42,0.10)",
-            }}
-          >
-            <TemplatePreview layout={card.layout} accent={card.accent} />
+        <div key={i} className={card.className} style={{ transform: card.rotate }}>
+          <div className="w-full h-full rounded-xl overflow-hidden bg-white" style={{ border: "1px solid #e2e8f0", boxShadow: "0 24px 48px -12px rgba(15,23,42,0.18), 0 8px 16px -6px rgba(15,23,42,0.10)" }}>
+            <LightResumeCard accent={card.accent} hassidebar={card.hassidebar} />
           </div>
         </div>
       ))}
