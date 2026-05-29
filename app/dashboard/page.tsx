@@ -306,6 +306,16 @@ export default function DashboardPage() {
       }
 
       await readProfile(user.id);
+
+      // Resume Gumroad checkout if user signed up for Pro but needed email confirmation first
+      try {
+        const pendingPlan = sessionStorage.getItem('pending_plan');
+        if (pendingPlan === 'pro') {
+          sessionStorage.removeItem('pending_plan');
+          window.location.href = '/api/lemonsqueezy/checkout-redirect?from=/dashboard';
+          return;
+        }
+      } catch {}
     })();
   }, []);
 
@@ -569,7 +579,10 @@ export default function DashboardPage() {
       return;
     }
     if (!isPro) {
-      showToast('Word download is a Pro feature. Upgrade to unlock.');
+      showToast('Word download is a Pro feature — taking you to upgrade…');
+      setTimeout(() => {
+        window.location.href = '/api/lemonsqueezy/checkout-redirect?from=/dashboard';
+      }, 1000);
       return;
     }
     setDownloadingId(targetId);
@@ -732,6 +745,26 @@ export default function DashboardPage() {
       <div className="flex gap-6 px-6 lg:px-8 py-8">
         {/* Main scrollable content */}
         <div className="flex-1 min-w-0 space-y-10">
+
+          {/* Mobile upgrade banner — visible below xl where sidebar is hidden */}
+          {!isPro && (
+            <div className="xl:hidden flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100">
+              <div className="flex items-center gap-2 min-w-0">
+                <Sparkles className="w-4 h-4 shrink-0" style={{ color: '#4AB7A6' }} />
+                <p className="text-sm text-slate-700 truncate">
+                  <span className="font-semibold">Go Pro</span> — unlock Word downloads, AI tailoring &amp; more
+                </p>
+              </div>
+              <Link
+                href="/api/lemonsqueezy/checkout-redirect?from=/dashboard"
+                className="shrink-0 text-xs font-bold text-white rounded-full px-3 py-1.5 transition-opacity hover:opacity-90"
+                style={{ backgroundColor: '#4AB7A6' }}
+              >
+                Upgrade
+              </Link>
+            </div>
+          )}
+
           {/* Jobs matched to your resume */}
           <section>
             <div className="flex items-center justify-between mb-3">

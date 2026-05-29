@@ -193,6 +193,10 @@ function SignupForm() {
     // kicked the user back to /login — now we show a clear "check your
     // inbox" state with a resend button so the user always knows what to do.
     if (data.user && !data.session) {
+      // Save pro intent so dashboard can resume checkout after email confirmation
+      if (selectedPlan === 'pro') {
+        try { sessionStorage.setItem('pending_plan', 'pro'); } catch {}
+      }
       setPendingConfirmation({ email: values.email });
       // Light 60-second cooldown to discourage hammering the resend button
       setResendCooldownUntil(Date.now() + 60_000);
