@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: "What payment methods do you accept?",
-    a: "We accept all major credit and debit cards (Visa, Mastercard, American Express, Discover) via Stripe. Apple Pay and Google Pay are also supported on compatible devices.",
+    a: "We accept all major credit and debit cards (Visa, Mastercard, American Express, Discover) via Gumroad. PayPal is also supported.",
   },
   {
     q: "Is there a money-back guarantee?",

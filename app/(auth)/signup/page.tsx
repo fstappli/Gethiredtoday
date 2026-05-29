@@ -200,22 +200,8 @@ function SignupForm() {
     }
 
     if (selectedPlan === 'pro' && data.user) {
-      try {
-        const res = await fetch('/api/stripe/create-checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: values.email, userId: data.user.id }),
-        });
-        if (res.ok) {
-          const json = await res.json();
-          if (json.url) {
-            window.location.href = json.url;
-            return;
-          }
-        }
-      } catch {
-        // Fall through to dashboard if checkout fails
-      }
+      window.location.href = '/api/lemonsqueezy/checkout-redirect?from=/dashboard';
+      return;
     }
 
     setSuccess(true);

@@ -10,6 +10,7 @@ import {
   Zap,
   FileText,
 } from 'lucide-react';
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -25,14 +26,6 @@ const PRO_FEATURES = [
   'All premium templates',
 ];
 
-type Invoice = {
-  id: string;
-  date: string;
-  description: string;
-  amount: string;
-  currency: string;
-  url: string | null;
-};
 
 export default function BillingPage() {
   const [isPro, setIsPro] = useState(false);
@@ -46,8 +39,6 @@ export default function BillingPage() {
   const [cancelled, setCancelled] = useState(false);
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const [cancelError, setCancelError] = useState<string | null>(null);
-  const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [invoicesLoading, setInvoicesLoading] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -72,15 +63,7 @@ export default function BillingPage() {
       }
       setLoading(false);
 
-      // Fetch real invoices from Stripe
-      if (isProActive(profile)) {
-        setInvoicesLoading(true);
-        fetch('/api/stripe/invoices')
-          .then((r) => r.json())
-          .then((json) => { if (json.invoices) setInvoices(json.invoices); })
-          .catch(() => {})
-          .finally(() => setInvoicesLoading(false));
-      }
+      // Billing history is managed by Gumroad — no local invoices to fetch.
     });
   }, []);
 
@@ -388,43 +371,17 @@ export default function BillingPage() {
           </h2>
         </CardHeader>
         <CardContent>
-          {invoicesLoading ? (
-            <div className="py-8 flex justify-center">
-              <Loader2 className="w-5 h-5 animate-spin text-gray-400" />
-            </div>
-          ) : invoices.length > 0 ? (
-            <div className="divide-y divide-gray-100">
-              {invoices.map((inv) => (
-                <div key={inv.id} className="flex items-center justify-between py-3.5 gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{inv.description}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">{inv.date}</p>
-                  </div>
-                  <div className="flex items-center gap-3 shrink-0">
-                    <span className="text-sm font-semibold text-gray-900">
-                      ${inv.amount}
-                    </span>
-                    {inv.url ? (
-                      <a
-                        href={inv.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-700 hover:bg-green-100 transition-colors"
-                      >
-                        Paid
-                      </a>
-                    ) : (
-                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-green-50 text-green-700">Paid</span>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-8 text-center text-sm text-gray-400">
-              {isPro ? 'No invoices found.' : 'No billing history yet.'}
-            </div>
-          )}
+          <div className="py-4 text-sm text-gray-500">
+            Your receipts and invoices are managed by Gumroad.{' '}
+            <a
+              href="https://app.gumroad.com/library"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium underline hover:text-gray-700 transition-colors"
+            >
+              View in Gumroad →
+            </a>
+          </div>
         </CardContent>
       </Card>
     </div>
