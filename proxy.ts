@@ -53,6 +53,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
+  // Redirect authenticated users away from login/signup to dashboard
+  const authOnlyPaths = ['/login', '/signup'];
+  const isAuthPage = authOnlyPaths.some(p => request.nextUrl.pathname === p);
+  if (isAuthPage && user) {
+    const url = request.nextUrl.clone();
+    url.pathname = '/dashboard';
+    url.search = '';
+    return NextResponse.redirect(url);
+  }
+
   return supabaseResponse;
 }
 
