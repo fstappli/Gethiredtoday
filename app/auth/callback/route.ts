@@ -22,7 +22,9 @@ export async function GET(request: Request) {
               email: user.email,
               firstName: user.user_metadata?.full_name?.split(' ')[0] ?? user.user_metadata?.name?.split(' ')[0] ?? '',
             }),
-          }).catch(() => { /* non-blocking */ });
+          }).catch((err) => {
+            console.error('auth/callback: welcome email failed for', user.email, err);
+          });
         }
       }
       return NextResponse.redirect(`${origin}${next}`);

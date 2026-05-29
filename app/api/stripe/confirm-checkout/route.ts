@@ -71,15 +71,27 @@ export async function POST(req: Request) {
     const customerId = (session.customer as string) || null;
     const subscriptionId = (session.subscription as string) || null;
 
-    // Book the cycle end so cancellation preserves Pro access.
-    const nextMonth = new Date();
-    nextMonth.setDate(nextMonth.getDate() + 30);
+    // Use the real billing cycle end from Stripe rather than guessing +30 days.
+    // The webhook is authoritative but may be slow; this gives an accurate date immediately.
+    let subscriptionEndsAt: string | null = null;
+    if (subscriptionId) {
+      try {
+        const sub = await stripe.subscriptions.retrieve(subscriptionId);
+        // current_period_end is a standard Stripe field present at runtime
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const periodEnd = (sub as any).current_period_end as number | undefined;
+        if (periodEnd) subscriptionEndsAt = new Date(periodEnd * 1000).toISOString();
+      } catch (e) {
+        console.error('confirm-checkout: failed to retrieve subscription for period end', e);
+        // Non-fatal — webhook will correct the date when it arrives.
+      }
+    }
 
     const { error } = await getAdminClient()
       .from('profiles')
       .update({
         subscription_status: 'active',
-        subscription_ends_at: nextMonth.toISOString(),
+        ...(subscriptionEndsAt && { subscription_ends_at: subscriptionEndsAt }),
         ...(customerId && { stripe_customer_id: customerId }),
         ...(subscriptionId && { subscription_id: subscriptionId }),
       })

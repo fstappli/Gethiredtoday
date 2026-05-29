@@ -52,6 +52,18 @@ export async function POST(req: Request) {
           break;
         }
 
+        // Verify the user exists before updating — prevents orphan records
+        // from stale or tampered metadata.
+        const { data: profile } = await getSupabaseAdmin()
+          .from('profiles')
+          .select('id')
+          .eq('id', userId)
+          .single();
+        if (!profile) {
+          console.error('webhook checkout.session.completed: userId not found', userId);
+          break;
+        }
+
         const { error } = await getSupabaseAdmin()
           .from('profiles')
           .update({

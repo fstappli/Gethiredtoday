@@ -136,9 +136,10 @@ export async function GET(request: NextRequest) {
 
       const tmpl = TEMPLATES[row.email_type];
       if (!tmpl) {
+        console.error('[cron/send-emails] unknown email_type', { id: row.id, type: row.email_type });
         await supabase
           .from('email_queue')
-          .update({ status: 'failed', last_error: 'Unknown email_type' })
+          .update({ status: 'failed', last_error: `Unknown email_type: ${row.email_type}` })
           .eq('id', row.id);
         failed++;
         continue;
@@ -175,16 +176,20 @@ export async function GET(request: NextRequest) {
     } catch (err) {
       const msg = err instanceof Error ? err.message.slice(0, 500) : String(err).slice(0, 500);
       const nextAttempts = (row.attempts ?? 0) + 1;
+      // Exponential backoff: 30min, 2h, 8h for attempts 1/2/3
+      const backoffMinutes = Math.pow(4, nextAttempts - 1) * 30;
+      const nextRetry = new Date(Date.now() + backoffMinutes * 60 * 1000).toISOString();
       await supabase
         .from('email_queue')
         .update({
           attempts: nextAttempts,
           last_error: msg,
           status: nextAttempts >= MAX_ATTEMPTS ? 'failed' : 'pending',
+          scheduled_at: nextAttempts >= MAX_ATTEMPTS ? undefined : nextRetry,
         })
         .eq('id', row.id);
       failed++;
-      console.error('[cron/send-emails] row failed', { id: row.id, error: msg });
+      console.error('[cron/send-emails] row failed', { id: row.id, attempt: nextAttempts, nextRetry, error: msg });
     }
   }
 

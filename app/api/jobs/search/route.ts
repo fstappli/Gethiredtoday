@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
         fetched_at: j.fetched_at,
         raw: {},
       }));
-      admin.from('jobs').upsert(rows, { onConflict: 'id' }).then(() => {});
+      await admin.from('jobs').upsert(rows, { onConflict: 'id' });
     }
 
     return NextResponse.json(result);

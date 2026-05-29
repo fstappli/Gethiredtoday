@@ -24,7 +24,8 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminSupabaseClient();
 
-    // Ensure job exists in DB — upsert from frontend data if needed
+    // Ensure job exists in DB — insert only if not cached; never overwrite
+    // a well-populated row with potentially incomplete frontend data.
     if (job_data) {
       await admin.from('jobs').upsert({
         id: job_id,
@@ -44,7 +45,7 @@ export async function POST(req: NextRequest) {
         posted_at: job_data.posted_at,
         fetched_at: job_data.fetched_at ?? new Date().toISOString(),
         raw: {},
-      }, { onConflict: 'id' });
+      }, { onConflict: 'id', ignoreDuplicates: true });
     }
 
     const { data: job } = await admin
@@ -86,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     const { data: application, error: insertError } = await supabase
       .from('applications')
-      .insert({
+      .upsert({
         user_id: user.id,
         job_id,
         resume_id: activeResumeId,
@@ -94,7 +95,7 @@ export async function POST(req: NextRequest) {
         application_type: 'external_redirect',
         redirected_at: new Date().toISOString(),
         source: source ?? 'manual',
-      })
+      }, { onConflict: 'user_id,job_id', ignoreDuplicates: true })
       .select()
       .single();
 

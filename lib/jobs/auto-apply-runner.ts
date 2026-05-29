@@ -41,9 +41,9 @@ export async function runAutoApplyForUser(userId: string): Promise<AutoApplyRunR
   if (!settings?.enabled) return { queued: 0, skipped: 0, message: 'Auto-apply not enabled.' };
   if (settings.paused_at) return { queued: 0, skipped: 0, message: 'Auto-apply is paused.' };
 
-  // Check daily cap
+  // Check daily cap — use UTC so the boundary is consistent regardless of server timezone
   const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
+  todayStart.setUTCHours(0, 0, 0, 0);
   const { count: todayCount } = await admin
     .from('applications')
     .select('id', { count: 'exact', head: true })

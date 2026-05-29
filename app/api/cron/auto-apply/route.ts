@@ -33,17 +33,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ processed: 0, message: 'No users with auto-apply enabled.' });
   }
 
-  // Run for each user — cap concurrency at 5 to avoid overwhelming job APIs
+  // Run for each user — cap concurrency at 3 to avoid rate-limiting job APIs.
+  // Add 1s pause between batches so API quotas are not exhausted.
   const results: { userId: string; queued: number; message: string }[] = [];
-  const batchSize = 5;
+  const batchSize = 3;
 
   for (let i = 0; i < activeSettings.length; i += batchSize) {
+    if (i > 0) await new Promise((r) => setTimeout(r, 1000));
     const batch = activeSettings.slice(i, i + batchSize);
     const batchResults = await Promise.allSettled(
       batch.map((s) => runAutoApplyForUser(s.user_id))
     );
     for (let j = 0; j < batch.length; j++) {
       const r = batchResults[j];
+      if (r.status === 'rejected') {
+        console.error(`cron/auto-apply: user ${batch[j].user_id} failed`, r.reason);
+      }
       results.push({
         userId: batch[j].user_id,
         queued: r.status === 'fulfilled' ? r.value.queued : 0,
