@@ -204,6 +204,17 @@ function SignupForm() {
       return;
     }
 
+    // Fire Google Ads sign-up conversion
+    try {
+      if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+        (window as any).gtag('event', 'conversion', {
+          send_to: 'AW-862628997/cOF0CO6vvbUcEIXZqpsD',
+          value: 1.0,
+          currency: 'AED',
+        });
+      }
+    } catch {}
+
     setSuccess(true);
     try {
       sessionStorage.setItem('dashboard_toast', 'Account created! Welcome to GetHiredToday.');

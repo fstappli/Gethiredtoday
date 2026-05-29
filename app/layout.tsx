@@ -98,20 +98,18 @@ export default function RootLayout({
         {children}
         <Analytics />
         <SpeedInsights />
-        {ga4Id && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${ga4Id}`}
-              strategy="afterInteractive"
-            />
-            <Script id="ga4-init" strategy="afterInteractive">{`
-              window.dataLayer=window.dataLayer||[];
-              function gtag(){dataLayer.push(arguments)}
-              gtag('js',new Date());
-              gtag('config','${ga4Id}');
-            `}</Script>
-          </>
-        )}
+        {/* Google Ads tag — always active */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-862628997"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">{`
+          window.dataLayer=window.dataLayer||[];
+          function gtag(){dataLayer.push(arguments)}
+          gtag('js',new Date());
+          gtag('config','AW-862628997');
+          ${ga4Id ? `gtag('config','${ga4Id}');` : ''}
+        `}</Script>
       </body>
     </html>
   );
