@@ -26,7 +26,7 @@ export default function PrivacyPage() {
                 <li>Account information (name, email address, password)</li>
                 <li>Resume content you create (work history, education, skills, contact details)</li>
                 <li>Cover letter content</li>
-                <li>Payment information (processed securely by Stripe — we never store card numbers)</li>
+                <li>Payment information (processed securely by Gumroad — we never store card numbers)</li>
                 <li>Usage data and preferences</li>
               </ul>
             </section>
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">3. Data Storage and Security</h2>
-              <p>Your data is stored securely using Supabase (PostgreSQL) with row-level security. We use industry-standard encryption in transit (TLS) and at rest. Payment data is handled exclusively by Stripe, a PCI-DSS compliant processor.</p>
+              <p>Your data is stored securely using Supabase (PostgreSQL) with row-level security. We use industry-standard encryption in transit (TLS) and at rest. Payment data is handled exclusively by Gumroad, a PCI-DSS compliant processor.</p>
             </section>
 
             <section>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
               <p>GetHiredToday uses the following third-party services:</p>
               <ul className="list-disc pl-5 mt-2 space-y-1 text-sm">
                 <li><strong>Supabase</strong> — database, authentication</li>
-                <li><strong>Stripe</strong> — payment processing</li>
+                <li><strong>Gumroad</strong> — payment processing</li>
                 <li><strong>Anthropic Claude API</strong> — AI content generation</li>
                 <li><strong>Vercel</strong> — hosting and deployment</li>
               </ul>

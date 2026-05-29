@@ -185,7 +185,7 @@ export async function GET(request: NextRequest) {
           attempts: nextAttempts,
           last_error: msg,
           status: nextAttempts >= MAX_ATTEMPTS ? 'failed' : 'pending',
-          scheduled_at: nextAttempts >= MAX_ATTEMPTS ? undefined : nextRetry,
+          scheduled_at: nextAttempts >= MAX_ATTEMPTS ? null : nextRetry,
         })
         .eq('id', row.id);
       failed++;

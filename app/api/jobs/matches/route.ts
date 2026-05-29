@@ -26,7 +26,7 @@ export async function GET() {
       .from('job_matches')
       .select(`
         id, match_score, matched_reasons, created_at,
-        jobs (
+        job:jobs (
           id, title, company, location, country, description,
           redirect_url, category, contract_type, work_type,
           salary_min, salary_max, currency, posted_at
@@ -45,7 +45,7 @@ export async function GET() {
     // Get application statuses for these jobs
     const jobIds = (matches ?? [])
       .map((m) => {
-        const j = m.jobs as unknown as { id: string } | null;
+        const j = m.job as unknown as { id: string } | null;
         return j?.id ?? null;
       })
       .filter((id): id is string => Boolean(id));
@@ -61,7 +61,7 @@ export async function GET() {
     const appliedMap = new Map((applications ?? []).map((a) => [a.job_id, a.status]));
 
     const enriched = (matches ?? []).map((m) => {
-      const j = m.jobs as unknown as { id: string } | null;
+      const j = m.job as unknown as { id: string } | null;
       return {
         ...m,
         application_status: appliedMap.get(j?.id ?? '') ?? null,
