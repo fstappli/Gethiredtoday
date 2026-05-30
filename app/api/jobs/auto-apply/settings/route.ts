@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { isProActive } from '@/lib/subscription';
 
 // GET /api/jobs/auto-apply/settings
 export async function GET() {
@@ -27,6 +28,15 @@ export async function PUT(req: NextRequest) {
     const supabase = await createServerSupabaseClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_status, subscription_ends_at')
+      .eq('id', user.id)
+      .single();
+    if (!isProActive(profile)) {
+      return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
+    }
 
     const body = await req.json();
     const {

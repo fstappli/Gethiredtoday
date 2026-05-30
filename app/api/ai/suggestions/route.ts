@@ -1,5 +1,6 @@
 import { getAnthropicClient } from '@/lib/ai';
 import { NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 type SuggestionType = 'bullets' | 'skills' | 'summary' | 'related-titles';
 
@@ -32,6 +33,10 @@ const PROMPTS: Record<SuggestionType, { system: string; user: (jobTitle: string)
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const body = await req.json();
     const type = (body.type ?? '') as SuggestionType;
     const jobTitle = typeof body.jobTitle === 'string' ? body.jobTitle.trim() : '';

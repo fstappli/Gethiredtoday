@@ -13,7 +13,7 @@ export async function GET() {
 
     const { data: coverLetters, error } = await supabase
       .from('cover_letters')
-      .select('id, user_id, title, template_id, is_public, created_at, updated_at')
+      .select('id, title, template_id, is_public, created_at, updated_at')
       .eq('user_id', user.id)
       .order('updated_at', { ascending: false });
 

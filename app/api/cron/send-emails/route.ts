@@ -12,7 +12,7 @@ import {
 /**
  * Scheduled email worker.
  *
- * Runs on a Vercel cron every 15 minutes. Pulls due rows from
+ * Runs on a Vercel cron daily at 14:00 UTC. Pulls due rows from
  * public.email_queue, sends them via Resend, and marks status.
  *
  * Auth: Vercel Cron invokes with `Authorization: Bearer $CRON_SECRET`.

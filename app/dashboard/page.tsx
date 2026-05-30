@@ -298,17 +298,25 @@ export default function DashboardPage() {
       if (upgraded) {
         url.searchParams.delete('upgraded');
         window.history.replaceState(null, '', url.toString());
-        if (upgraded === '1') {
-          try { sessionStorage.setItem('dashboard_toast', '🎉 Welcome to Pro! All features are now unlocked.'); } catch {}
-          window.location.replace(url.toString());
-          return;
-        }
         if (upgraded === 'pending') {
           setToastMessage('Your payment is processing — Pro access will activate within a minute.');
         }
       }
 
       await readProfile(user.id);
+
+      if (upgraded === '1') {
+        // Only show the Pro welcome toast if the DB actually shows Pro status.
+        // This prevents showing the toast to anyone who manually pastes ?upgraded=1.
+        const { data: freshProfile } = await supabase
+          .from('profiles')
+          .select('subscription_status, subscription_ends_at')
+          .eq('id', user.id)
+          .single();
+        if (isProActive(freshProfile)) {
+          setToastMessage('🎉 Welcome to Pro! All features are now unlocked.');
+        }
+      }
 
       // Resume Gumroad checkout if user signed up for Pro but needed email confirmation first
       try {
@@ -661,12 +669,14 @@ export default function DashboardPage() {
       href: undefined as string | undefined,
     },
     {
-      label: 'Profile Complete',
-      value: '78%',
+      label: 'Best ATS Score',
+      value: displayResumes.length > 0
+        ? `${Math.max(...displayResumes.map((r) => r.ats_score ?? 0))}%`
+        : '—',
       icon: User,
       iconBg: '#faf5ff',
       iconColor: '#7c3aed',
-      href: undefined as string | undefined,
+      href: '/dashboard/ats-checker' as string | undefined,
     },
   ];
 
@@ -1104,7 +1114,9 @@ export default function DashboardPage() {
                 <div className="flex-1">
                   <h3 className="font-semibold text-slate-900 mb-1">Improve Your ATS Score</h3>
                   <p className="text-sm text-slate-600 mb-4">
-                    Your average ATS score is 83/100. Here&apos;s how to improve:
+                    {displayResumes.length > 0
+                      ? `Your average ATS score is ${Math.round(displayResumes.reduce((sum, r) => sum + (r.ats_score ?? 0), 0) / displayResumes.length)}/100. Here's how to improve:`
+                      : "Boost your resume's ATS score. Here's how:"}
                   </p>
                   <ul className="space-y-2">
                     {[

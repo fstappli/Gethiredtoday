@@ -1,5 +1,6 @@
 import { getAnthropicClient } from '@/lib/ai';
 import { NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
 
 const TONE_INSTRUCTIONS: Record<string, string> = {
   professional: 'Use a polished, business-appropriate tone. Be confident and precise.',
@@ -10,6 +11,10 @@ const TONE_INSTRUCTIONS: Record<string, string> = {
 
 export async function POST(req: Request) {
   try {
+    const supabase = await createServerSupabaseClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
     const { jobTitle, company, recipientName, tone, skills, yearsExperience } = await req.json();
 
     if (!jobTitle || typeof jobTitle !== 'string') {

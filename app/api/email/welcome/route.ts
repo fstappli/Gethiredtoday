@@ -5,6 +5,11 @@ const FROM = process.env.EMAIL_FROM ?? 'HiredTodayApp <hello@hiredtodayapp.com>'
 
 export async function POST(request: NextRequest) {
   try {
+    const secret = process.env.INTERNAL_API_SECRET;
+    if (secret && request.headers.get('x-internal-secret') !== secret) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { email, firstName } = await request.json();
 
     if (!email || typeof email !== 'string') {
