@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { createClient } from '@supabase/supabase-js';
 
 const CHECKOUT_URL = 'https://kreativecasa.gumroad.com/l/kxtcbs';
+
+function getAdminClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
 
 // Only allow returning the user to safe in-app paths (starts with a single
 // slash, no protocol-relative URLs, no absolute URLs). Anything else falls
@@ -33,6 +41,15 @@ export async function GET(req: NextRequest) {
   const from = safeReturnPath(req.nextUrl.searchParams.get('from'));
   const appOrigin = req.nextUrl.origin;
   const returnUrl = `${appOrigin}/api/purchase/return?to=${encodeURIComponent(from)}`;
+
+  // Log the checkout attempt so we can measure drop-off
+  try {
+    await getAdminClient()
+      .from('checkout_attempts')
+      .insert({ user_id: user.id, email: user.email, from_path: from });
+  } catch {
+    // Table may not exist yet — silent fail, never block the checkout
+  }
 
   const url = new URL(CHECKOUT_URL);
   url.searchParams.set('email', user.email!);

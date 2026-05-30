@@ -39,6 +39,15 @@ function UpgradeContent() {
 
   const handleCheckout = () => {
     setLoading(true);
+    // Fire GA4 begin_checkout event
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window as any).gtag?.('event', 'begin_checkout', {
+        currency: 'USD',
+        value: 9.99,
+        items: [{ item_id: 'pro_monthly', item_name: 'Pro Plan', price: 9.99 }],
+      });
+    } catch {}
     window.location.href = `/api/lemonsqueezy/checkout-redirect?from=${encodeURIComponent(from)}`;
   };
 
