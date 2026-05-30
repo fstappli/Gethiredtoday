@@ -37,22 +37,27 @@ function safeReturnPath(raw: string | null): string {
   return raw;
 }
 
-// Query Gumroad for the most recent active subscriber tied to this email.
-async function findActiveGumroadSubscriber(
+// Query Gumroad sales API to verify a paid, non-refunded purchase for this email.
+async function findActiveGumroadSale(
   email: string,
   accessToken: string
-): Promise<{ subscriberId: string } | null> {
+): Promise<{ saleId: string } | null> {
   try {
     const res = await fetch(
-      `https://api.gumroad.com/v2/subscribers?email=${encodeURIComponent(email)}`,
+      `https://api.gumroad.com/v2/sales?email=${encodeURIComponent(email)}`,
       { headers: { Authorization: `Bearer ${accessToken}` } }
     );
     if (!res.ok) return null;
     const json = (await res.json()) as {
-      subscribers?: Array<{ id: string; cancelled_at?: string | null; status?: string }>;
+      success?: boolean;
+      sales?: Array<{ id: string; paid?: boolean; refunded?: boolean; chargedback?: boolean; product_permalink?: string }>;
     };
-    const active = (json.subscribers ?? []).find((s) => !s.cancelled_at);
-    return active ? { subscriberId: active.id } : null;
+    if (!json.success) return null;
+    const PRODUCT_PERMALINK = process.env.GUMROAD_PRODUCT_PERMALINK ?? 'kxtcbs';
+    const valid = (json.sales ?? []).find(
+      (s) => s.paid && !s.refunded && !s.chargedback && s.product_permalink === PRODUCT_PERMALINK
+    );
+    return valid ? { saleId: valid.id } : null;
   } catch {
     return null;
   }
@@ -75,16 +80,14 @@ export async function GET(req: NextRequest) {
   const accessToken = process.env.GUMROAD_ACCESS_TOKEN;
 
   if (accessToken) {
-    // Verify with Gumroad that this email actually has an active subscription.
-    const subscriber = await findActiveGumroadSubscriber(user.email, accessToken);
-    if (subscriber) {
+    // Verify with Gumroad that this email has a valid paid purchase.
+    const sale = await findActiveGumroadSale(user.email, accessToken);
+    if (sale) {
       await getAdminClient()
         .from('profiles')
         .update({
           subscription_status: 'active',
-          subscription_id: subscriber.subscriberId,
-          // Book the next billing cycle — if the user later cancels, this
-          // value is the date their Pro access is honoured until.
+          subscription_id: sale.saleId,
           subscription_ends_at: monthFromNow(),
         })
         .eq('id', user.id);

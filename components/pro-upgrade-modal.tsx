@@ -205,7 +205,7 @@ export default function ProUpgradeModal({
               payment with Pro status already active. */}
           <Link
             ref={primaryActionRef}
-            href={`/api/lemonsqueezy/checkout-redirect${
+            href={`/upgrade${
               typeof window !== 'undefined'
                 ? `?from=${encodeURIComponent(window.location.pathname + window.location.search)}`
                 : ''

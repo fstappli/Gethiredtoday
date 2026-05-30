@@ -467,7 +467,7 @@ export default function AccountPage() {
                 className="rounded-full font-medium text-white"
                 style={{ backgroundColor: '#4AB7A6' }}
                 onClick={() => {
-                  window.location.href = '/api/lemonsqueezy/checkout-redirect?from=/dashboard/account';
+                  window.location.href = '/upgrade?from=%2Fdashboard%2Faccount';
                 }}
               >
                 <Crown className="w-3.5 h-3.5 mr-1.5" />

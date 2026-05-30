@@ -7,9 +7,10 @@ import {
   ArrowLeft, Building2, MapPin, Clock, Banknote, Briefcase,
   Calendar, Tag, Loader2, AlertCircle,
 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { ApplyButton } from '@/components/jobs/apply-button';
 import type { Job } from '@/types/jobs';
+
+// ── Pure helper functions — unchanged ───────────────────────────────────────
 
 function workTypeLabel(type: Job['work_type']): string {
   if (type === 'remote') return 'Remote';
@@ -43,7 +44,10 @@ function formatDate(dateStr: string | null): string {
   return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
+// ── Component ────────────────────────────────────────────────────────────────
+
 function JobDetailContent() {
+  // ── State & effects — UNCHANGED ────────────────────────────────────────────
   const params = useParams();
   const router = useRouter();
   const id = typeof params.id === 'string' ? params.id : '';
@@ -51,6 +55,18 @@ function JobDetailContent() {
   const [job, setJob] = useState<Job | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [isPro, setIsPro] = useState(false);
+  const [accountCreatedAt, setAccountCreatedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/user/subscription-status')
+      .then((r) => r.json())
+      .then((d) => {
+        setIsPro(d.isPro ?? false);
+        setAccountCreatedAt(d.accountCreatedAt ?? null);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     if (!id) return;
@@ -82,157 +98,227 @@ function JobDetailContent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  // ── Loading skeleton ────────────────────────────────────────────────────────
   if (loading && !job) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+      <div className="min-h-screen bg-slate-50">
+        <div className="px-6 lg:px-8 pt-5 pb-3">
+          <div className="h-4 w-28 bg-slate-200 rounded-full animate-pulse" />
+        </div>
+        <div className="mx-4 lg:mx-8 rounded-2xl overflow-hidden animate-pulse"
+          style={{ background: 'linear-gradient(135deg, #0f766e 0%, #4AB7A6 100%)' }}>
+          <div className="px-6 lg:px-10 py-10">
+            <div className="h-8 bg-white/20 rounded-xl w-2/3 mb-4" />
+            <div className="h-4 bg-white/15 rounded-lg w-1/3 mb-2" />
+            <div className="h-4 bg-white/10 rounded-lg w-1/4 mb-5" />
+            <div className="flex gap-2">
+              <div className="h-7 w-20 bg-white/15 rounded-full" />
+              <div className="h-7 w-24 bg-white/10 rounded-full" />
+            </div>
+          </div>
+        </div>
+        <div className="px-4 lg:px-8 py-6 max-w-4xl mx-auto space-y-4">
+          <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-3 animate-pulse">
+            <div className="h-5 bg-slate-100 rounded-lg w-1/4 mb-4" />
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className={`h-4 bg-slate-100 rounded ${i % 3 === 2 ? 'w-3/4' : 'w-full'}`} />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }
 
+  // ── Error state ─────────────────────────────────────────────────────────────
   if (error && !job) {
     return (
-      <div className="px-6 lg:px-8 py-12 text-center">
-        <AlertCircle className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-        <h2 className="font-semibold text-slate-700 mb-2">Job not found</h2>
-        <p className="text-slate-500 text-sm mb-6">
-          This job may have expired or been removed.
-        </p>
-        <Link
-          href="/dashboard/find-jobs"
-          className="inline-flex items-center gap-2 text-sm text-[#4AB7A6] hover:underline"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          Back to search
-        </Link>
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center px-6">
+        <div className="text-center max-w-sm">
+          <div className="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-red-400" />
+          </div>
+          <h2 className="text-lg font-semibold text-slate-800 mb-2">Job not found</h2>
+          <p className="text-slate-500 text-sm mb-6">
+            This job may have expired or been removed.
+          </p>
+          <Link
+            href="/dashboard/find-jobs"
+            className="inline-flex items-center gap-2 text-sm font-medium text-white px-4 py-2 rounded-full transition-opacity hover:opacity-90"
+            style={{ backgroundColor: '#4AB7A6' }}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to search
+          </Link>
+        </div>
       </div>
     );
   }
 
   if (!job) return null;
 
+  // ── Derived display values — UNCHANGED ────────────────────────────────────
   const wt = workTypeLabel(job.work_type);
   const ct = contractLabel(job.contract_type);
   const salary = formatSalary(job.salary_min, job.salary_max, job.currency);
   const posted = formatDate(job.posted_at);
 
+  // ── Render ──────────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-full bg-white">
-      {/* Header */}
-      <div className="border-b border-slate-100 px-6 lg:px-8 py-5">
+    <div className="min-h-screen bg-slate-50">
+
+      {/* ── Back nav ── */}
+      <div className="px-6 lg:px-8 pt-5 pb-0">
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors mb-4"
+          className="inline-flex items-center gap-1.5 text-sm text-slate-500 hover:text-[#4AB7A6] transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to results
         </button>
+      </div>
 
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div className="flex-1 min-w-0">
-            <h1 className="text-2xl font-bold text-slate-900 leading-tight">{job.title}</h1>
+      {/* ── Hero banner ── */}
+      <div
+        className="mx-4 lg:mx-8 mt-4 rounded-2xl overflow-hidden shadow-lg"
+        style={{ background: 'linear-gradient(135deg, #0d6b61 0%, #0d9488 55%, #4AB7A6 100%)' }}
+      >
+        {/* Subtle texture overlay */}
+        <div
+          className="absolute inset-0 pointer-events-none opacity-[0.04]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }}
+        />
 
-            <div className="flex items-center gap-4 mt-2 text-sm text-slate-500 flex-wrap">
-              {job.company && (
-                <span className="flex items-center gap-1.5 font-medium text-slate-700">
-                  <Building2 className="w-4 h-4 shrink-0" />
-                  {job.company}
-                </span>
-              )}
-              {job.location && (
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 shrink-0" />
-                  {job.location}
-                </span>
-              )}
-              {posted && (
-                <span className="flex items-center gap-1.5">
-                  <Calendar className="w-4 h-4 shrink-0" />
-                  Posted {posted}
-                </span>
+        <div className="relative px-6 lg:px-10 py-8 lg:py-10">
+          <div className="flex items-start justify-between gap-6 flex-wrap">
+
+            {/* Left: title + company + location + date */}
+            <div className="flex-1 min-w-0">
+              <h1 className="text-2xl lg:text-3xl font-bold text-white leading-tight tracking-tight mb-3">
+                {job.title}
+              </h1>
+
+              <div className="flex items-center gap-x-5 gap-y-1.5 flex-wrap">
+                {job.company && (
+                  <span className="flex items-center gap-1.5 text-sm font-semibold text-white/95">
+                    <Building2 className="w-4 h-4 shrink-0 text-white/70" />
+                    {job.company}
+                  </span>
+                )}
+                {job.location && (
+                  <span className="flex items-center gap-1.5 text-sm text-white/80">
+                    <MapPin className="w-3.5 h-3.5 shrink-0 text-white/60" />
+                    {job.location}
+                  </span>
+                )}
+                {posted && (
+                  <span className="flex items-center gap-1.5 text-xs text-white/60">
+                    <Calendar className="w-3.5 h-3.5 shrink-0" />
+                    Posted {posted}
+                  </span>
+                )}
+              </div>
+
+              {/* Meta chips */}
+              {(wt || ct || job.category || salary) && (
+                <div className="flex items-center gap-2 mt-4 flex-wrap">
+                  {wt && (
+                    <span className="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-full bg-white/20 text-white border border-white/10">
+                      {wt}
+                    </span>
+                  )}
+                  {ct && (
+                    <span className="inline-flex items-center text-xs font-semibold px-3 py-1.5 rounded-full bg-white/15 text-white border border-white/10">
+                      {ct}
+                    </span>
+                  )}
+                  {job.category && (
+                    <span className="inline-flex items-center gap-1 text-xs font-medium px-3 py-1.5 rounded-full bg-white/10 text-white/80 border border-white/10">
+                      <Tag className="w-3 h-3" />
+                      {job.category}
+                    </span>
+                  )}
+                  {salary && (
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-full bg-white/20 text-white border border-white/10">
+                      <Banknote className="w-3.5 h-3.5 text-white/80" />
+                      {salary} / yr
+                    </span>
+                  )}
+                </div>
               )}
             </div>
 
-            <div className="flex items-center gap-2 mt-3 flex-wrap">
-              {wt && (
-                <Badge variant="secondary" className="text-xs rounded-full px-3 py-1 bg-[#f0fdfa] text-[#0f766e] border border-[#99f6e4]">
-                  {wt}
-                </Badge>
-              )}
-              {ct && (
-                <Badge variant="outline" className="text-xs rounded-full px-3 py-1 text-slate-600">
-                  {ct}
-                </Badge>
-              )}
-              {job.category && (
-                <Badge variant="outline" className="text-xs rounded-full px-3 py-1 text-slate-500">
-                  <Tag className="w-3 h-3 mr-1" />
-                  {job.category}
-                </Badge>
-              )}
+            {/* Right: Apply button */}
+            <div className="shrink-0 flex flex-col items-end gap-2 mt-1">
+              <ApplyButton
+                jobId={job.id}
+                redirectUrl={job.redirect_url}
+                job={job}
+                size="default"
+                isPro={isPro}
+                accountCreatedAt={accountCreatedAt}
+              />
             </div>
-          </div>
 
-          <div className="flex flex-col gap-2 items-end shrink-0">
-            <ApplyButton
-              jobId={job.id}
-              redirectUrl={job.redirect_url}
-              job={job}
-              size="default"
-            />
-            {salary && (
-              <span className="flex items-center gap-1 text-sm font-medium text-slate-700">
-                <Banknote className="w-4 h-4 text-slate-400" />
-                {salary} / yr
-              </span>
-            )}
           </div>
         </div>
       </div>
 
-      {/* Body */}
-      <div className="px-6 lg:px-8 py-6 max-w-4xl">
-        {job.description ? (
-          <div>
-            <h2 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-slate-400" />
-              Job Description
-            </h2>
-            <div className="prose prose-sm prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line">
-              {job.description}
-            </div>
-          </div>
-        ) : (
-          <p className="text-slate-400 text-sm italic">No description available.</p>
-        )}
+      {/* ── Body ── */}
+      <div className="px-4 lg:px-8 py-6 max-w-4xl mx-auto space-y-4">
 
-        {/* Full description note */}
-        <div className="mt-8 p-4 bg-slate-50 rounded-xl border border-slate-200 flex items-start gap-3">
-          <Clock className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-          <div className="text-sm text-slate-600">
-            <p className="font-medium text-slate-800 mb-0.5">View the full job posting</p>
-            <p>
+        {/* Description card */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          <div className="flex items-center gap-2.5 px-6 py-4 border-b border-slate-100 bg-slate-50/60">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#E8F7F5' }}>
+              <Briefcase className="w-3.5 h-3.5" style={{ color: '#4AB7A6' }} />
+            </div>
+            <h2 className="font-semibold text-slate-900 text-sm">Job Description</h2>
+          </div>
+          <div className="px-6 py-6">
+            {job.description ? (
+              <div className="prose prose-sm prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line">
+                {job.description}
+              </div>
+            ) : (
+              <p className="text-slate-400 text-sm italic">No description available.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Full posting note */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-5 py-4 flex items-start gap-4">
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: '#E8F7F5' }}>
+            <Clock className="w-4 h-4" style={{ color: '#4AB7A6' }} />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-slate-800 mb-0.5">View the full job posting</p>
+            <p className="text-sm text-slate-500 leading-relaxed">
               This preview may be truncated. Click Apply to visit the employer&apos;s site for the complete
               job description and to submit your application.
             </p>
           </div>
         </div>
 
-        {/* Bottom apply CTA */}
-        <div className="mt-8 flex items-center gap-4">
+        {/* Bottom CTA row */}
+        <div className="flex items-center gap-4 pt-2 pb-10">
           <ApplyButton
             jobId={job.id}
             redirectUrl={job.redirect_url}
             job={job}
             size="default"
+            isPro={isPro}
+            accountCreatedAt={accountCreatedAt}
           />
           <button
             onClick={() => router.back()}
-            className="text-sm text-slate-500 hover:text-slate-700"
+            className="text-sm text-slate-500 hover:text-[#4AB7A6] transition-colors"
           >
             ← Back to results
           </button>
         </div>
+
       </div>
     </div>
   );

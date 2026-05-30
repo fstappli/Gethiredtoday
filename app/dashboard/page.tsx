@@ -25,6 +25,7 @@ import {
   Briefcase,
   RefreshCw,
   ExternalLink,
+  Crown,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -262,6 +263,7 @@ export default function DashboardPage() {
   const [subEndsAt, setSubEndsAt] = useState<string | null>(null);
   const [isCancelled, setIsCancelled] = useState(false);
   const [firstName, setFirstName] = useState<string>('');
+  const [accountCreatedAt, setAccountCreatedAt] = useState<string | null>(null);
   // Load profile + handle post-Gumroad-checkout return
   useEffect(() => {
     const supabase = createClient();
@@ -269,12 +271,13 @@ export default function DashboardPage() {
     const readProfile = async (userId: string) => {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('subscription_status, subscription_ends_at, full_name, email')
+        .select('subscription_status, subscription_ends_at, full_name, email, created_at')
         .eq('id', userId)
         .single();
       setIsPro(isProActive(profile));
       setIsCancelled(isCancelledWithGrace(profile));
       setSubEndsAt((profile?.subscription_ends_at as string | null) ?? null);
+      setAccountCreatedAt((profile?.created_at as string | null) ?? null);
       const name =
         profile?.full_name?.trim().split(/\s+/)[0] ||
         profile?.email?.split('@')[0] ||
@@ -312,7 +315,7 @@ export default function DashboardPage() {
         const pendingPlan = sessionStorage.getItem('pending_plan');
         if (pendingPlan === 'pro') {
           sessionStorage.removeItem('pending_plan');
-          window.location.href = '/api/lemonsqueezy/checkout-redirect?from=/dashboard';
+          window.location.href = '/upgrade?from=%2Fdashboard';
           return;
         }
       } catch {}
@@ -449,6 +452,8 @@ export default function DashboardPage() {
 
   const handleRefreshMatches = async () => {
     setRefreshingMatches(true);
+    setLoadingMatches(true);
+    setJobMatches([]);
     try {
       const res = await fetch('/api/jobs/matches/refresh', { method: 'POST' });
       const data = await res.json();
@@ -462,6 +467,7 @@ export default function DashboardPage() {
       showToast('Failed to refresh matches.');
     } finally {
       setRefreshingMatches(false);
+      setLoadingMatches(false);
     }
   };
 
@@ -581,7 +587,7 @@ export default function DashboardPage() {
     if (!isPro) {
       showToast('Word download is a Pro feature — taking you to upgrade…');
       setTimeout(() => {
-        window.location.href = '/api/lemonsqueezy/checkout-redirect?from=/dashboard';
+        window.location.href = '/upgrade?from=%2Fdashboard';
       }, 1000);
       return;
     }
@@ -756,7 +762,7 @@ export default function DashboardPage() {
                 </p>
               </div>
               <Link
-                href="/api/lemonsqueezy/checkout-redirect?from=/dashboard"
+                href="/upgrade?from=%2Fdashboard"
                 className="shrink-0 text-xs font-bold text-white rounded-full px-3 py-1.5 transition-opacity hover:opacity-90"
                 style={{ backgroundColor: '#4AB7A6' }}
               >
@@ -914,25 +920,37 @@ export default function DashboardPage() {
                             <CheckCircle2 className="w-3 h-3" />
                             Applied
                           </span>
-                        ) : (
-                          <button
-                            onClick={async () => {
-                              const res = await fetch('/api/jobs/apply', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ job_id: job.id }),
-                              });
-                              const data = await res.json();
-                              window.open(data.redirect_url ?? job.redirect_url, '_blank', 'noopener,noreferrer');
-                              showToast('Opening job — did you finish applying?');
-                              setAppliedCount((c) => c + 0);
-                            }}
-                            className="flex items-center gap-1 text-xs text-[#4AB7A6] hover:text-[#3da090] font-medium"
-                          >
-                            <ExternalLink className="w-3 h-3" />
-                            Apply
-                          </button>
-                        )}
+                        ) : (() => {
+                          const trialMs = 2 * 24 * 60 * 60 * 1000;
+                          const canApply = isPro || (accountCreatedAt ? Date.now() - new Date(accountCreatedAt).getTime() < trialMs : false);
+                          return canApply ? (
+                            <button
+                              onClick={async () => {
+                                const res = await fetch('/api/jobs/apply', {
+                                  method: 'POST',
+                                  headers: { 'Content-Type': 'application/json' },
+                                  body: JSON.stringify({ job_id: job.id }),
+                                });
+                                const data = await res.json();
+                                window.open(data.redirect_url ?? job.redirect_url, '_blank', 'noopener,noreferrer');
+                                showToast('Opening job — did you finish applying?');
+                              }}
+                              className="flex items-center gap-1 text-xs text-[#4AB7A6] hover:text-[#3da090] font-medium"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              Apply
+                            </button>
+                          ) : (
+                            <a
+                              href="/upgrade?from=%2Fdashboard"
+                              className="flex items-center gap-1 text-xs font-semibold text-white rounded-full px-2.5 py-1 transition-opacity hover:opacity-90"
+                              style={{ backgroundColor: '#4AB7A6' }}
+                            >
+                              <Crown className="w-3 h-3" />
+                              Pro
+                            </a>
+                          );
+                        })()}
                         <a
                           href={job.redirect_url}
                           target="_blank"
@@ -1161,7 +1179,7 @@ export default function DashboardPage() {
                   </div>
                   <p className="text-[11px] text-slate-500 leading-snug mb-2">Unlock Word downloads, AI tailoring & more.</p>
                   <Link
-                    href="/api/lemonsqueezy/checkout-redirect?from=/dashboard"
+                    href="/upgrade?from=%2Fdashboard"
                     className="block text-center text-[11px] font-bold text-white rounded-lg py-1.5 transition-opacity hover:opacity-90"
                     style={{ backgroundColor: '#4AB7A6' }}
                   >

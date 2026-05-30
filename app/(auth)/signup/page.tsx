@@ -204,7 +204,7 @@ function SignupForm() {
     }
 
     if (selectedPlan === 'pro' && data.user) {
-      window.location.href = '/api/lemonsqueezy/checkout-redirect?from=/dashboard';
+      window.location.href = '/upgrade?from=%2Fdashboard';
       return;
     }
 

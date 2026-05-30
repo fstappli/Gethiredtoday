@@ -145,5 +145,5 @@ export async function getUserPlan(): Promise<Plan> {
  * attaching the user's email and the post-purchase return URL.
  */
 export function startCheckout(from = '/dashboard'): void {
-  window.location.href = `/api/lemonsqueezy/checkout-redirect?from=${encodeURIComponent(from)}`;
+  window.location.href = `/upgrade?from=${encodeURIComponent(from)}`;
 }

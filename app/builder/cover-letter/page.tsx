@@ -167,7 +167,7 @@ export default async function CoverLetterStartPage() {
             ) : (
               <Link
                 key={template.id}
-                href="/api/lemonsqueezy/checkout-redirect?from=/builder/cover-letter"
+                href="/upgrade?from=%2Fbuilder%2Fcover-letter"
                 className="group relative border border-border rounded-2xl p-6 hover:border-amber-300 hover:shadow-md transition-all card-shadow bg-card flex flex-col gap-4"
               >
                 <span className="absolute top-4 right-4 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">
@@ -206,7 +206,7 @@ export default async function CoverLetterStartPage() {
           ) : (
             <>
               Unlock all templates with{' '}
-              <Link href="/api/lemonsqueezy/checkout-redirect?from=/builder/cover-letter" className="text-teal-600 hover:underline font-medium">
+              <Link href="/upgrade?from=%2Fbuilder%2Fcover-letter" className="text-teal-600 hover:underline font-medium">
                 Pro — $9.99/month
               </Link>
               .
