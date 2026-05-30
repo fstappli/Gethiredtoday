@@ -137,6 +137,8 @@ export function useJobSearch(): UseJobSearchReturn {
       isMounted.current = true;
       return; // skip first run — already handled by mount effect above
     }
+    // Show skeleton immediately — don't wait for the debounce to fire
+    setLoading(true);
     clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       const params = filtersToParams(filters, 1);
