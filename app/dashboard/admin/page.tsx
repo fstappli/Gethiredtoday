@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import {
   Users, TrendingUp, UserCheck, AlertCircle,
   ShoppingCart, Clock, Search, Plus, X, ChevronDown,
-  RefreshCw, Shield, ArrowUpRight,
+  RefreshCw, Shield, ArrowUpRight, KeyRound, Check,
 } from 'lucide-react';
 
 interface Profile {
@@ -243,6 +243,49 @@ function CreateUserModal({ onClose, onCreated }: { onClose: () => void; onCreate
   );
 }
 
+// ── Reset password button ────────────────────────────────────────────────────
+
+function ResetPasswordButton({ userId }: { userId: string }) {
+  const [state, setState] = useState<'idle' | 'loading' | 'sent' | 'error'>('idle');
+
+  const send = async () => {
+    setState('loading');
+    try {
+      const res = await fetch(`/api/admin/users/${userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'reset_password' }),
+      });
+      setState(res.ok ? 'sent' : 'error');
+      if (res.ok) setTimeout(() => setState('idle'), 3000);
+    } catch {
+      setState('error');
+    }
+  };
+
+  return (
+    <button
+      onClick={send}
+      disabled={state === 'loading' || state === 'sent'}
+      title="Send password reset email"
+      className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg transition-all disabled:opacity-60"
+      style={
+        state === 'sent'
+          ? { backgroundColor: '#dcfce7', color: '#166534' }
+          : state === 'error'
+          ? { backgroundColor: '#fee2e2', color: '#991b1b' }
+          : { backgroundColor: '#f1f5f9', color: '#64748b' }
+      }
+    >
+      {state === 'loading' && <RefreshCw size={11} className="animate-spin" />}
+      {state === 'sent'    && <Check size={11} />}
+      {state === 'idle'    && <KeyRound size={11} />}
+      {state === 'error'   && <AlertCircle size={11} />}
+      {state === 'sent' ? 'Sent!' : state === 'error' ? 'Failed' : 'Reset pwd'}
+    </button>
+  );
+}
+
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
 function StatCard({ label, value, sub, icon: Icon, color }: {
@@ -438,17 +481,18 @@ export default function AdminPage() {
               <>
                 {/* Column headers */}
                 <div className="grid grid-cols-12 gap-3 px-5 py-2.5 bg-slate-50/80 border-b border-slate-100">
-                  <span className="col-span-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">User</span>
-                  <span className="col-span-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</span>
+                  <span className="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">User</span>
+                  <span className="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</span>
                   <span className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Joined</span>
                   <span className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Access</span>
+                  <span className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Actions</span>
                 </div>
 
                 <div className="divide-y divide-slate-50">
                   {users.map(u => (
                     <div key={u.id} className="grid grid-cols-12 gap-3 px-5 py-3.5 items-center hover:bg-slate-50/60 transition-colors group">
                       {/* Avatar + name */}
-                      <div className="col-span-4 flex items-center gap-3 min-w-0">
+                      <div className="col-span-3 flex items-center gap-3 min-w-0">
                         <div
                           className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold text-white"
                           style={{ backgroundColor: '#4AB7A6' }}
@@ -459,7 +503,7 @@ export default function AdminPage() {
                       </div>
 
                       {/* Email */}
-                      <div className="col-span-4 min-w-0">
+                      <div className="col-span-3 min-w-0">
                         <span className="text-sm text-slate-500 truncate block">{u.email}</span>
                       </div>
 
@@ -471,6 +515,11 @@ export default function AdminPage() {
                       {/* Status dropdown */}
                       <div className="col-span-2">
                         <StatusDropdown userId={u.id} current={u.subscription_status} onChanged={handleStatusChange} />
+                      </div>
+
+                      {/* Actions */}
+                      <div className="col-span-2">
+                        <ResetPasswordButton userId={u.id} />
                       </div>
                     </div>
                   ))}

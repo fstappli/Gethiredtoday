@@ -48,3 +48,44 @@ export async function PATCH(
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json({ success: true });
 }
+
+// POST /api/admin/users/[id] — send password reset email
+export async function POST(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  if (!await assertAdmin()) return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
+  const { id } = await params;
+  const body = await req.json();
+  if (body.action !== 'reset_password') {
+    return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+  }
+
+  const admin = createAdminSupabaseClient();
+
+  // Look up the user's email
+  const { data: profile, error: profileError } = await admin
+    .from('profiles')
+    .select('email')
+    .eq('id', id)
+    .single();
+
+  if (profileError || !profile?.email) {
+    return NextResponse.json({ error: 'User not found' }, { status: 404 });
+  }
+
+  // Use Supabase Auth admin to generate a password reset link
+  const { data, error } = await admin.auth.admin.generateLink({
+    type: 'recovery',
+    email: profile.email,
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password`,
+    },
+  });
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
+  // Send the reset email via Supabase (it sends automatically when generating the link)
+  return NextResponse.json({ success: true, email: profile.email, link: data.properties?.action_link });
+}
