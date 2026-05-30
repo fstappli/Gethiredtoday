@@ -63,10 +63,16 @@ function StatusDropdown({ userId, current, onChanged }: {
   const btnRef = useRef<HTMLButtonElement>(null);
   const style = statusStyle(current);
 
+  const MENU_HEIGHT = 190; // approx height of the dropdown in px
+
   const openMenu = () => {
     if (!btnRef.current) return;
     const r = btnRef.current.getBoundingClientRect();
-    setPos({ top: r.bottom + 6, left: r.left });
+    const spaceBelow = window.innerHeight - r.bottom;
+    const top = spaceBelow < MENU_HEIGHT + 12
+      ? r.top - MENU_HEIGHT - 6  // flip above
+      : r.bottom + 6;            // default below
+    setPos({ top, left: r.left });
     setOpen(true);
   };
 
