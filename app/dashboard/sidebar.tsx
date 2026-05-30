@@ -14,6 +14,7 @@ import {
   Briefcase,
   CheckCircle2,
   Zap,
+  ShieldCheck,
 } from 'lucide-react';
 import Logo from '@/components/logo';
 
@@ -54,7 +55,7 @@ const navSections = [
   },
 ];
 
-export default function DashboardSidebar() {
+export default function DashboardSidebar({ isAdmin = false }: { isAdmin?: boolean }) {
   const pathname = usePathname();
 
   return (
@@ -93,6 +94,29 @@ export default function DashboardSidebar() {
             </div>
           </div>
         ))}
+
+        {/* Admin — only visible to kreativecasaentertainment@gmail.com */}
+        {isAdmin && (
+          <div>
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-widest px-3 mb-1.5">
+              Admin
+            </p>
+            <div className="space-y-0.5">
+              <Link
+                href="/dashboard/admin"
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                  pathname === '/dashboard/admin'
+                    ? 'text-white'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+                style={pathname === '/dashboard/admin' ? { backgroundColor: '#4AB7A6' } : {}}
+              >
+                <ShieldCheck size={18} className="shrink-0" />
+                Admin
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
     </aside>
   );
