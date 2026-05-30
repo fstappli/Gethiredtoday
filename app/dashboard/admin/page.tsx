@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { createPortal } from 'react-dom';
 import {
-  Users, TrendingUp, CreditCard, AlertCircle, UserCheck,
+  Users, TrendingUp, UserCheck, AlertCircle,
   ShoppingCart, Clock, Search, Plus, X, ChevronDown,
-  RefreshCw, Shield,
+  RefreshCw, Shield, ArrowUpRight,
 } from 'lucide-react';
 
 interface Profile {
@@ -26,11 +27,11 @@ interface CheckoutAttempt {
 }
 
 const STATUS_OPTIONS = [
-  { value: 'active',    label: 'Pro (Active)',  bg: '#dcfce7', text: '#166534' },
-  { value: 'trialing',  label: 'Trialing',      bg: '#dbeafe', text: '#1e40af' },
-  { value: 'cancelled', label: 'Cancelled',     bg: '#fef9c3', text: '#854d0e' },
-  { value: 'free',      label: 'Free',          bg: '#f1f5f9', text: '#475569' },
-  { value: 'past_due',  label: 'Past Due',      bg: '#fee2e2', text: '#991b1b' },
+  { value: 'active',    label: 'Pro (Active)',  bg: '#dcfce7', text: '#166534', dot: '#16a34a' },
+  { value: 'trialing',  label: 'Trialing',      bg: '#dbeafe', text: '#1e40af', dot: '#2563eb' },
+  { value: 'cancelled', label: 'Cancelled',     bg: '#fef9c3', text: '#854d0e', dot: '#ca8a04' },
+  { value: 'free',      label: 'Free',          bg: '#f1f5f9', text: '#64748b', dot: '#94a3b8' },
+  { value: 'past_due',  label: 'Past Due',      bg: '#fee2e2', text: '#991b1b', dot: '#dc2626' },
 ];
 
 function statusStyle(status: string | null) {
@@ -39,29 +40,35 @@ function statusStyle(status: string | null) {
 }
 
 function fmt(date: string) {
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  });
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 }
-
 function fmtTime(date: string) {
-  return new Date(date).toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-  });
+  return new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+function initials(name: string | null, email: string | null) {
+  const src = name || email || '?';
+  return src.split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase();
 }
 
-// ── Status badge + dropdown ───────────────────────────────────────────────────
+// ── Status dropdown — portal-rendered so it's never clipped ─────────────────
 
-function StatusDropdown({
-  userId, current, onChanged,
-}: {
+function StatusDropdown({ userId, current, onChanged }: {
   userId: string;
   current: string | null;
   onChanged: (id: string, newStatus: string) => void;
 }) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef<HTMLButtonElement>(null);
   const style = statusStyle(current);
+
+  const openMenu = () => {
+    if (!btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setPos({ top: r.bottom + 6, left: r.left });
+    setOpen(true);
+  };
 
   const change = async (newStatus: string) => {
     if (newStatus === (current ?? 'free')) { setOpen(false); return; }
@@ -80,39 +87,48 @@ function StatusDropdown({
   };
 
   return (
-    <div className="relative">
+    <>
       <button
-        onClick={() => setOpen(o => !o)}
+        ref={btnRef}
+        onClick={openMenu}
         disabled={loading}
-        className="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full transition-opacity hover:opacity-80 disabled:opacity-50"
+        className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full transition-all hover:opacity-80 disabled:opacity-50 select-none"
         style={{ backgroundColor: style.bg, color: style.text }}
       >
-        {loading ? <RefreshCw size={10} className="animate-spin" /> : null}
-        {style.label}
-        <ChevronDown size={10} />
+        <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: style.dot }} />
+        {loading ? 'Saving…' : style.label}
+        {!loading && <ChevronDown size={10} />}
       </button>
 
-      {open && (
+      {open && typeof window !== 'undefined' && createPortal(
         <>
-          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 mt-1 w-36 bg-white border border-slate-200 rounded-xl shadow-lg z-20 py-1 overflow-hidden">
+          <div className="fixed inset-0 z-[9998]" onClick={() => setOpen(false)} />
+          <div
+            className="fixed z-[9999] w-44 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 overflow-hidden"
+            style={{ top: pos.top, left: pos.left }}
+          >
+            <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider px-3 pb-1.5 pt-0.5">
+              Change access
+            </p>
             {STATUS_OPTIONS.map(opt => (
               <button
                 key={opt.value}
                 onClick={() => change(opt.value)}
-                className="w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-slate-50 transition-colors"
+                className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-slate-50 transition-colors text-left"
+                style={{ color: opt.value === (current ?? 'free') ? opt.text : '#374151' }}
               >
-                <span
-                  className="w-2 h-2 rounded-full shrink-0"
-                  style={{ backgroundColor: opt.text }}
-                />
+                <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: opt.dot }} />
                 {opt.label}
+                {opt.value === (current ?? 'free') && (
+                  <span className="ml-auto text-[10px] font-medium" style={{ color: opt.dot }}>current</span>
+                )}
               </button>
             ))}
           </div>
-        </>
+        </>,
+        document.body
       )}
-    </div>
+    </>
   );
 }
 
@@ -145,45 +161,50 @@ function CreateUserModal({ onClose, onCreated }: { onClose: () => void; onCreate
     }
   };
 
-  return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="font-semibold text-slate-900 text-lg">Create User</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600">
-            <X size={18} />
+  return createPortal(
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+        {/* Modal header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#E8F7F5' }}>
+              <Plus size={16} style={{ color: '#4AB7A6' }} />
+            </div>
+            <h2 className="font-semibold text-slate-900">Create User</h2>
+          </div>
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+            <X size={15} />
           </button>
         </div>
 
-        <form onSubmit={submit} className="space-y-4">
+        <form onSubmit={submit} className="px-6 py-5 space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Email *</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Email address *</label>
             <input
               type="email"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
               placeholder="user@example.com"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
-              style={{ '--tw-ring-color': '#4AB7A6' } as React.CSSProperties}
+              className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#4AB7A6]/30 focus:border-[#4AB7A6] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Full Name</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Full name</label>
             <input
               type="text"
               value={name}
               onChange={e => setName(e.target.value)}
               placeholder="John Doe"
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:border-transparent"
+              className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#4AB7A6]/30 focus:border-[#4AB7A6] transition-colors"
             />
           </div>
           <div>
-            <label className="block text-xs font-medium text-slate-600 mb-1">Access Level</label>
+            <label className="block text-xs font-semibold text-slate-600 mb-1.5">Access level</label>
             <select
               value={status}
               onChange={e => setStatus(e.target.value)}
-              className="w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none bg-white"
+              className="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#4AB7A6]/30 focus:border-[#4AB7A6] transition-colors bg-white"
             >
               {STATUS_OPTIONS.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -191,26 +212,54 @@ function CreateUserModal({ onClose, onCreated }: { onClose: () => void; onCreate
             </select>
           </div>
 
-          {error && <p className="text-xs text-red-500">{error}</p>}
+          {error && (
+            <div className="flex items-center gap-2 bg-red-50 border border-red-100 rounded-xl px-3.5 py-2.5">
+              <AlertCircle size={14} className="text-red-500 shrink-0" />
+              <p className="text-xs text-red-600">{error}</p>
+            </div>
+          )}
 
           <div className="flex gap-3 pt-1">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-2.5 rounded-full text-sm font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading || !email}
-              className="flex-1 py-2.5 rounded-full text-sm font-medium text-white transition-opacity disabled:opacity-60"
+              className="flex-1 py-2.5 rounded-xl text-sm font-medium text-white transition-opacity disabled:opacity-60"
               style={{ backgroundColor: '#4AB7A6' }}
             >
               {loading ? 'Creating…' : 'Create User'}
             </button>
           </div>
         </form>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ── Stat card ─────────────────────────────────────────────────────────────────
+
+function StatCard({ label, value, sub, icon: Icon, color }: {
+  label: string; value: string | number; sub: string;
+  icon: React.ElementType; color: string;
+}) {
+  return (
+    <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5 flex flex-col gap-3">
+      <div className="flex items-center justify-between">
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</span>
+        <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
+          <Icon size={17} style={{ color }} />
+        </div>
+      </div>
+      <div>
+        <p className="text-3xl font-bold text-slate-900 leading-none">{value}</p>
+        <p className="text-xs text-slate-400 mt-1.5">{sub}</p>
       </div>
     </div>
   );
@@ -227,8 +276,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'funnel'>('users');
+  const [lastRefreshed, setLastRefreshed] = useState(new Date());
 
-  // Debounce search
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
     return () => clearTimeout(t);
@@ -254,94 +303,102 @@ export default function AdminPage() {
     }
   }, []);
 
+  const refresh = () => {
+    fetchUsers(debouncedSearch);
+    fetchAttempts();
+    setLastRefreshed(new Date());
+  };
+
   useEffect(() => { fetchUsers(debouncedSearch); }, [debouncedSearch, fetchUsers]);
   useEffect(() => { fetchAttempts(); }, [fetchAttempts]);
 
   const handleStatusChange = (id: string, newStatus: string) => {
-    setUsers(prev => prev.map(u =>
-      u.id === id ? { ...u, subscription_status: newStatus } : u
-    ));
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, subscription_status: newStatus } : u));
   };
 
-  // Computed stats (from unfiltered users — search only affects display)
+  // Stats
   const proStatuses = ['active', 'trialing', 'pro'];
   const activePro = users.filter(u => proStatuses.includes((u.subscription_status ?? '').toLowerCase()));
   const convertedEmails = new Set(
     users.filter(u => u.subscription_status && u.subscription_status !== 'free').map(u => u.email)
   );
   const nonConverted = attempts.filter(a => a.email && !convertedEmails.has(a.email));
-  const conversionRate = attempts.length > 0
-    ? Math.round((convertedEmails.size / attempts.length) * 100)
-    : 0;
-
+  const conversionRate = attempts.length > 0 ? Math.round((convertedEmails.size / attempts.length) * 100) : 0;
   const now = new Date();
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const newToday = users.filter(u => new Date(u.created_at) >= startOfToday).length;
   const attemptsToday = attempts.filter(a => new Date(a.created_at) >= startOfToday).length;
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 lg:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-              <Shield size={20} style={{ color: '#4AB7A6' }} />
-              Admin Dashboard
-            </h1>
-            <p className="text-xs text-slate-400 mt-0.5">Live data from Supabase</p>
+    <div className="min-h-screen bg-slate-50">
+      {/* Top bar */}
+      <div className="bg-white border-b border-slate-100 sticky top-0 z-10">
+        <div className="max-w-6xl mx-auto px-6 lg:px-8 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ backgroundColor: '#E8F7F5' }}>
+              <Shield size={14} style={{ color: '#4AB7A6' }} />
+            </div>
+            <span className="font-semibold text-slate-900 text-sm">Admin Dashboard</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-1" title="Live" />
           </div>
-          <button
-            onClick={() => { fetchUsers(debouncedSearch); fetchAttempts(); }}
-            className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 transition-colors"
-          >
-            <RefreshCw size={14} />
-            Refresh
-          </button>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400">
+              Updated {lastRefreshed.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+            </span>
+            <button
+              onClick={refresh}
+              className="flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 px-3 py-1.5 rounded-lg transition-colors"
+            >
+              <RefreshCw size={12} />
+              Refresh
+            </button>
+          </div>
         </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-6 lg:px-8 py-8 space-y-6">
 
         {/* KPI cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { label: 'Total Users',        value: users.length,      sub: `+${newToday} today`,           icon: Users,        color: '#4AB7A6' },
-            { label: 'Active Pro',         value: activePro.length,  sub: `${users.length - activePro.length} free`, icon: UserCheck, color: '#16a34a' },
-            { label: 'Checkout Attempts',  value: attempts.length,   sub: `${attemptsToday} today`,       icon: ShoppingCart, color: '#2563eb' },
-            { label: 'Conversion Rate',    value: `${conversionRate}%`, sub: `${convertedEmails.size} converted`, icon: TrendingUp, color: '#7c3aed' },
-          ].map(({ label, value, sub, icon: Icon, color }) => (
-            <div key={label} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
-              <div className="flex items-start justify-between mb-3">
-                <span className="text-xs text-slate-500 font-medium">{label}</span>
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}18` }}>
-                  <Icon size={16} style={{ color }} />
-                </div>
-              </div>
-              <p className="text-3xl font-bold text-slate-900">{value}</p>
-              <p className="text-xs text-slate-400 mt-1">{sub}</p>
-            </div>
-          ))}
+          <StatCard label="Total Users"       value={users.length}      sub={`+${newToday} joined today`}           icon={Users}        color="#4AB7A6" />
+          <StatCard label="Active Pro"        value={activePro.length}  sub={`${users.length - activePro.length} on free plan`} icon={UserCheck}    color="#16a34a" />
+          <StatCard label="Checkout Clicks"   value={attempts.length}   sub={`${attemptsToday} today`}              icon={ShoppingCart} color="#2563eb" />
+          <StatCard label="Conversion Rate"   value={`${conversionRate}%`} sub={`${convertedEmails.size} converted total`} icon={TrendingUp}   color="#7c3aed" />
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-slate-100 p-1 rounded-xl w-fit">
-          {(['users', 'funnel'] as const).map(tab => (
+        <div className="flex items-center gap-2">
+          {[
+            { key: 'users',  label: 'Users',     count: users.length },
+            { key: 'funnel', label: 'Drop-offs',  count: nonConverted.length },
+          ].map(({ key, label, count }) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className="px-4 py-1.5 rounded-lg text-sm font-medium transition-colors capitalize"
-              style={activeTab === tab ? { backgroundColor: '#4AB7A6', color: '#fff' } : { color: '#64748b' }}
+              key={key}
+              onClick={() => setActiveTab(key as 'users' | 'funnel')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all"
+              style={
+                activeTab === key
+                  ? { backgroundColor: '#4AB7A6', color: '#fff', boxShadow: '0 2px 8px rgba(74,183,166,0.3)' }
+                  : { backgroundColor: '#fff', color: '#64748b', border: '1px solid #e2e8f0' }
+              }
             >
-              {tab === 'users' ? `Users (${users.length})` : `Drop-offs (${nonConverted.length})`}
+              {label}
+              <span
+                className="text-xs font-bold px-1.5 py-0.5 rounded-full"
+                style={activeTab === key ? { backgroundColor: 'rgba(255,255,255,0.25)', color: '#fff' } : { backgroundColor: '#f1f5f9', color: '#94a3b8' }}
+              >
+                {count}
+              </span>
             </button>
           ))}
         </div>
 
-        {/* Users tab */}
+        {/* ── Users tab ── */}
         {activeTab === 'users' && (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
             {/* Toolbar */}
             <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-100">
-              <div className="flex-1 flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+              <div className="flex-1 flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2.5 focus-within:ring-2 focus-within:ring-[#4AB7A6]/20 focus-within:border-[#4AB7A6] transition-all">
                 <Search size={14} className="text-slate-400 shrink-0" />
                 <input
                   type="text"
@@ -351,115 +408,139 @@ export default function AdminPage() {
                   className="flex-1 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none"
                 />
                 {search && (
-                  <button onClick={() => setSearch('')} className="text-slate-400 hover:text-slate-600">
-                    <X size={12} />
+                  <button onClick={() => setSearch('')} className="text-slate-300 hover:text-slate-500 transition-colors">
+                    <X size={13} />
                   </button>
                 )}
               </div>
               <button
                 onClick={() => setShowCreate(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-white transition-opacity hover:opacity-90"
-                style={{ backgroundColor: '#4AB7A6' }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:opacity-90 active:scale-[0.98] shrink-0"
+                style={{ backgroundColor: '#4AB7A6', boxShadow: '0 2px 8px rgba(74,183,166,0.3)' }}
               >
-                <Plus size={14} />
+                <Plus size={15} />
                 Create User
               </button>
             </div>
 
-            {/* User list */}
+            {/* Table */}
             {loading ? (
-              <div className="py-12 flex items-center justify-center">
-                <RefreshCw size={20} className="animate-spin text-slate-300" />
+              <div className="py-16 flex flex-col items-center gap-3 text-slate-300">
+                <RefreshCw size={22} className="animate-spin" />
+                <span className="text-sm">Loading users…</span>
               </div>
             ) : users.length === 0 ? (
-              <p className="text-sm text-slate-400 px-5 py-8 text-center italic">No users found.</p>
+              <div className="py-16 flex flex-col items-center gap-2">
+                <Users size={32} className="text-slate-200" />
+                <p className="text-sm text-slate-400">No users found{search ? ` for "${search}"` : ''}.</p>
+              </div>
             ) : (
-              <div className="divide-y divide-slate-100">
-                {/* Header row */}
-                <div className="grid grid-cols-12 gap-3 px-5 py-2.5 bg-slate-50/60">
-                  <span className="col-span-4 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">User</span>
-                  <span className="col-span-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Email</span>
-                  <span className="col-span-2 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Joined</span>
-                  <span className="col-span-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Access</span>
+              <>
+                {/* Column headers */}
+                <div className="grid grid-cols-12 gap-3 px-5 py-2.5 bg-slate-50/80 border-b border-slate-100">
+                  <span className="col-span-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">User</span>
+                  <span className="col-span-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</span>
+                  <span className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Joined</span>
+                  <span className="col-span-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Access</span>
                 </div>
 
-                {users.map(u => (
-                  <div key={u.id} className="grid grid-cols-12 gap-3 px-5 py-3.5 items-center hover:bg-slate-50/50 transition-colors">
-                    <div className="col-span-4 flex items-center gap-2.5 min-w-0">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold text-white"
-                        style={{ backgroundColor: '#4AB7A6' }}
-                      >
-                        {(u.full_name || u.email || '?')[0].toUpperCase()}
+                <div className="divide-y divide-slate-50">
+                  {users.map(u => (
+                    <div key={u.id} className="grid grid-cols-12 gap-3 px-5 py-3.5 items-center hover:bg-slate-50/60 transition-colors group">
+                      {/* Avatar + name */}
+                      <div className="col-span-4 flex items-center gap-3 min-w-0">
+                        <div
+                          className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold text-white"
+                          style={{ backgroundColor: '#4AB7A6' }}
+                        >
+                          {initials(u.full_name, u.email)}
+                        </div>
+                        <span className="text-sm font-medium text-slate-800 truncate">{u.full_name || <span className="text-slate-300 italic">No name</span>}</span>
                       </div>
-                      <span className="text-sm font-medium text-slate-800 truncate">{u.full_name || '—'}</span>
+
+                      {/* Email */}
+                      <div className="col-span-4 min-w-0">
+                        <span className="text-sm text-slate-500 truncate block">{u.email}</span>
+                      </div>
+
+                      {/* Joined */}
+                      <div className="col-span-2">
+                        <span className="text-xs text-slate-400">{fmt(u.created_at)}</span>
+                      </div>
+
+                      {/* Status dropdown */}
+                      <div className="col-span-2">
+                        <StatusDropdown userId={u.id} current={u.subscription_status} onChanged={handleStatusChange} />
+                      </div>
                     </div>
-                    <div className="col-span-3 min-w-0">
-                      <span className="text-xs text-slate-500 truncate block">{u.email}</span>
-                    </div>
-                    <div className="col-span-2">
-                      <span className="text-xs text-slate-400">{fmt(u.created_at)}</span>
-                    </div>
-                    <div className="col-span-3 flex items-center gap-2">
-                      <StatusDropdown
-                        userId={u.id}
-                        current={u.subscription_status}
-                        onChanged={handleStatusChange}
-                      />
-                      {u.subscription_ends_at && (
-                        <span className="text-[10px] text-slate-400 hidden xl:block">
-                          ends {fmt(u.subscription_ends_at)}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+
+                <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/40">
+                  <span className="text-xs text-slate-400">{users.length} user{users.length !== 1 ? 's' : ''}{search ? ` matching "${search}"` : ''}</span>
+                </div>
+              </>
             )}
           </div>
         )}
 
-        {/* Funnel / drop-offs tab */}
+        {/* ── Funnel tab ── */}
         {activeTab === 'funnel' && (
           <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-            <div className="flex items-center gap-2 px-5 py-4 border-b border-slate-100 bg-slate-50/60">
-              <AlertCircle size={15} className="text-amber-500" />
-              <h2 className="font-semibold text-slate-800 text-sm">
-                Clicked upgrade but didn&apos;t convert ({nonConverted.length})
-              </h2>
+            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-amber-50 flex items-center justify-center">
+                  <AlertCircle size={15} className="text-amber-500" />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-slate-800 text-sm">Upgrade drop-offs</h2>
+                  <p className="text-xs text-slate-400">Clicked upgrade · never converted</p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-2xl font-bold text-slate-900">{nonConverted.length}</p>
+                <p className="text-xs text-slate-400">potential conversions</p>
+              </div>
             </div>
 
             {nonConverted.length === 0 ? (
-              <p className="text-sm text-slate-400 px-5 py-8 text-center italic">No drop-offs yet.</p>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                <div className="grid grid-cols-12 gap-3 px-5 py-2.5 bg-slate-50/60">
-                  <span className="col-span-5 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Email</span>
-                  <span className="col-span-4 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Came from</span>
-                  <span className="col-span-3 text-[10px] font-semibold text-slate-400 uppercase tracking-wider">When</span>
-                </div>
-                {nonConverted.slice(0, 100).map(a => (
-                  <div key={a.id} className="grid grid-cols-12 gap-3 px-5 py-3.5 items-center">
-                    <div className="col-span-5 flex items-center gap-2 min-w-0">
-                      <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0 text-xs font-bold text-amber-700">
-                        {(a.email || '?')[0].toUpperCase()}
-                      </div>
-                      <span className="text-sm text-slate-700 truncate">{a.email || 'Unknown'}</span>
-                    </div>
-                    <div className="col-span-4">
-                      <span className="text-xs text-slate-400 font-mono truncate block">{a.from_path || '/'}</span>
-                    </div>
-                    <div className="col-span-3 flex items-center gap-1.5">
-                      <Clock size={11} className="text-slate-300 shrink-0" />
-                      <span className="text-xs text-slate-400">{fmtTime(a.created_at)}</span>
-                    </div>
-                  </div>
-                ))}
+              <div className="py-16 flex flex-col items-center gap-2">
+                <ArrowUpRight size={32} className="text-slate-200" />
+                <p className="text-sm text-slate-400">No drop-offs yet — great conversion rate!</p>
               </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-12 gap-3 px-5 py-2.5 bg-slate-50/80 border-b border-slate-100">
+                  <span className="col-span-5 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Email</span>
+                  <span className="col-span-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">Came from</span>
+                  <span className="col-span-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider">When</span>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {nonConverted.slice(0, 100).map(a => (
+                    <div key={a.id} className="grid grid-cols-12 gap-3 px-5 py-3.5 items-center hover:bg-slate-50/60 transition-colors">
+                      <div className="col-span-5 flex items-center gap-2.5 min-w-0">
+                        <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center shrink-0 text-xs font-bold text-amber-700">
+                          {(a.email || '?')[0].toUpperCase()}
+                        </div>
+                        <span className="text-sm text-slate-700 truncate">{a.email || 'Unknown'}</span>
+                      </div>
+                      <div className="col-span-4 min-w-0">
+                        <span className="text-xs text-slate-400 font-mono bg-slate-50 px-2 py-0.5 rounded truncate block">{a.from_path || '/'}</span>
+                      </div>
+                      <div className="col-span-3 flex items-center gap-1.5">
+                        <Clock size={11} className="text-slate-300 shrink-0" />
+                        <span className="text-xs text-slate-400">{fmtTime(a.created_at)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/40">
+                  <span className="text-xs text-slate-400">{nonConverted.length} drop-off{nonConverted.length !== 1 ? 's' : ''} recorded</span>
+                </div>
+              </>
             )}
           </div>
         )}
-
       </div>
 
       {showCreate && (
