@@ -127,85 +127,154 @@ const blogPosts = [
 ───────────────────────────────────────────────────────────────────────────── */
 
 /** Lightweight CSS-only resume card — replaces TemplatePreview in the hero to avoid a 54 KB render-blocking component above the fold. */
-/** Single hero resume card — classic layout with teal accent */
-function HeroResumeCard() {
-  const accent = "#4AB7A6";
+/** Hero product illustration — resume card with floating UI widgets */
+function HeroProductIllustration() {
+  const teal = "#4AB7A6";
   return (
-    <div
-      className="w-full bg-white rounded-2xl overflow-hidden select-none"
-      aria-hidden="true"
-      style={{
-        border: "1px solid #e2e8f0",
-        boxShadow: "0 24px 60px -12px rgba(15,23,42,0.14), 0 8px 20px -6px rgba(15,23,42,0.08)",
-      }}
-    >
-      {/* Header bar */}
-      <div className="px-6 pt-6 pb-4 border-b border-slate-100">
-        <div className="flex items-start gap-3">
-          <div className="w-10 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: `${accent}22` }}>
-            <div className="w-full h-full rounded-full" style={{ background: `radial-gradient(circle at 35% 35%, ${accent}55, ${accent}22)` }} />
-          </div>
-          <div className="flex-1 min-w-0 pt-0.5">
-            <div className="h-2.5 w-32 rounded-full bg-slate-800 mb-1.5" />
-            <div className="h-1.5 w-24 rounded-full" style={{ backgroundColor: accent }} />
-          </div>
-          <div className="text-right space-y-1">
-            <div className="h-1 w-20 rounded-full bg-slate-200" />
-            <div className="h-1 w-16 rounded-full bg-slate-200" />
-          </div>
-        </div>
-      </div>
+    <div className="relative select-none" aria-hidden="true" style={{ minHeight: 480 }}>
 
-      {/* Body */}
-      <div className="px-6 py-4 space-y-4">
-        {/* Summary */}
-        <div>
-          <div className="h-1.5 w-16 rounded-full mb-2" style={{ backgroundColor: accent }} />
-          <div className="space-y-1">
-            {[100, 92, 78].map((w, i) => (
-              <div key={i} className="h-1 rounded-full bg-slate-200" style={{ width: `${w}%` }} />
-            ))}
-          </div>
-        </div>
+      {/* ── Background glow ─────────────────────────────────────────────── */}
+      <div className="absolute inset-0 rounded-3xl pointer-events-none" style={{
+        background: "radial-gradient(ellipse 80% 60% at 70% 30%, rgba(74,183,166,0.10) 0%, transparent 70%)",
+      }} />
 
-        {/* Experience */}
-        <div>
-          <div className="h-1.5 w-20 rounded-full mb-2.5" style={{ backgroundColor: accent }} />
-          {[1, 2].map((job) => (
-            <div key={job} className="mb-3">
-              <div className="flex justify-between mb-1">
-                <div className="h-1.5 w-28 rounded-full bg-slate-700" />
-                <div className="h-1 w-16 rounded-full bg-slate-300" />
-              </div>
-              <div className="h-1 w-20 rounded-full mb-1.5" style={{ backgroundColor: `${accent}66` }} />
-              <div className="space-y-1 pl-3">
-                {[88, 72, 60].slice(0, job === 1 ? 3 : 2).map((w, i) => (
-                  <div key={i} className="h-1 rounded-full bg-slate-200" style={{ width: `${w}%` }} />
+      {/* ── Main resume card ────────────────────────────────────────────── */}
+      <div className="bg-white rounded-2xl overflow-hidden" style={{
+        border: "1px solid #e8edf3",
+        boxShadow: "0 20px 60px -10px rgba(15,23,42,0.12), 0 6px 20px -4px rgba(15,23,42,0.07)",
+        marginRight: "3rem",
+        marginBottom: "2.5rem",
+      }}>
+        {/* Resume header */}
+        <div className="px-7 pt-6 pb-5" style={{ borderBottom: "1px solid #f1f5f9" }}>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <div className="text-lg font-bold mb-0.5" style={{ color: "#0f172a" }}>Jordan Rivera</div>
+              <div className="text-sm font-medium" style={{ color: teal }}>Senior Product Manager</div>
+              <div className="flex gap-3 mt-2">
+                {["jordan@email.com", "San Francisco, CA", "(415) 555-0182"].map((t, i) => (
+                  <span key={i} className="text-[10px]" style={{ color: "#94a3b8" }}>{t}</span>
                 ))}
               </div>
             </div>
-          ))}
+            {/* Avatar circle */}
+            <div className="w-14 h-14 rounded-full flex-shrink-0 flex items-center justify-center text-white text-lg font-bold" style={{
+              background: `linear-gradient(135deg, ${teal} 0%, #2d9e8e 100%)`,
+            }}>JR</div>
+          </div>
         </div>
 
-        {/* Skills */}
-        <div>
-          <div className="h-1.5 w-12 rounded-full mb-2" style={{ backgroundColor: accent }} />
-          <div className="flex flex-wrap gap-1.5">
-            {[44, 36, 52, 40, 36].map((w, i) => (
-              <div key={i} className="h-5 rounded-md" style={{ width: w, backgroundColor: `${accent}18`, border: `1px solid ${accent}33` }} />
+        {/* Resume body */}
+        <div className="px-7 py-5 space-y-5">
+          {/* Summary */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: teal }}>Professional Summary</div>
+            <div className="space-y-1">
+              {[100, 94, 88, 72].map((w, i) => (
+                <div key={i} className="h-[5px] rounded-full bg-slate-100" style={{ width: `${w}%` }} />
+              ))}
+            </div>
+          </div>
+
+          {/* Experience */}
+          <div>
+            <div className="text-[10px] font-bold uppercase tracking-widest mb-3" style={{ color: teal }}>Experience</div>
+            {[
+              { title: "Senior Product Manager", co: "Acme Cloud", period: "2021 – Present", lines: [96, 80, 68] },
+              { title: "Product Manager", co: "Bright Labs", period: "2018 – 2021", lines: [90, 74] },
+            ].map((job) => (
+              <div key={job.co} className="mb-4">
+                <div className="flex items-baseline justify-between mb-0.5">
+                  <span className="text-[11px] font-semibold" style={{ color: "#1e293b" }}>{job.title}</span>
+                  <span className="text-[9px]" style={{ color: "#94a3b8" }}>{job.period}</span>
+                </div>
+                <div className="text-[10px] mb-1.5" style={{ color: teal }}>{job.co}</div>
+                <div className="space-y-1 pl-2.5" style={{ borderLeft: `1.5px solid ${teal}22` }}>
+                  {job.lines.map((w, i) => (
+                    <div key={i} className="h-[5px] rounded-full bg-slate-100" style={{ width: `${w}%` }} />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Footer badge */}
-      <div className="px-6 pb-5">
-        <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />
-          <div className="h-1 w-24 rounded-full bg-slate-200" />
-          <div className="ml-auto h-4 w-12 rounded-full" style={{ backgroundColor: `${accent}22` }} />
+      {/* ── Floating widget 1: ATS Score ────────────────────────────────── */}
+      <div className="absolute bg-white rounded-2xl px-4 py-3 flex items-center gap-3" style={{
+        top: "1.25rem",
+        left: "-1rem",
+        border: "1px solid #e8edf3",
+        boxShadow: "0 8px 24px -4px rgba(15,23,42,0.12)",
+        minWidth: 172,
+      }}>
+        {/* Score ring */}
+        <div className="relative w-11 h-11 flex-shrink-0">
+          <svg viewBox="0 0 40 40" className="w-full h-full -rotate-90">
+            <circle cx="20" cy="20" r="16" fill="none" stroke="#f1f5f9" strokeWidth="4" />
+            <circle cx="20" cy="20" r="16" fill="none" stroke={teal} strokeWidth="4"
+              strokeDasharray={`${2 * Math.PI * 16 * 0.94} ${2 * Math.PI * 16 * 0.06}`}
+              strokeLinecap="round" />
+          </svg>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-[11px] font-bold" style={{ color: teal }}>94</span>
+          </div>
+        </div>
+        <div>
+          <div className="text-[11px] font-bold" style={{ color: "#0f172a" }}>ATS Score</div>
+          <div className="text-[10px]" style={{ color: "#22c55e" }}>Excellent match</div>
         </div>
       </div>
+
+      {/* ── Floating widget 2: Skills panel ─────────────────────────────── */}
+      <div className="absolute bg-white rounded-2xl p-4" style={{
+        bottom: "3.5rem",
+        right: 0,
+        border: "1px solid #e8edf3",
+        boxShadow: "0 8px 24px -4px rgba(15,23,42,0.12)",
+        minWidth: 168,
+      }}>
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="text-[11px] font-bold" style={{ color: "#0f172a" }}>Skills</span>
+          <span className="text-[9px] font-semibold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: `${teal}15`, color: teal }}>AI</span>
+        </div>
+        {["Product Strategy", "Data Analysis", "Roadmapping"].map((skill) => (
+          <div key={skill} className="flex items-center gap-2 py-1.5" style={{ borderBottom: "1px solid #f8fafc" }}>
+            <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: teal }} />
+            <span className="text-[11px]" style={{ color: "#334155" }}>{skill}</span>
+          </div>
+        ))}
+        <div className="flex items-center gap-1.5 mt-2.5">
+          <div className="w-4 h-4 rounded-full flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0" style={{ backgroundColor: teal }}>+</div>
+          <span className="text-[10px] font-semibold" style={{ color: teal }}>Add skill</span>
+        </div>
+      </div>
+
+      {/* ── Floating widget 3: AI suggestion ────────────────────────────── */}
+      <div className="absolute bg-white rounded-2xl px-4 py-3 flex items-center gap-3" style={{
+        bottom: "0.25rem",
+        left: "1rem",
+        border: "1px solid #e8edf3",
+        boxShadow: "0 8px 24px -4px rgba(15,23,42,0.12)",
+        maxWidth: 240,
+      }}>
+        <div className="w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center" style={{ backgroundColor: `${teal}18` }}>
+          <Sparkles className="w-3.5 h-3.5" style={{ color: teal }} />
+        </div>
+        <span className="text-[11px]" style={{ color: "#64748b" }}>Improve this bullet with AI…</span>
+      </div>
+
+      {/* ── Floating badge: ATS Perfect pill ────────────────────────────── */}
+      <div className="absolute flex items-center gap-2 px-3.5 py-2 rounded-full" style={{
+        top: "5.5rem",
+        right: "-0.5rem",
+        backgroundColor: teal,
+        boxShadow: "0 4px 14px -2px rgba(74,183,166,0.45)",
+      }}>
+        <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+        <span className="text-[11px] font-bold text-white">ATS Optimised</span>
+      </div>
+
     </div>
   );
 }
@@ -577,10 +646,10 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {/* Right — Single resume preview */}
+              {/* Right — Product illustration */}
               <div className="flex justify-center lg:justify-end">
-                <div className="w-full max-w-sm lg:max-w-md">
-                  <HeroResumeCard />
+                <div className="w-full max-w-sm lg:max-w-[420px] px-4 lg:px-0">
+                  <HeroProductIllustration />
                 </div>
               </div>
 
