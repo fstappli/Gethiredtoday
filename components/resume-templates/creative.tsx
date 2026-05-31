@@ -58,7 +58,7 @@ export default function CreativeTemplate({ data, colorScheme = 'rose', fontSize 
     <div id="resume-preview" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'Arial, Helvetica, sans-serif', fontSize: fs.base, lineHeight: 1.55, color: '#1f2937', display: 'flex', boxSizing: 'border-box' as const }}>
 
       {/* Left Sidebar */}
-      <div style={{ width: '64mm', background: c.sidebar, color: '#fff', padding: '0 0 16mm', flexShrink: 0, display: 'flex', flexDirection: 'column' as const }}>
+      <div style={{ width: '64mm', background: c.sidebar, color: '#fff', padding: '0 0 16mm', flexShrink: 0, display: 'flex', flexDirection: 'column' as const, overflow: 'hidden' }}>
         {/* Top accent block with name */}
         <div style={{ background: c.accent, padding: '14mm 10mm 12mm', position: 'relative' }}>
           {/* Decorative shape */}
@@ -79,7 +79,7 @@ export default function CreativeTemplate({ data, colorScheme = 'rose', fontSize 
             <>
               <SideHeading title="Contact" />
               {contactItems.map((item, i) => (
-                <div key={i} style={{ fontSize: fs.xs, color: 'rgba(255,255,255,0.8)', marginBottom: '5px', wordBreak: 'break-all' as const, lineHeight: 1.4 }}>{item}</div>
+                <div key={i} style={{ fontSize: fs.xs, color: 'rgba(255,255,255,0.8)', marginBottom: '5px', wordBreak: 'break-all' as const, overflowWrap: 'anywhere' as const, lineHeight: 1.4 }}>{item}</div>
               ))}
             </>
           )}

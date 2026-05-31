@@ -93,7 +93,10 @@ function UpgradeContent() {
             <span className="text-4xl font-bold text-slate-900">$9.99</span>
             <span className="text-slate-500 text-base">/month</span>
           </div>
-          <p className="text-sm text-slate-400 mb-4">Cancel anytime. No commitment.</p>
+          <p className="text-sm text-slate-400 mb-1">Cancel anytime. No commitment.</p>
+          <p className="text-xs font-semibold mb-4" style={{ color: '#4AB7A6' }}>
+            New accounts get 2 days of full access free — no credit card needed to start.
+          </p>
           <button
             ref={ctaRef}
             onClick={handleCheckout}

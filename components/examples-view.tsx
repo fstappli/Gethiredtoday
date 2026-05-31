@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   Search,
@@ -25,12 +25,90 @@ import {
   Beaker,
   Crown,
 } from "lucide-react";
-import { TemplatePreview, type TemplateLayout } from "@/components/template-preview";
 import { RESUME_EXAMPLES } from "@/lib/resume-examples-data";
-import { exampleToPreviewContent } from "@/lib/example-to-resume";
+import type { ResumeExample } from "@/lib/resume-examples-data";
+import { exampleToResumeData } from "@/lib/example-to-resume";
+import ClassicTemplate from "@/components/resume-templates/classic";
+import ModernTemplate from "@/components/resume-templates/modern";
+import ExecutiveTemplate from "@/components/resume-templates/executive";
+import CreativeTemplate from "@/components/resume-templates/creative";
+import MinimalTemplate from "@/components/resume-templates/minimal";
+import SimpleTemplate from "@/components/resume-templates/simple";
 
 type Industry = "All" | "Technology" | "Healthcare" | "Education" | "Marketing" | "Finance" | "Design" | "Sales" | "Operations";
 type ExperienceLevel = "All" | "Entry Level" | "Mid Level" | "Senior" | "Executive";
+
+function pickTemplate(industry: string): { key: string; color: string } {
+  const i = industry.toLowerCase();
+  if (i.includes('technology')) return { key: 'modern', color: 'blue' };
+  if (i.includes('creative') || i.includes('design')) return { key: 'creative', color: 'purple' };
+  if (i.includes('executive') || i.includes('finance')) return { key: 'executive', color: 'slate' };
+  if (i.includes('academic') || i.includes('education')) return { key: 'minimal', color: 'blue' };
+  if (i.includes('healthcare')) return { key: 'classic', color: 'teal' };
+  return { key: 'classic', color: 'teal' };
+}
+
+function renderTemplateComponent(tpl: { key: string; color: string }, resumeData: ReturnType<typeof exampleToResumeData>) {
+  const props = { data: resumeData, colorScheme: tpl.color, fontSize: 'medium' as const };
+  switch (tpl.key) {
+    case 'modern':    return <ModernTemplate {...props} />;
+    case 'creative':  return <CreativeTemplate {...props} />;
+    case 'executive': return <ExecutiveTemplate {...props} />;
+    case 'minimal':   return <MinimalTemplate {...props} />;
+    case 'simple':    return <SimpleTemplate {...props} />;
+    default:          return <ClassicTemplate {...props} />;
+  }
+}
+
+function makeThumbnailData(ex: ResumeExample) {
+  const base = exampleToResumeData(ex);
+  return {
+    ...base,
+    contact: {
+      full_name: 'Sample Candidate',
+      email: 'candidate@example.com',
+      phone: '+1 (555) 123-4567',
+      location: 'San Francisco, CA',
+      linkedin: `linkedin.com/in/${ex.slug}`,
+      website: '',
+      github: '',
+    },
+  };
+}
+
+function ExampleThumbnail({ ex }: { ex: ResumeExample }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [scale, setScale] = useState(0.34);
+
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => setScale(el.offsetWidth / 793.7);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const tpl = pickTemplate(ex.industry);
+  const resumeData = makeThumbnailData(ex);
+
+  return (
+    <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}>
+      <div style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        transformOrigin: 'top left',
+        transform: `scale(${scale})`,
+        width: '210mm',
+        pointerEvents: 'none',
+      }}>
+        {renderTemplateComponent(tpl, resumeData)}
+      </div>
+    </div>
+  );
+}
 
 const industries: Industry[] = ["All", "Technology", "Healthcare", "Education", "Marketing", "Finance", "Design", "Sales", "Operations"];
 const experienceLevels: ExperienceLevel[] = ["All", "Entry Level", "Mid Level", "Senior", "Executive"];
@@ -51,31 +129,30 @@ interface Example {
   accentColor: string;
   iconBg: string;
   Icon: React.ElementType;
-  layout: TemplateLayout;
   skills: string[];
 }
 
 const EXAMPLES: Example[] = [
-  { slug: "software-engineer",          title: "Software Engineering",    industry: "Technology", level: "Mid Level",   count: 32, accentColor: "#4AB7A6", iconBg: "#f0fdfa", Icon: Code2,        layout: "sidebar",   skills: ["React", "Node.js", "TypeScript"] },
-  { slug: "marketing-manager",          title: "Marketing & Advertising", industry: "Marketing",  level: "Mid Level",   count: 27, accentColor: "#db2777", iconBg: "#fdf2f8", Icon: Megaphone,    layout: "classic",   skills: ["SEO", "Google Ads", "Analytics"] },
-  { slug: "registered-nurse",           title: "Healthcare & Nursing",    industry: "Healthcare", level: "Senior",      count: 24, accentColor: "#059669", iconBg: "#f0fdf4", Icon: HeartPulse,   layout: "classic",   skills: ["Patient Care", "EMR", "Clinical"] },
-  { slug: "data-analyst",               title: "Data & Analytics",        industry: "Technology", level: "Mid Level",   count: 21, accentColor: "#0891b2", iconBg: "#ecfeff", Icon: BarChart2,    layout: "sidebar",   skills: ["Python", "SQL", "Tableau"] },
-  { slug: "high-school-teacher",        title: "Education & Teaching",    industry: "Education",  level: "Entry Level", count: 18, accentColor: "#d97706", iconBg: "#fffbeb", Icon: GraduationCap,layout: "minimal",   skills: ["Curriculum", "EdTech", "K-12"] },
-  { slug: "sales-representative",       title: "Sales & Business Dev",    industry: "Sales",      level: "Mid Level",   count: 22, accentColor: "#ea580c", iconBg: "#fff7ed", Icon: TrendingUp,   layout: "executive", skills: ["CRM", "Salesforce", "B2B"] },
-  { slug: "financial-analyst",          title: "Finance & Accounting",    industry: "Finance",    level: "Senior",      count: 19, accentColor: "#1d4ed8", iconBg: "#eff6ff", Icon: Briefcase,    layout: "classic",   skills: ["Excel", "GAAP", "Financial Modeling"] },
-  { slug: "project-manager",            title: "Project Management",      industry: "Operations", level: "Senior",      count: 15, accentColor: "#0f766e", iconBg: "#f0fdfa", Icon: Layers,       layout: "executive", skills: ["Agile", "PMP", "Jira"] },
-  { slug: "ux-designer",                title: "Design & Creative",       industry: "Design",     level: "Mid Level",   count: 20, accentColor: "#7c3aed", iconBg: "#faf5ff", Icon: Palette,      layout: "creative",  skills: ["Figma", "Adobe CC", "UX Research"] },
-  { slug: "human-resources-manager",    title: "Human Resources",         industry: "Operations", level: "Mid Level",   count: 14, accentColor: "#ec4899", iconBg: "#fdf2f8", Icon: Users,        layout: "classic",   skills: ["Recruiting", "HRIS", "L&D"] },
-  { slug: "operations-manager",         title: "Legal",                   industry: "Operations", level: "Senior",      count: 12, accentColor: "#334155", iconBg: "#f8fafc", Icon: Scale,        layout: "classic",   skills: ["Contract Law", "Litigation", "Compliance"] },
-  { slug: "graphic-designer",            title: "Consulting",              industry: "Operations", level: "Senior",      count: 16, accentColor: "#374151", iconBg: "#f9fafb", Icon: Building2,    layout: "executive", skills: ["Strategy", "Problem Solving", "PowerPoint"] },
-  { slug: "account-executive",          title: "Real Estate",             industry: "Sales",      level: "Mid Level",   count: 11, accentColor: "#c2410c", iconBg: "#fff7ed", Icon: Home,         layout: "sidebar",   skills: ["MLS", "Negotiation", "CRM"] },
-  { slug: "software-developer-entry-level", title: "Engineering",         industry: "Technology", level: "Senior",      count: 17, accentColor: "#4338ca", iconBg: "#eef2ff", Icon: Wrench,       layout: "sidebar",   skills: ["AutoCAD", "Six Sigma", "Lean"] },
-  { slug: "content-marketing-manager",  title: "Writing & Content",       industry: "Marketing",  level: "Entry Level", count: 13, accentColor: "#0369a1", iconBg: "#f0f9ff", Icon: PenLine,      layout: "minimal",   skills: ["SEO Writing", "Copywriting", "WordPress"] },
-  { slug: "product-manager",            title: "Product Management",      industry: "Technology", level: "Senior",      count: 25, accentColor: "#7c3aed", iconBg: "#faf5ff", Icon: Star,         layout: "sidebar",   skills: ["Roadmapping", "A/B Testing", "User Stories"] },
-  { slug: "marketing-director",         title: "Customer Success",        industry: "Sales",      level: "Mid Level",   count: 14, accentColor: "#2dd4bf", iconBg: "#f0fdfa", Icon: HeartPulse,   layout: "classic",   skills: ["Onboarding", "NPS", "Churn Reduction"] },
-  { slug: "supply-chain-analyst",       title: "Supply Chain",            industry: "Operations", level: "Mid Level",   count: 10, accentColor: "#0891b2", iconBg: "#ecfeff", Icon: Layers,       layout: "classic",   skills: ["Logistics", "ERP", "Procurement"] },
-  { slug: "data-scientist",             title: "Research & Science",      industry: "Education",  level: "Senior",      count: 9,  accentColor: "#059669", iconBg: "#f0fdf4", Icon: Beaker,       layout: "minimal",   skills: ["R", "SPSS", "Grant Writing"] },
-  { slug: "chief-technology-officer",   title: "Executive Leadership",    industry: "Operations", level: "Executive",   count: 18, accentColor: "#111827", iconBg: "#f8fafc", Icon: Crown,        layout: "executive", skills: ["P&L Management", "Board Relations", "M&A"] },
+  { slug: "software-engineer",              title: "Software Engineering",    industry: "Technology", level: "Mid Level",   count: 32, accentColor: "#4AB7A6", iconBg: "#f0fdfa", Icon: Code2,         skills: ["React", "Node.js", "TypeScript"] },
+  { slug: "marketing-manager",              title: "Marketing & Advertising", industry: "Marketing",  level: "Mid Level",   count: 27, accentColor: "#db2777", iconBg: "#fdf2f8", Icon: Megaphone,     skills: ["SEO", "Google Ads", "Analytics"] },
+  { slug: "registered-nurse",               title: "Healthcare & Nursing",    industry: "Healthcare", level: "Senior",      count: 24, accentColor: "#059669", iconBg: "#f0fdf4", Icon: HeartPulse,    skills: ["Patient Care", "EMR", "Clinical"] },
+  { slug: "data-analyst",                   title: "Data & Analytics",        industry: "Technology", level: "Mid Level",   count: 21, accentColor: "#0891b2", iconBg: "#ecfeff", Icon: BarChart2,     skills: ["Python", "SQL", "Tableau"] },
+  { slug: "high-school-teacher",            title: "Education & Teaching",    industry: "Education",  level: "Entry Level", count: 18, accentColor: "#d97706", iconBg: "#fffbeb", Icon: GraduationCap, skills: ["Curriculum", "EdTech", "K-12"] },
+  { slug: "sales-representative",           title: "Sales & Business Dev",    industry: "Sales",      level: "Mid Level",   count: 22, accentColor: "#ea580c", iconBg: "#fff7ed", Icon: TrendingUp,    skills: ["CRM", "Salesforce", "B2B"] },
+  { slug: "financial-analyst",              title: "Finance & Accounting",    industry: "Finance",    level: "Senior",      count: 19, accentColor: "#1d4ed8", iconBg: "#eff6ff", Icon: Briefcase,     skills: ["Excel", "GAAP", "Financial Modeling"] },
+  { slug: "project-manager",                title: "Project Management",      industry: "Operations", level: "Senior",      count: 15, accentColor: "#0f766e", iconBg: "#f0fdfa", Icon: Layers,        skills: ["Agile", "PMP", "Jira"] },
+  { slug: "ux-designer",                    title: "Design & Creative",       industry: "Design",     level: "Mid Level",   count: 20, accentColor: "#7c3aed", iconBg: "#faf5ff", Icon: Palette,       skills: ["Figma", "Adobe CC", "UX Research"] },
+  { slug: "human-resources-manager",        title: "Human Resources",         industry: "Operations", level: "Mid Level",   count: 14, accentColor: "#ec4899", iconBg: "#fdf2f8", Icon: Users,         skills: ["Recruiting", "HRIS", "L&D"] },
+  { slug: "operations-manager",             title: "Legal",                   industry: "Operations", level: "Senior",      count: 12, accentColor: "#334155", iconBg: "#f8fafc", Icon: Scale,         skills: ["Contract Law", "Litigation", "Compliance"] },
+  { slug: "graphic-designer",               title: "Consulting",              industry: "Operations", level: "Senior",      count: 16, accentColor: "#374151", iconBg: "#f9fafb", Icon: Building2,     skills: ["Strategy", "Problem Solving", "PowerPoint"] },
+  { slug: "account-executive",              title: "Real Estate",             industry: "Sales",      level: "Mid Level",   count: 11, accentColor: "#c2410c", iconBg: "#fff7ed", Icon: Home,          skills: ["MLS", "Negotiation", "CRM"] },
+  { slug: "software-developer-entry-level", title: "Engineering",             industry: "Technology", level: "Senior",      count: 17, accentColor: "#4338ca", iconBg: "#eef2ff", Icon: Wrench,        skills: ["AutoCAD", "Six Sigma", "Lean"] },
+  { slug: "content-marketing-manager",      title: "Writing & Content",       industry: "Marketing",  level: "Entry Level", count: 13, accentColor: "#0369a1", iconBg: "#f0f9ff", Icon: PenLine,       skills: ["SEO Writing", "Copywriting", "WordPress"] },
+  { slug: "product-manager",                title: "Product Management",      industry: "Technology", level: "Senior",      count: 25, accentColor: "#7c3aed", iconBg: "#faf5ff", Icon: Star,          skills: ["Roadmapping", "A/B Testing", "User Stories"] },
+  { slug: "marketing-director",             title: "Customer Success",        industry: "Sales",      level: "Mid Level",   count: 14, accentColor: "#2dd4bf", iconBg: "#f0fdfa", Icon: HeartPulse,    skills: ["Onboarding", "NPS", "Churn Reduction"] },
+  { slug: "supply-chain-analyst",           title: "Supply Chain",            industry: "Operations", level: "Mid Level",   count: 10, accentColor: "#0891b2", iconBg: "#ecfeff", Icon: Layers,        skills: ["Logistics", "ERP", "Procurement"] },
+  { slug: "data-scientist",                 title: "Research & Science",      industry: "Education",  level: "Senior",      count: 9,  accentColor: "#059669", iconBg: "#f0fdf4", Icon: Beaker,        skills: ["R", "SPSS", "Grant Writing"] },
+  { slug: "chief-technology-officer",       title: "Executive Leadership",    industry: "Operations", level: "Executive",   count: 18, accentColor: "#111827", iconBg: "#f8fafc", Icon: Crown,         skills: ["P&L Management", "Board Relations", "M&A"] },
 ];
 
 export default function ExamplesView() {
@@ -156,21 +233,17 @@ export default function ExamplesView() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {filtered.map((ex) => {
                 const Icon = ex.Icon;
-                // Look up the richer example data (summary, experience, etc.) so the
-                // thumbnail renders the actual role, company, and skills instead of
-                // generic placeholder bars.
                 const richEx = RESUME_EXAMPLES.find((r) => r.slug === ex.slug);
-                const content = richEx ? exampleToPreviewContent(richEx) : { title: ex.title, skills: ex.skills };
                 return (
                   <div key={ex.slug}
                     className="group bg-white rounded-2xl border border-slate-200 hover:border-[#4AB7A6] hover:shadow-xl transition-all duration-200 flex flex-col overflow-hidden"
                     style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.06)' }}
                   >
-                    {/* Mini resume preview */}
+                    {/* Mini resume preview — renders the actual template at scale */}
                     <div className="relative overflow-hidden bg-slate-100" style={{ height: '200px' }}>
-                      <div className="absolute inset-0 flex items-stretch justify-stretch p-2">
-                        <div className="flex-1 rounded-lg overflow-hidden" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.08)' }}>
-                          <TemplatePreview layout={ex.layout} accent={ex.accentColor} content={content} />
+                      <div className="absolute inset-0 p-2">
+                        <div className="w-full h-full rounded-lg overflow-hidden" style={{ boxShadow: '0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.08)' }}>
+                          {richEx ? <ExampleThumbnail ex={richEx} /> : <div className="w-full h-full bg-slate-200" />}
                         </div>
                       </div>
                       <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">

@@ -385,7 +385,7 @@ const faqs = [
   },
   {
     q: "Is it really free?",
-    a: "Yes. You can build, edit, and preview your resume for free with no credit card required. The free plan includes 1 resume and basic templates. Pro unlocks unlimited resumes, all templates, PDF/Word download, and full AI writing.",
+    a: "When you create an account you get 2 days of full access — no credit card required. After the free trial, a Pro subscription is $9.99/month and unlocks unlimited resumes, all templates, PDF/Word download, and full AI writing. You can cancel anytime.",
   },
   {
     q: "Is GetHiredToday ATS compatible?",
@@ -1445,7 +1445,7 @@ export default function HomePage() {
               Start Free — Enable Auto-Apply →
             </Link>
             <p className="text-sm mt-6 text-white" style={{ opacity: 0.7 }}>
-              No credit card · Cancel anytime · 14-day money-back guarantee
+              No credit card · 2 days free on signup · Cancel anytime · 30-day money-back guarantee
             </p>
           </div>
         </section>

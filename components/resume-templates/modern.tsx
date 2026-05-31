@@ -42,7 +42,7 @@ export default function ModernTemplate({ data, colorScheme = 'teal', fontSize = 
     <div id="resume-preview" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'Arial, Helvetica, sans-serif', fontSize: fs.base, lineHeight: 1.5, color: '#1f2937', display: 'flex', boxSizing: 'border-box' as const }}>
 
       {/* SIDEBAR */}
-      <div style={{ width: '72mm', background: `linear-gradient(175deg, ${c.sidebar} 0%, ${c.sidebarDark} 100%)`, color: '#fff', padding: '16mm 8mm 16mm', display: 'flex', flexDirection: 'column' as const, flexShrink: 0 }}>
+      <div style={{ width: '72mm', background: `linear-gradient(175deg, ${c.sidebar} 0%, ${c.sidebarDark} 100%)`, color: '#fff', padding: '16mm 8mm 16mm', display: 'flex', flexDirection: 'column' as const, flexShrink: 0, overflow: 'hidden' }}>
         {/* Avatar — real uploaded photo if provided, else initial fallback */}
         {d.contact.photo_url ? (
           // eslint-disable-next-line @next/next/no-img-element
@@ -67,7 +67,7 @@ export default function ModernTemplate({ data, colorScheme = 'teal', fontSize = 
 
         {/* Contact */}
         {[d.contact.email, d.contact.phone, d.contact.location, d.contact.linkedin, d.contact.website, d.contact.github].filter(Boolean).map((item, i) => (
-          <div key={i} style={{ fontSize: fs.xs, color: 'rgba(255,255,255,0.75)', marginBottom: '4px', wordBreak: 'break-all' as const }}>{item}</div>
+          <div key={i} style={{ fontSize: fs.xs, color: 'rgba(255,255,255,0.75)', marginBottom: '4px', wordBreak: 'break-all' as const, overflowWrap: 'anywhere' as const }}>{item}</div>
         ))}
 
         {/* Skills */}

@@ -762,6 +762,47 @@ export default function DashboardPage() {
         {/* Main scrollable content */}
         <div className="flex-1 min-w-0 space-y-10">
 
+          {/* Trial status banner — shown to all non-Pro users */}
+          {!isPro && accountCreatedAt && (() => {
+            const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
+            const elapsed = Date.now() - new Date(accountCreatedAt).getTime();
+            const inTrial = elapsed < TRIAL_MS;
+            const hoursLeft = Math.max(1, Math.ceil((TRIAL_MS - elapsed) / (60 * 60 * 1000)));
+            return inTrial ? (
+              <div className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-lg shrink-0">⏱</span>
+                  <p className="text-sm text-slate-700">
+                    <span className="font-semibold text-teal-700">{hoursLeft} hour{hoursLeft !== 1 ? 's' : ''} left</span> in your free trial — all features are unlocked right now
+                  </p>
+                </div>
+                <Link
+                  href="/upgrade?from=%2Fdashboard"
+                  className="shrink-0 text-xs font-bold text-white rounded-full px-3 py-1.5 transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: '#4AB7A6' }}
+                >
+                  Upgrade
+                </Link>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span className="text-lg shrink-0">🔒</span>
+                  <p className="text-sm text-slate-700">
+                    <span className="font-semibold text-amber-700">Your 2-day free trial has ended.</span> Upgrade to Pro to unlock AI tools, Word downloads &amp; more.
+                  </p>
+                </div>
+                <Link
+                  href="/upgrade?from=%2Fdashboard"
+                  className="shrink-0 text-xs font-bold text-white rounded-full px-3 py-1.5 transition-opacity hover:opacity-90"
+                  style={{ backgroundColor: '#f59e0b' }}
+                >
+                  Upgrade
+                </Link>
+              </div>
+            );
+          })()}
+
           {/* Mobile upgrade banner — visible below xl where sidebar is hidden */}
           {!isPro && (
             <div className="xl:hidden flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-100">
@@ -1183,22 +1224,30 @@ export default function DashboardPage() {
               </div>
 
               {/* Upgrade nudge — only for free users */}
-              {!isPro && (
-                <div className="mx-3 mb-3 mt-1 bg-gradient-to-br from-teal-50 to-emerald-50 border border-teal-100 rounded-xl p-3">
-                  <div className="flex items-center gap-1.5 mb-1">
-                    <Sparkles className="w-3.5 h-3.5" style={{ color: '#4AB7A6' }} />
-                    <span className="text-xs font-bold text-slate-900">Go Pro</span>
+              {!isPro && (() => {
+                const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
+                const inTrial = accountCreatedAt ? Date.now() - new Date(accountCreatedAt).getTime() < TRIAL_MS : false;
+                return (
+                  <div className={`mx-3 mb-3 mt-1 border rounded-xl p-3 ${inTrial ? 'bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-200' : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200'}`}>
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <Sparkles className="w-3.5 h-3.5" style={{ color: inTrial ? '#4AB7A6' : '#f59e0b' }} />
+                      <span className="text-xs font-bold text-slate-900">{inTrial ? 'Free Trial Active' : 'Trial Ended'}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-snug mb-2">
+                      {inTrial
+                        ? 'You have full access for 2 days. Upgrade to keep it.'
+                        : 'Your 2-day trial is up. Upgrade to Pro to continue.'}
+                    </p>
+                    <Link
+                      href="/upgrade?from=%2Fdashboard"
+                      className="block text-center text-[11px] font-bold text-white rounded-lg py-1.5 transition-opacity hover:opacity-90"
+                      style={{ backgroundColor: inTrial ? '#4AB7A6' : '#f59e0b' }}
+                    >
+                      Upgrade Now
+                    </Link>
                   </div>
-                  <p className="text-[11px] text-slate-500 leading-snug mb-2">Unlock Word downloads, AI tailoring & more.</p>
-                  <Link
-                    href="/upgrade?from=%2Fdashboard"
-                    className="block text-center text-[11px] font-bold text-white rounded-lg py-1.5 transition-opacity hover:opacity-90"
-                    style={{ backgroundColor: '#4AB7A6' }}
-                  >
-                    Upgrade Now
-                  </Link>
-                </div>
-              )}
+                );
+              })()}
             </div>
           </div>
         </aside>

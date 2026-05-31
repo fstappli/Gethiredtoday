@@ -401,7 +401,7 @@ function SignupForm() {
       <div>
         <h1 className="text-3xl font-bold text-slate-900">Create your free account</h1>
         <p className="mt-2 text-slate-500">
-          Start building your resume in minutes. No credit card required.
+          Get <span className="font-semibold text-teal-600">2 days of full access free</span> — no credit card required. After that, upgrade to Pro for $9.99/month.
         </p>
       </div>
 

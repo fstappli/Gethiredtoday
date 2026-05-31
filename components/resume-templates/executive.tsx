@@ -109,7 +109,7 @@ export default function ExecutiveTemplate({ data, colorScheme = 'purple', fontSi
         </div>
 
         {/* Sidebar */}
-        <div style={{ width: '58mm', background: '#fafafa', borderLeft: '1px solid #f0f0f0', padding: '8mm 12mm 16mm 10mm', flexShrink: 0 }}>
+        <div style={{ width: '58mm', background: '#fafafa', borderLeft: '1px solid #f0f0f0', padding: '8mm 12mm 16mm 10mm', flexShrink: 0, overflow: 'hidden' }}>
           {d.education.length > 0 && (
             <>
               <div style={{ fontSize: fs.xs, fontWeight: 800, color: c.bg, textTransform: 'uppercase' as const, letterSpacing: '0.1em', marginBottom: '8px' }}>Education</div>
