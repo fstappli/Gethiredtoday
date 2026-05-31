@@ -2,6 +2,7 @@ import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { Star, Check } from 'lucide-react';
 import Logo from '@/components/logo';
+import { ClassicMiniResume } from '@/components/mini-resume-cards';
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
@@ -111,13 +112,14 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             ))}
           </div>
 
-          {/* Animated resume preview card */}
+          {/* Beautiful mini resume preview */}
           <div
-            className="bg-white rounded-xl overflow-hidden border border-[#c8edea] animate-fade-up"
+            className="bg-white rounded-2xl overflow-hidden border border-[#c8edea] animate-fade-up"
             style={{
               transform: 'rotate(-1.5deg)',
               boxShadow: '0 12px 36px rgba(74,183,166,0.16), 0 2px 8px rgba(0,0,0,0.06)',
               '--stagger-delay': '160ms',
+              height: 220,
             } as React.CSSProperties}
           >
             {/* Chrome bar */}
@@ -126,35 +128,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <div className="w-2 h-2 rounded-full bg-yellow-400" />
               <div className="w-2 h-2 rounded-full bg-green-400" />
             </div>
-            {/* Teal header band */}
-            <div className="h-7 w-full" style={{ background: 'linear-gradient(135deg, #4AB7A6, #2d9e8e)' }}>
-              <div className="flex items-center h-full px-4 gap-2">
-                <div className="h-2 w-16 rounded-full bg-white/50" />
-                <div className="h-1.5 w-10 rounded-full bg-white/30" />
-              </div>
-            </div>
-            {/* Body */}
-            <div className="p-4 space-y-2">
-              <div className="h-2 w-2/3 rounded-full bg-slate-200 animate-bar-grow" style={{ '--bar-delay': '600ms' } as React.CSSProperties} />
-              <div className="h-1.5 w-1/2 rounded-full bg-slate-100" />
-              <div className="mt-2.5 space-y-1.5">
-                {[100, 88, 75, 92].map((w, i) => (
-                  <div key={i} className="h-1.5 rounded-full bg-slate-100 animate-bar-grow" style={{ width: `${w}%`, '--bar-delay': `${700 + i * 60}ms` } as React.CSSProperties} />
-                ))}
-              </div>
-              <div className="mt-2.5 flex gap-1.5">
-                {['Design', 'Strategy', 'Research'].map((tag) => (
-                  <div key={tag} className="h-4 rounded-full px-2 flex items-center" style={{ backgroundColor: '#4AB7A615', border: '1px solid #4AB7A630' }}>
-                    <div className="h-1 w-8 rounded-full" style={{ backgroundColor: '#4AB7A6' }} />
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* ATS badge overlay */}
-            <div className="flex items-center gap-1.5 px-4 py-2.5 border-t border-slate-50 bg-gradient-to-r from-teal-50 to-emerald-50">
-              <Check className="w-3 h-3 text-teal-500" strokeWidth={3} />
-              <span className="text-[10px] font-semibold text-teal-700">ATS Score: 94/100 · Excellent</span>
+            {/* Real resume content */}
+            <div style={{ height: 'calc(100% - 36px)', overflow: 'hidden' }}>
+              <ClassicMiniResume accent="#4AB7A6" />
             </div>
           </div>
 

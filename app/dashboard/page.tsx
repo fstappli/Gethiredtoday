@@ -31,7 +31,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { truncate } from '@/lib/utils';
-import { TemplatePreview, previewFromResumeData } from '@/components/template-preview';
+import { MiniResume } from '@/components/mini-resume-cards';
 import { isProActive, isCancelledWithGrace, formatEndsAt } from '@/lib/subscription';
 import { scoreResume } from '@/lib/ats';
 import type { TemplateLayout } from '@/components/template-preview';
@@ -1333,7 +1333,7 @@ function ResumeCard({
             className="flex-1 rounded-lg overflow-hidden transition-transform duration-300 group-hover/card:scale-[1.02]"
             style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)' }}
           >
-            <TemplatePreview layout={meta.layout} accent={meta.accent} content={previewFromResumeData(resume.data)} />
+            <MiniResume layout={meta.layout} accent={meta.accent} />
           </div>
         </div>
         {/* Edit overlay */}

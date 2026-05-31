@@ -1,15 +1,10 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Search, ArrowRight, Check, Loader2 } from "lucide-react";
-import ClassicTemplate from "@/components/resume-templates/classic";
-import ModernTemplate from "@/components/resume-templates/modern";
-import ExecutiveTemplate from "@/components/resume-templates/executive";
-import CreativeTemplate from "@/components/resume-templates/creative";
-import MinimalTemplate from "@/components/resume-templates/minimal";
-import SimpleTemplate from "@/components/resume-templates/simple";
+import { MiniResume } from "@/components/mini-resume-cards";
 
 type Category = "All" | "Professional" | "Modern" | "Creative" | "Simple" | "Executive" | "Academic" | "Tech";
 type LayoutType =
@@ -70,128 +65,11 @@ const templates: Template[] = [
   { id: 24, templateId: "modern",       name: "Real Estate Agent",    category: "Professional", accent: "#c2410c", bg: "#fff7ed", layout: "sidebar",      pro: false, description: "Orange warm sidebar" },
 ];
 
-const TEMPLATE_SAMPLE_DATA = {
-  contact: {
-    full_name: 'Alex Morgan',
-    email: 'alex.morgan@email.com',
-    phone: '+1 (555) 234-5678',
-    location: 'San Francisco, CA',
-    linkedin: 'linkedin.com/in/alexmorgan',
-    website: 'alexmorgan.design',
-    github: '',
-    photo_url: 'https://randomuser.me/api/portraits/women/65.jpg',
-  },
-  summary: 'Senior product designer with 8+ years shipping consumer and SaaS products. Led design for high-growth teams from Series A through IPO. Expert in Figma, design systems, and mixed-methods research.',
-  work_experience: [
-    {
-      id: 'exp-1',
-      job_title: 'Senior Product Designer',
-      company: 'Linear',
-      location: 'San Francisco, CA',
-      start_date: '2022-01',
-      end_date: '',
-      is_current: true,
-      description: '',
-      achievements: [
-        'Led redesign of core issue tracker used by 300K+ teams, improving task completion 28%',
-        'Built and shipped design system adopted by 6 product squads across web and mobile',
-        'Shipped new onboarding that lifted activation rate from 38% to 61%',
-      ],
-    },
-    {
-      id: 'exp-2',
-      job_title: 'Product Designer',
-      company: 'Notion',
-      location: 'San Francisco, CA',
-      start_date: '2019-03',
-      end_date: '2021-12',
-      is_current: false,
-      description: '',
-      achievements: [
-        'Owned design for mobile app across 10 releases reaching 4M+ users',
-        'Ran 20+ usability studies per year, reducing user friction in core workflows by 35%',
-        'Collaborated with 3 PM and 8 engineering partners in agile sprints',
-      ],
-    },
-    {
-      id: 'exp-3',
-      job_title: 'UX Designer',
-      company: 'Dropbox',
-      location: 'San Francisco, CA',
-      start_date: '2016-06',
-      end_date: '2019-02',
-      is_current: false,
-      description: '',
-      achievements: [
-        'Redesigned file sharing flow, increasing sharing rate by 22%',
-        'Contributed to cross-platform design language used by 200M+ users',
-      ],
-    },
-  ],
-  education: [{ id: 'edu-1', degree: 'B.A. Design', field_of_study: 'Interaction Design', institution: 'Stanford University', location: '', start_date: '2012-09', end_date: '2016-05', is_current: false, gpa: '', description: '' }],
-  skills: [
-    { id: 'sk-1', name: 'Figma', category: 'Design' },
-    { id: 'sk-2', name: 'Prototyping', category: 'Design' },
-    { id: 'sk-3', name: 'Design Systems', category: 'Design' },
-    { id: 'sk-4', name: 'User Research', category: 'Research' },
-    { id: 'sk-5', name: 'A/B Testing', category: 'Analytics' },
-    { id: 'sk-6', name: 'Motion Design', category: 'Design' },
-  ],
-  certifications: [],
-  languages: [],
-  volunteer_work: [],
-  projects: [],
-  custom_sections: [],
-};
 
-function renderActualTemplate(templateId: string, accent: string) {
-  const colorMap: Record<string, string> = {
-    '#4AB7A6': 'teal', '#0d9488': 'teal', '#4338ca': 'purple', '#7c3aed': 'purple',
-    '#1d4ed8': 'blue', '#1e293b': 'slate', '#0f172a': 'slate', '#334155': 'slate',
-    '#374151': 'slate', '#111827': 'slate', '#1e3a8a': 'blue', '#0f766e': 'teal',
-    '#db2777': 'rose', '#e11d48': 'rose', '#ea580c': 'rose', '#c2410c': 'rose',
-    '#be123c': 'rose', '#9f1239': 'rose', '#ec4899': 'rose', '#059669': 'teal',
-    '#10b981': 'teal', '#0891b2': 'teal', '#2dd4bf': 'teal', '#6d28d9': 'purple',
-  };
-  const color = colorMap[accent] ?? 'teal';
-  const props = { data: TEMPLATE_SAMPLE_DATA, colorScheme: color, fontSize: 'medium' as const };
-  switch (templateId) {
-    case 'modern':    return <ModernTemplate {...props} />;
-    case 'creative':  return <CreativeTemplate {...props} />;
-    case 'executive': return <ExecutiveTemplate {...props} />;
-    case 'minimal':   return <MinimalTemplate {...props} />;
-    case 'simple':    return <SimpleTemplate {...props} />;
-    default:          return <ClassicTemplate {...props} />;
-  }
-}
-
-function TemplateThumbnail({ templateId, accent }: { templateId: string; accent: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [scale, setScale] = useState(0.34);
-
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const update = () => setScale(el.offsetWidth / 793.7);
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
+function TemplateThumbnail({ layout, accent }: { layout: string; accent: string }) {
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }}>
-      <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        transformOrigin: 'top left',
-        transform: `scale(${scale})`,
-        width: '210mm',
-        pointerEvents: 'none',
-      }}>
-        {renderActualTemplate(templateId, accent)}
-      </div>
+    <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
+      <MiniResume layout={layout} accent={accent} />
     </div>
   );
 }
@@ -362,7 +240,7 @@ export default function TemplatesView() {
                         className="w-full h-full rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
                         style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.08)" }}
                       >
-                        <TemplateThumbnail templateId={template.templateId} accent={template.accent} />
+                        <TemplateThumbnail layout={template.layout} accent={template.accent} />
                       </div>
                     </div>
 
