@@ -127,55 +127,85 @@ const blogPosts = [
 ───────────────────────────────────────────────────────────────────────────── */
 
 /** Lightweight CSS-only resume card — replaces TemplatePreview in the hero to avoid a 54 KB render-blocking component above the fold. */
-function LightResumeCard({ accent, hassidebar }: { accent: string; hassidebar?: boolean }) {
+/** Single hero resume card — classic layout with teal accent */
+function HeroResumeCard() {
+  const accent = "#4AB7A6";
   return (
-    <div className="w-full h-full bg-white flex overflow-hidden">
-      {hassidebar && (
-        <div className="w-[32%] h-full flex-shrink-0 flex flex-col gap-2 p-3" style={{ backgroundColor: accent }}>
-          <div className="w-10 h-10 rounded-full bg-white/30 mt-1 mx-auto" />
-          <div className="h-1.5 rounded-full bg-white/40 mt-2" />
-          <div className="h-1 rounded-full bg-white/25 w-3/4" />
-          <div className="h-px bg-white/20 my-1" />
-          {[80, 65, 90, 55].map((w, i) => (
-            <div key={i} className="h-1 rounded-full bg-white/30" style={{ width: `${w}%` }} />
-          ))}
-        </div>
-      )}
-      <div className="flex-1 p-3 flex flex-col gap-1.5 min-w-0">
-        {!hassidebar && <div className="h-1 rounded-full w-1/3 mb-0.5" style={{ backgroundColor: accent }} />}
-        <div className="h-2 rounded-full bg-slate-800 w-2/3" />
-        <div className="h-1 rounded-full bg-slate-400 w-1/2" />
-        <div className="h-px bg-slate-100 my-1" style={{ borderTop: `1.5px solid ${accent}` }} />
-        {[100, 85, 70, 90, 60, 75, 55, 80].map((w, i) => (
-          <div key={i} className="h-1 rounded-full bg-slate-200" style={{ width: `${w}%`, opacity: i > 4 ? 0.6 : 1 }} />
-        ))}
-        <div className="flex gap-1 mt-1 flex-wrap">
-          {[accent, '#e2e8f0', '#e2e8f0'].map((bg, i) => (
-            <div key={i} className="h-2 rounded-full px-2" style={{ backgroundColor: bg, width: i === 0 ? 28 : 20 }} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function HeroResumeCollage() {
-  const cards = [
-    { accent: "#4AB7A6", hassidebar: true,  className: "absolute top-0 left-0 w-[58%] aspect-[3/4] z-20",    rotate: "rotate(-2deg)" },
-    { accent: "#1e293b", hassidebar: false, className: "absolute top-4 right-0 w-[46%] aspect-[3/4] z-10",   rotate: "rotate(3deg)" },
-    { accent: "#2563eb", hassidebar: false, className: "absolute bottom-0 left-[12%] w-[52%] aspect-[3/4] z-30", rotate: "rotate(1deg)" },
-    { accent: "#34d399", hassidebar: true,  className: "absolute bottom-2 right-2 w-[44%] aspect-[3/4] z-20",  rotate: "rotate(-2deg)" },
-  ];
-
-  return (
-    <div className="relative w-full max-w-[560px] mx-auto aspect-[5/4] select-none" aria-hidden="true">
-      {cards.map((card, i) => (
-        <div key={i} className={card.className} style={{ transform: card.rotate }}>
-          <div className="w-full h-full rounded-xl overflow-hidden bg-white" style={{ border: "1px solid #e2e8f0", boxShadow: "0 24px 48px -12px rgba(15,23,42,0.18), 0 8px 16px -6px rgba(15,23,42,0.10)" }}>
-            <LightResumeCard accent={card.accent} hassidebar={card.hassidebar} />
+    <div
+      className="w-full bg-white rounded-2xl overflow-hidden select-none"
+      aria-hidden="true"
+      style={{
+        border: "1px solid #e2e8f0",
+        boxShadow: "0 24px 60px -12px rgba(15,23,42,0.14), 0 8px 20px -6px rgba(15,23,42,0.08)",
+      }}
+    >
+      {/* Header bar */}
+      <div className="px-6 pt-6 pb-4 border-b border-slate-100">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-full flex-shrink-0" style={{ backgroundColor: `${accent}22` }}>
+            <div className="w-full h-full rounded-full" style={{ background: `radial-gradient(circle at 35% 35%, ${accent}55, ${accent}22)` }} />
+          </div>
+          <div className="flex-1 min-w-0 pt-0.5">
+            <div className="h-2.5 w-32 rounded-full bg-slate-800 mb-1.5" />
+            <div className="h-1.5 w-24 rounded-full" style={{ backgroundColor: accent }} />
+          </div>
+          <div className="text-right space-y-1">
+            <div className="h-1 w-20 rounded-full bg-slate-200" />
+            <div className="h-1 w-16 rounded-full bg-slate-200" />
           </div>
         </div>
-      ))}
+      </div>
+
+      {/* Body */}
+      <div className="px-6 py-4 space-y-4">
+        {/* Summary */}
+        <div>
+          <div className="h-1.5 w-16 rounded-full mb-2" style={{ backgroundColor: accent }} />
+          <div className="space-y-1">
+            {[100, 92, 78].map((w, i) => (
+              <div key={i} className="h-1 rounded-full bg-slate-200" style={{ width: `${w}%` }} />
+            ))}
+          </div>
+        </div>
+
+        {/* Experience */}
+        <div>
+          <div className="h-1.5 w-20 rounded-full mb-2.5" style={{ backgroundColor: accent }} />
+          {[1, 2].map((job) => (
+            <div key={job} className="mb-3">
+              <div className="flex justify-between mb-1">
+                <div className="h-1.5 w-28 rounded-full bg-slate-700" />
+                <div className="h-1 w-16 rounded-full bg-slate-300" />
+              </div>
+              <div className="h-1 w-20 rounded-full mb-1.5" style={{ backgroundColor: `${accent}66` }} />
+              <div className="space-y-1 pl-3">
+                {[88, 72, 60].slice(0, job === 1 ? 3 : 2).map((w, i) => (
+                  <div key={i} className="h-1 rounded-full bg-slate-200" style={{ width: `${w}%` }} />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Skills */}
+        <div>
+          <div className="h-1.5 w-12 rounded-full mb-2" style={{ backgroundColor: accent }} />
+          <div className="flex flex-wrap gap-1.5">
+            {[44, 36, 52, 40, 36].map((w, i) => (
+              <div key={i} className="h-5 rounded-md" style={{ width: w, backgroundColor: `${accent}18`, border: `1px solid ${accent}33` }} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer badge */}
+      <div className="px-6 pb-5">
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: accent }} />
+          <div className="h-1 w-24 rounded-full bg-slate-200" />
+          <div className="ml-auto h-4 w-12 rounded-full" style={{ backgroundColor: `${accent}22` }} />
+        </div>
+      </div>
     </div>
   );
 }
@@ -456,70 +486,57 @@ export default function HomePage() {
             SECTION 1 — HERO + HIRED-AT LOGOS
         ════════════════════════════════════════════════════════════════ */}
         <section
-          className="relative overflow-hidden pt-16 pb-12 lg:pt-24 lg:pb-16"
-          style={{ backgroundColor: "#eef1f8" }}
+          className="relative overflow-hidden pt-16 pb-14 lg:pt-24 lg:pb-20"
+          style={{ backgroundColor: "#f8fafc" }}
         >
-          {/* Soft accent glow */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background:
-                "radial-gradient(60% 50% at 85% 20%, rgba(74,183,166,0.10) 0%, transparent 60%), radial-gradient(45% 40% at 10% 80%, rgba(14,165,233,0.05) 0%, transparent 60%)",
-            }}
-          />
-
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-[45%_55%] gap-10 lg:gap-12 items-center">
+          <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
 
               {/* Left copy */}
               <div>
-                {/* 2-day free trial badge */}
-                <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-5 text-sm font-semibold border"
-                  style={{ backgroundColor: "#fff8ed", borderColor: "#f59e0b", color: "#92400e" }}>
-                  <span className="text-base">🚀</span>
-                  <span>Auto-Apply is <strong>FREE for 2 days</strong> — apply to 50 jobs/day automatically, get hired faster</span>
+                {/* Subtle badge */}
+                <div className="inline-flex items-center gap-2 mb-6">
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#4AB7A6" }} />
+                  <span className="text-sm" style={{ color: "#64748b" }}>
+                    Auto-apply to 50 jobs/day — free for 2 days
+                  </span>
                 </div>
 
                 <h1
-                  className="text-5xl md:text-6xl font-bold leading-tight tracking-tight mb-5"
+                  className="text-4xl md:text-5xl lg:text-[52px] font-bold leading-[1.12] tracking-tight mb-5"
                   style={{ color: "#0f172a" }}
                 >
                   Your Resume Is Costing You Interviews.{" "}
-                  <span style={{ color: "#4AB7A6" }}>
-                    Let AI Fix That in 3 Minutes.
-                  </span>
+                  <span style={{ color: "#4AB7A6" }}>Let AI Fix That.</span>
                 </h1>
 
                 <p
-                  className="text-xl leading-relaxed mb-8 max-w-lg"
-                  style={{ color: "#64748b" }}
+                  className="text-lg leading-relaxed mb-8"
+                  style={{ color: "#64748b", maxWidth: "440px" }}
                 >
-                  GetHiredToday&apos;s AI builds your resume, scores it for ATS, and then{" "}
-                  <span className="font-semibold" style={{ color: "#0f172a" }}>automatically applies to matching jobs every day</span>{" "}
-                  — so your resume works for you 24/7 while you focus on interviews.
+                  Build an ATS-optimized resume in minutes, then let AI automatically apply to matching jobs every day while you focus on interviews.
                 </p>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-8">
+                <div className="flex flex-col sm:flex-row gap-3 mb-8">
                   <Link
                     href="/builder/resume"
-                    className="group inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold text-white rounded-full transition-all hover:-translate-y-0.5"
+                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white rounded-full transition-all hover:opacity-90"
                     style={{
-                      background: "linear-gradient(135deg, #4AB7A6 0%, #3aa492 100%)",
-                      boxShadow: "0 8px 24px -6px rgba(74,183,166,0.5), 0 2px 4px rgba(74,183,166,0.2)",
+                      backgroundColor: "#4AB7A6",
+                      boxShadow: "0 4px 14px -2px rgba(74,183,166,0.4)",
                     }}
                   >
-                    Start Free — 2 Days Full Access →
-                    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
+                    Start Free
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link
                     href="/resume-templates"
-                    className="inline-flex items-center justify-center gap-2 px-8 py-4 text-base font-semibold rounded-full border transition-all hover:border-slate-400 hover:-translate-y-0.5"
+                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold rounded-full border transition-all hover:border-slate-400"
                     style={{
-                      color: "#0f172a",
-                      borderColor: "#cbd5e1",
+                      color: "#334155",
+                      borderColor: "#e2e8f0",
                       backgroundColor: "#ffffff",
-                      boxShadow: "0 2px 4px rgba(15,23,42,0.04)",
                     }}
                   >
                     View Templates
@@ -527,45 +544,47 @@ export default function HomePage() {
                 </div>
 
                 {/* Trust strip */}
-                <div className="flex flex-wrap gap-x-6 gap-y-2 mb-8">
-                  {["2 days free — no credit card", "ATS-optimized", "Auto-apply 50 jobs/day"].map((item) => (
-                    <span key={item} className="flex items-center gap-1.5 text-sm font-medium" style={{ color: "#475569" }}>
-                      <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} strokeWidth={3} />
+                <div className="flex flex-wrap gap-x-5 gap-y-1.5 mb-8">
+                  {["No credit card · 2 days free", "ATS-optimized templates", "Auto-apply 50 jobs/day"].map((item) => (
+                    <span key={item} className="flex items-center gap-1.5 text-xs" style={{ color: "#94a3b8" }}>
+                      <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#4AB7A6" }} strokeWidth={3} />
                       {item}
                     </span>
                   ))}
                 </div>
 
                 {/* Avatar strip */}
-                <div className="flex items-center gap-3">
-                  <div className="flex -space-x-2.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="flex -space-x-2">
                     {[
-                      { initials: "M", gradient: "linear-gradient(135deg, #4AB7A6 0%, #0f766e 100%)" },
-                      { initials: "P", gradient: "linear-gradient(135deg, #a78bfa 0%, #7c3aed 100%)" },
-                      { initials: "L", gradient: "linear-gradient(135deg, #38bdf8 0%, #0891b2 100%)" },
-                      { initials: "A", gradient: "linear-gradient(135deg, #fbbf24 0%, #d97706 100%)" },
-                    ].map(({ initials, gradient }) => (
+                      { initials: "M", bg: "#4AB7A6" },
+                      { initials: "P", bg: "#a78bfa" },
+                      { initials: "L", bg: "#38bdf8" },
+                      { initials: "A", bg: "#fbbf24" },
+                    ].map(({ initials, bg }) => (
                       <div
                         key={initials}
-                        className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold ring-[2.5px] ring-white shadow-md"
-                        style={{ background: gradient }}
+                        className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold ring-2 ring-white"
+                        style={{ backgroundColor: bg }}
                       >
                         {initials}
                       </div>
                     ))}
                   </div>
-                  <p className="text-sm font-medium" style={{ color: "#475569" }}>
+                  <p className="text-xs" style={{ color: "#94a3b8" }}>
                     Professionals landing jobs with AI
                   </p>
                 </div>
               </div>
 
-              {/* Right — Resume collage */}
+              {/* Right — Single resume preview */}
               <div className="flex justify-center lg:justify-end">
-                <HeroResumeCollage />
+                <div className="w-full max-w-sm lg:max-w-md">
+                  <HeroResumeCard />
+                </div>
               </div>
-            </div>
 
+            </div>
           </div>
         </section>
 
