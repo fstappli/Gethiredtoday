@@ -130,6 +130,8 @@ const blogPosts = [
 /** Hero product illustration — resume card with floating UI widgets */
 function HeroProductIllustration() {
   const teal = "#4AB7A6";
+  /* Note: animation classes (hero-float, hero-widget-*) are defined in the
+     <style> block inside HomePage and applied via className below. */
   return (
     <div className="relative select-none" aria-hidden="true" style={{ minHeight: 480 }}>
 
@@ -139,7 +141,7 @@ function HeroProductIllustration() {
       }} />
 
       {/* ── Main resume card ────────────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl overflow-hidden" style={{
+      <div className="hero-float bg-white rounded-2xl overflow-hidden" style={{
         border: "1px solid #e8edf3",
         boxShadow: "0 20px 60px -10px rgba(15,23,42,0.12), 0 6px 20px -4px rgba(15,23,42,0.07)",
         marginRight: "3rem",
@@ -201,7 +203,7 @@ function HeroProductIllustration() {
       </div>
 
       {/* ── Floating widget 1: ATS Score ────────────────────────────────── */}
-      <div className="absolute bg-white rounded-2xl px-4 py-3 flex items-center gap-3" style={{
+      <div className="hero-widget-1 absolute bg-white rounded-2xl px-4 py-3 flex items-center gap-3" style={{
         top: "1.25rem",
         left: "-1rem",
         border: "1px solid #e8edf3",
@@ -227,7 +229,7 @@ function HeroProductIllustration() {
       </div>
 
       {/* ── Floating widget 2: Skills panel ─────────────────────────────── */}
-      <div className="absolute bg-white rounded-2xl p-4" style={{
+      <div className="hero-widget-2 absolute bg-white rounded-2xl p-4" style={{
         bottom: "3.5rem",
         right: 0,
         border: "1px solid #e8edf3",
@@ -251,7 +253,7 @@ function HeroProductIllustration() {
       </div>
 
       {/* ── Floating widget 3: AI suggestion ────────────────────────────── */}
-      <div className="absolute bg-white rounded-2xl px-4 py-3 flex items-center gap-3" style={{
+      <div className="hero-widget-3 absolute bg-white rounded-2xl px-4 py-3 flex items-center gap-3" style={{
         bottom: "0.25rem",
         left: "1rem",
         border: "1px solid #e8edf3",
@@ -265,7 +267,7 @@ function HeroProductIllustration() {
       </div>
 
       {/* ── Floating badge: ATS Perfect pill ────────────────────────────── */}
-      <div className="absolute flex items-center gap-2 px-3.5 py-2 rounded-full" style={{
+      <div className="hero-widget-4 absolute flex items-center gap-2 px-3.5 py-2 rounded-full" style={{
         top: "5.5rem",
         right: "-0.5rem",
         backgroundColor: teal,
@@ -513,8 +515,9 @@ function HomeFAQ() {
     <section className="py-20 lg:py-28" style={{ backgroundColor: "#f8fafc" }}>
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
+          <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: "#4AB7A6" }}>FAQ</div>
           <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: "#0f172a" }}>
-            Frequently Asked Questions
+            Frequently Asked <span className="section-heading" style={{ color: "#4AB7A6" }}>Questions</span>
           </h2>
           <p style={{ color: "#64748b" }}>
             Still have questions?{" "}
@@ -547,6 +550,97 @@ function HomeFAQ() {
 export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen" style={{ backgroundColor: "#ffffff" }}>
+      {/* ─── Global page animations & polish ───────────────────────────── */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
+
+        /* ── Keyframes ── */
+        @keyframes heroFadeUp {
+          from { opacity: 0; transform: translateY(22px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes heroSlideRight {
+          from { opacity: 0; transform: translateX(36px); }
+          to   { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes heroPop {
+          from { opacity: 0; transform: scale(0.80); }
+          to   { opacity: 1; transform: scale(1); }
+        }
+        @keyframes heroFloat {
+          0%, 100% { transform: translateY(0px); }
+          50%       { transform: translateY(-10px); }
+        }
+        @keyframes heroFadeIn {
+          from { opacity: 0; }
+          to   { opacity: 1; }
+        }
+        @keyframes accentPulse {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0.7; }
+        }
+
+        /* ── Hero entry animations ── */
+        .hero-badge  { animation: heroFadeUp   0.55s ease both; animation-delay:   0ms; }
+        .hero-h1     { animation: heroFadeUp   0.65s ease both; animation-delay:  80ms; }
+        .hero-sub    { animation: heroFadeUp   0.65s ease both; animation-delay: 190ms; }
+        .hero-ctas   { animation: heroFadeUp   0.60s ease both; animation-delay: 310ms; }
+        .hero-trust  { animation: heroFadeUp   0.50s ease both; animation-delay: 430ms; }
+        .hero-avatars{ animation: heroFadeIn   0.50s ease both; animation-delay: 560ms; }
+        .hero-visual { animation: heroSlideRight 0.75s cubic-bezier(0.22,1,0.36,1) both; animation-delay: 120ms; }
+
+        /* ── Illustration widget pop-ins (staggered) ── */
+        .hero-widget-1 { animation: heroPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both; animation-delay: 700ms; }
+        .hero-widget-2 { animation: heroPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both; animation-delay: 900ms; }
+        .hero-widget-3 { animation: heroPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both; animation-delay: 1050ms; }
+        .hero-widget-4 { animation: heroPop 0.45s cubic-bezier(0.34,1.56,0.64,1) both; animation-delay: 820ms; }
+
+        /* ── Gentle float on resume card ── */
+        .hero-float { animation: heroFloat 5s ease-in-out infinite; animation-delay: 1.2s; }
+
+        /* ── Teal accent on h1 ── */
+        .hero-accent { color: #4AB7A6; }
+
+        /* ── Button hover states ── */
+        .page-btn-primary {
+          box-shadow: 0 4px 14px -2px rgba(74,183,166,0.35);
+          transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+        }
+        .page-btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 24px -4px rgba(74,183,166,0.45);
+        }
+        .page-btn-outline {
+          transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+        }
+        .page-btn-outline:hover {
+          transform: translateY(-2px);
+          border-color: #94a3b8;
+          box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+        }
+
+        /* ── Section card hover lift ── */
+        .page-card-hover {
+          transition: transform 0.22s ease, box-shadow 0.22s ease;
+        }
+        .page-card-hover:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 16px 40px -8px rgba(15,23,42,0.12) !important;
+        }
+
+        /* ── Section heading serif accent ── */
+        .section-heading {
+          font-family: 'Instrument Serif', Georgia, serif;
+          font-style: italic;
+        }
+
+        /* ── How it works connector dots ── */
+        .step-number {
+          font-family: 'Instrument Serif', Georgia, serif;
+          font-style: italic;
+        }
+      `}</style>
+
       <Navbar />
 
       <main className="flex-1">
@@ -555,65 +649,58 @@ export default function HomePage() {
             SECTION 1 — HERO + HIRED-AT LOGOS
         ════════════════════════════════════════════════════════════════ */}
         <section
-          className="relative overflow-hidden pt-16 pb-14 lg:pt-24 lg:pb-20"
-          style={{ backgroundColor: "#f8fafc" }}
+          className="relative overflow-hidden pt-16 pb-14 lg:pt-28 lg:pb-24"
+          style={{ backgroundColor: "#ffffff" }}
         >
+          {/* Subtle background mesh */}
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: "radial-gradient(circle at 20% 50%, rgba(74,183,166,0.06) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(74,183,166,0.04) 0%, transparent 40%)",
+          }} />
+
           <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
               {/* Left copy */}
               <div>
                 {/* Subtle badge */}
-                <div className="inline-flex items-center gap-2 mb-6">
+                <div className="hero-badge inline-flex items-center gap-2 mb-7 px-3 py-1.5 rounded-full" style={{ backgroundColor: "rgba(74,183,166,0.08)", border: "1px solid rgba(74,183,166,0.2)" }}>
                   <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#4AB7A6" }} />
-                  <span className="text-sm" style={{ color: "#64748b" }}>
+                  <span className="text-xs font-medium" style={{ color: "#2d9e8e" }}>
                     Auto-apply to 50 jobs/day — free for 2 days
                   </span>
                 </div>
 
-                <h1
-                  className="text-4xl md:text-5xl lg:text-[52px] font-bold leading-[1.12] tracking-tight mb-5"
-                  style={{ color: "#0f172a" }}
-                >
-                  Your Resume Is Costing You Interviews.{" "}
-                  <span style={{ color: "#4AB7A6" }}>Let AI Fix That.</span>
+                <h1 className="hero-h1 text-4xl md:text-5xl lg:text-[54px] font-bold leading-[1.1] tracking-tight mb-5" style={{ color: "#0f172a" }}>
+                  Your Resume Is<br />
+                  Costing You<br />
+                  <span className="hero-accent">Interviews.</span>
                 </h1>
 
-                <p
-                  className="text-lg leading-relaxed mb-8"
-                  style={{ color: "#64748b", maxWidth: "440px" }}
-                >
-                  Build an ATS-optimized resume in minutes, then let AI automatically apply to matching jobs every day while you focus on interviews.
+                <p className="hero-sub text-lg leading-relaxed mb-9" style={{ color: "#64748b", maxWidth: "420px" }}>
+                  Build an ATS-optimised resume in minutes, then let AI automatically apply to matching jobs every day — while you focus on interviews.
                 </p>
 
                 {/* CTAs */}
-                <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                <div className="hero-ctas flex flex-col sm:flex-row gap-3 mb-8">
                   <Link
                     href="/builder/resume"
-                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white rounded-full transition-all hover:opacity-90"
-                    style={{
-                      backgroundColor: "#4AB7A6",
-                      boxShadow: "0 4px 14px -2px rgba(74,183,166,0.4)",
-                    }}
+                    className="page-btn-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white rounded-full"
+                    style={{ backgroundColor: "#4AB7A6" }}
                   >
                     Start Free
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link
                     href="/resume-templates"
-                    className="inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold rounded-full border transition-all hover:border-slate-400"
-                    style={{
-                      color: "#334155",
-                      borderColor: "#e2e8f0",
-                      backgroundColor: "#ffffff",
-                    }}
+                    className="page-btn-outline inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold rounded-full border"
+                    style={{ color: "#334155", borderColor: "#e2e8f0", backgroundColor: "#ffffff" }}
                   >
                     View Templates
                   </Link>
                 </div>
 
                 {/* Trust strip */}
-                <div className="flex flex-wrap gap-x-5 gap-y-1.5 mb-8">
+                <div className="hero-trust flex flex-wrap gap-x-5 gap-y-1.5 mb-8">
                   {["No credit card · 2 days free", "ATS-optimized templates", "Auto-apply 50 jobs/day"].map((item) => (
                     <span key={item} className="flex items-center gap-1.5 text-xs" style={{ color: "#94a3b8" }}>
                       <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#4AB7A6" }} strokeWidth={3} />
@@ -623,7 +710,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Avatar strip */}
-                <div className="flex items-center gap-2.5">
+                <div className="hero-avatars flex items-center gap-2.5">
                   <div className="flex -space-x-2">
                     {[
                       { initials: "M", bg: "#4AB7A6" },
@@ -640,14 +727,12 @@ export default function HomePage() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs" style={{ color: "#94a3b8" }}>
-                    Professionals landing jobs with AI
-                  </p>
+                  <p className="text-xs" style={{ color: "#94a3b8" }}>Professionals landing jobs with AI</p>
                 </div>
               </div>
 
               {/* Right — Product illustration */}
-              <div className="flex justify-center lg:justify-end">
+              <div className="hero-visual flex justify-center lg:justify-end">
                 <div className="w-full max-w-sm lg:max-w-[420px] px-4 lg:px-0">
                   <HeroProductIllustration />
                 </div>
@@ -661,27 +746,20 @@ export default function HomePage() {
             SECTION 2 — TRUST BAR (STATS)
         ════════════════════════════════════════════════════════════════ */}
         <section
-          className="py-10"
-          style={{
-            backgroundColor: "#f8fafc",
-            borderTop: "1px solid #e2e8f0",
-            borderBottom: "1px solid #e2e8f0",
-          }}
+          className="py-12"
+          style={{ backgroundColor: "#f8fafc", borderTop: "1px solid #e8edf3", borderBottom: "1px solid #e8edf3" }}
         >
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p className="text-center text-xs font-semibold uppercase tracking-widest mb-8" style={{ color: "#94a3b8" }}>
+            <p className="text-center text-[10px] font-bold uppercase tracking-[0.18em] mb-10" style={{ color: "#b0bec5" }}>
               Trusted by professionals worldwide
             </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {stats.map((stat, i) => (
-                <div
-                  key={stat.label}
-                  className={`text-center ${i < stats.length - 1 ? "md:border-r md:border-slate-200" : ""}`}
-                >
-                  <div className="text-3xl sm:text-4xl font-bold mb-1" style={{ color: "#4AB7A6" }}>
+                <div key={stat.label} className={`text-center py-2 ${i < stats.length - 1 ? "md:border-r md:border-slate-200" : ""}`}>
+                  <div className="text-[2.5rem] font-bold leading-none mb-2" style={{ color: "#4AB7A6", fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic" }}>
                     {stat.value}
                   </div>
-                  <div className="text-sm" style={{ color: "#64748b" }}>{stat.label}</div>
+                  <div className="text-xs font-medium" style={{ color: "#64748b" }}>{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -695,26 +773,27 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <div className="text-center mb-14">
-              <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#4AB7A6" }}>
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: "#4AB7A6" }}>
                 HOW IT WORKS
               </div>
               <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: "#0f172a" }}>
-                From Zero to Hired in 4 Simple Steps
+                From Zero to Hired<br />
+                <span className="section-heading" style={{ color: "#4AB7A6" }}>in 4 Simple Steps</span>
               </h2>
               <p className="text-lg max-w-xl mx-auto" style={{ color: "#64748b" }}>
                 Build your resume, pass ATS, then let AI apply to jobs for you — automatically.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
               {/* Step 1 */}
               <div
-                className="bg-white rounded-2xl p-8 flex flex-col gap-5"
-                style={{ border: "1px solid #e2e8f0", boxShadow: "0 2px 12px rgba(15,23,42,0.06)" }}
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5"
+                style={{ border: "1px solid #e8edf3", boxShadow: "0 2px 12px rgba(15,23,42,0.05)" }}
               >
-                <div className="flex items-start gap-4">
-                  <span className="text-6xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.15 }}>
+                <div className="flex items-start gap-3">
+                  <span className="step-number text-5xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.18 }}>
                     1
                   </span>
                   <div
@@ -754,11 +833,11 @@ export default function HomePage() {
 
               {/* Step 2 */}
               <div
-                className="bg-white rounded-2xl p-8 flex flex-col gap-5"
-                style={{ border: "1px solid #e2e8f0", boxShadow: "0 2px 12px rgba(15,23,42,0.06)" }}
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5"
+                style={{ border: "1px solid #e8edf3", boxShadow: "0 2px 12px rgba(15,23,42,0.05)" }}
               >
-                <div className="flex items-start gap-4">
-                  <span className="text-6xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.15 }}>
+                <div className="flex items-start gap-3">
+                  <span className="step-number text-5xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.18 }}>
                     2
                   </span>
                   <div
@@ -797,11 +876,11 @@ export default function HomePage() {
 
               {/* Step 3 */}
               <div
-                className="bg-white rounded-2xl p-8 flex flex-col gap-5"
-                style={{ border: "1px solid #e2e8f0", boxShadow: "0 2px 12px rgba(15,23,42,0.06)" }}
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5"
+                style={{ border: "1px solid #e8edf3", boxShadow: "0 2px 12px rgba(15,23,42,0.05)" }}
               >
-                <div className="flex items-start gap-4">
-                  <span className="text-6xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.15 }}>
+                <div className="flex items-start gap-3">
+                  <span className="step-number text-5xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.18 }}>
                     3
                   </span>
                   <div
@@ -840,14 +919,14 @@ export default function HomePage() {
 
               {/* Step 4 */}
               <div
-                className="bg-white rounded-2xl p-8 flex flex-col gap-5 relative overflow-hidden"
-                style={{ border: "2px solid #4AB7A6", boxShadow: "0 4px 24px rgba(74,183,166,0.15)" }}
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5 relative overflow-hidden"
+                style={{ border: "1.5px solid #4AB7A6", boxShadow: "0 4px 24px rgba(74,183,166,0.12)" }}
               >
-                <div className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: "#4AB7A6" }}>
+                <div className="absolute top-3 right-3 text-[9px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: "#4AB7A6" }}>
                   NEW
                 </div>
-                <div className="flex items-start gap-4">
-                  <span className="text-6xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.15 }}>
+                <div className="flex items-start gap-3">
+                  <span className="step-number text-5xl font-bold leading-none select-none" style={{ color: "#4AB7A6", opacity: 0.18 }}>
                     4
                   </span>
                   <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ backgroundColor: "#f0fdf9" }}>
@@ -889,8 +968,10 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <div className="text-center mb-16">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: "#4AB7A6" }}>FEATURES</div>
               <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: "#0f172a" }}>
-                Everything You Need to Beat the Competition
+                Everything You Need to<br />
+                <span className="section-heading" style={{ color: "#4AB7A6" }}>Beat the Competition</span>
               </h2>
             </div>
 
@@ -1232,22 +1313,24 @@ export default function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <div className="text-center mb-12">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: "#4AB7A6" }}>TESTIMONIALS</div>
               <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: "#0f172a" }}>
-                Real People. Real Jobs. Real Results.
+                Real People. Real Jobs.<br />
+                <span className="section-heading" style={{ color: "#4AB7A6" }}>Real Results.</span>
               </h2>
               <p className="text-lg" style={{ color: "#64748b" }}>
                 Here&apos;s what job seekers are saying after using GetHiredToday.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {testimonials.map((t) => (
                 <div
                   key={t.name}
-                  className="bg-white rounded-2xl p-8 flex flex-col gap-4"
+                  className="page-card-hover bg-white rounded-2xl p-8 flex flex-col gap-4"
                   style={{
-                    border: "1px solid #e2e8f0",
-                    boxShadow: "0 2px 12px rgba(15,23,42,0.06)",
+                    border: "1px solid #e8edf3",
+                    boxShadow: "0 2px 12px rgba(15,23,42,0.05)",
                   }}
                 >
                   {/* Stars */}
@@ -1258,9 +1341,12 @@ export default function HomePage() {
                   </div>
 
                   {/* Quote */}
-                  <p className="flex-1 text-base italic leading-relaxed" style={{ color: "#475569" }}>
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
+                  <div className="flex-1">
+                    <div className="text-5xl leading-none select-none mb-1" style={{ color: "#4AB7A6", opacity: 0.2, fontFamily: "Georgia, serif" }}>&ldquo;</div>
+                    <p className="text-sm leading-relaxed" style={{ color: "#475569" }}>
+                      {t.quote}
+                    </p>
+                  </div>
 
                   {/* Author */}
                   <div className="flex items-center gap-3 pt-4" style={{ borderTop: "1px solid #f1f5f9" }}>
@@ -1297,8 +1383,10 @@ export default function HomePage() {
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <div className="text-center mb-12">
+              <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: "#4AB7A6" }}>PRICING</div>
               <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: "#0f172a" }}>
-                Surprisingly Affordable. Impossibly Good.
+                Surprisingly Affordable.<br />
+                <span className="section-heading" style={{ color: "#4AB7A6" }}>Impossibly Good.</span>
               </h2>
               <p className="text-lg" style={{ color: "#64748b" }}>
                 Full Pro access — unlimited resumes, cover letters, AI writing, and ATS scoring — for $9.99/month.
@@ -1476,13 +1564,17 @@ export default function HomePage() {
         {/* ════════════════════════════════════════════════════════════════
             SECTION 10 — PROBLEM SECTION
         ════════════════════════════════════════════════════════════════ */}
-        <section className="py-20 lg:py-28" style={{ backgroundColor: "#0f172a" }}>
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "#4AB7A6" }}>
+        <section className="py-20 lg:py-28 relative overflow-hidden" style={{ backgroundColor: "#0c1220" }}>
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: "radial-gradient(circle at 30% 50%, rgba(74,183,166,0.07) 0%, transparent 55%), radial-gradient(circle at 80% 80%, rgba(74,183,166,0.04) 0%, transparent 40%)",
+          }} />
+          <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-5" style={{ color: "#4AB7A6" }}>
               THE PROBLEM
             </div>
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
-              75% of Resumes Never Reach a Human Recruiter.
+              75% of Resumes Never Reach<br />
+              <span className="section-heading" style={{ color: "#4AB7A6" }}>a Human Recruiter.</span>
             </h2>
             <p className="text-lg text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
               Applicant Tracking Systems automatically reject resumes that use the wrong keywords,
@@ -1519,27 +1611,31 @@ export default function HomePage() {
         {/* ════════════════════════════════════════════════════════════════
             SECTION 12 — FINAL CTA
         ════════════════════════════════════════════════════════════════ */}
-        <section className="py-20 lg:py-28" style={{ backgroundColor: "#4AB7A6" }}>
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-sm font-semibold" style={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#ffffff" }}>
-              <Zap className="w-4 h-4" />
+        <section className="py-20 lg:py-28 relative overflow-hidden" style={{ backgroundColor: "#4AB7A6" }}>
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: "radial-gradient(circle at 15% 50%, rgba(255,255,255,0.08) 0%, transparent 50%), radial-gradient(circle at 85% 20%, rgba(255,255,255,0.06) 0%, transparent 40%)",
+          }} />
+          <div className="relative max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-6 text-xs font-semibold" style={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#ffffff" }}>
+              <Zap className="w-3.5 h-3.5" />
               Auto-Apply to 50 jobs/day — included with Pro
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Build Once. Apply Everywhere. Automatically.
+            <h2 className="text-3xl sm:text-5xl font-bold text-white mb-5 leading-tight">
+              Build Once.<br />
+              <span style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontStyle: "italic", opacity: 0.9 }}>Apply Everywhere. Automatically.</span>
             </h2>
-            <p className="text-lg text-white mb-10" style={{ opacity: 0.9 }}>
+            <p className="text-lg text-white mb-10 max-w-xl mx-auto" style={{ opacity: 0.85 }}>
               Create your ATS-optimized resume in minutes, then turn on Auto-Apply and let
               GetHiredToday submit applications to matching jobs for you — every single day.
             </p>
             <Link
               href="/builder/wizard"
-              className="inline-flex items-center gap-2 px-10 py-4 rounded-full text-base font-bold transition-colors hover:bg-slate-100"
-              style={{ backgroundColor: "#ffffff", color: "#4AB7A6" }}
+              className="page-btn-outline inline-flex items-center gap-2 px-10 py-4 rounded-full text-sm font-bold"
+              style={{ backgroundColor: "#ffffff", color: "#4AB7A6", borderColor: "transparent" }}
             >
               Start Free — Enable Auto-Apply →
             </Link>
-            <p className="text-sm mt-6 text-white" style={{ opacity: 0.7 }}>
+            <p className="text-xs mt-6 text-white" style={{ opacity: 0.65 }}>
               No credit card · 2 days free on signup · Cancel anytime · 30-day money-back guarantee
             </p>
           </div>
