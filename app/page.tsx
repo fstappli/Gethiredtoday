@@ -473,6 +473,13 @@ export default function HomePage() {
 
               {/* Left copy */}
               <div>
+                {/* 2-day free trial badge */}
+                <div className="inline-flex items-center gap-2 rounded-full px-4 py-2 mb-5 text-sm font-semibold border"
+                  style={{ backgroundColor: "#fff8ed", borderColor: "#f59e0b", color: "#92400e" }}>
+                  <span className="text-base">🚀</span>
+                  <span>Auto-Apply is <strong>FREE for 2 days</strong> — apply to 50 jobs/day automatically, get hired faster</span>
+                </div>
+
                 <h1
                   className="text-5xl md:text-6xl font-bold leading-tight tracking-tight mb-5"
                   style={{ color: "#0f172a" }}
@@ -502,7 +509,7 @@ export default function HomePage() {
                       boxShadow: "0 8px 24px -6px rgba(74,183,166,0.5), 0 2px 4px rgba(74,183,166,0.2)",
                     }}
                   >
-                    Build My Resume Free →
+                    Start Free — 2 Days Full Access →
                     <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                   <Link
@@ -521,7 +528,7 @@ export default function HomePage() {
 
                 {/* Trust strip */}
                 <div className="flex flex-wrap gap-x-6 gap-y-2 mb-8">
-                  {["No credit card needed", "ATS-optimized", "Auto-apply included"].map((item) => (
+                  {["2 days free — no credit card", "ATS-optimized", "Auto-apply 50 jobs/day"].map((item) => (
                     <span key={item} className="flex items-center gap-1.5 text-sm font-medium" style={{ color: "#475569" }}>
                       <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} strokeWidth={3} />
                       {item}

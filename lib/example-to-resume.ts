@@ -84,20 +84,18 @@ export function getTemplateStarterData(): ResumeData {
  * example card shows its real title/skills/experience instead of placeholders.
  */
 export function exampleToPreviewContent(ex: ResumeExample): PreviewContent {
-  // Derive a fake candidate name from the title for visual differentiation
-  const title = ex.sampleExperience.role || ex.title;
+  const first = ex.sampleExperiences?.[0];
+  const title = first?.role || ex.title;
   return {
-    name: `Sample Candidate`,
+    name: 'Sample Candidate',
     title,
     summary: ex.sampleSummary,
-    experiences: [
-      {
-        role: ex.sampleExperience.role,
-        company: ex.sampleExperience.company,
-        dates: 'Present',
-        bullets: ex.sampleExperience.bullets,
-      },
-    ],
+    experiences: (ex.sampleExperiences ?? []).map((se) => ({
+      role: se.role,
+      company: se.company,
+      dates: se.dates ?? 'Present',
+      bullets: se.bullets,
+    })),
     skills: ex.skills,
   };
 }
@@ -109,19 +107,19 @@ export function exampleToPreviewContent(ex: ResumeExample): PreviewContent {
  */
 export function exampleToResumeData(ex: ResumeExample): ResumeData {
   const now = new Date();
-  const startYear = now.getFullYear() - 3;
+  const year = now.getFullYear();
 
-  const firstExperience: WorkExperience = {
-    id: crypto.randomUUID ? crypto.randomUUID() : `exp-${Date.now()}`,
-    job_title: ex.sampleExperience.role,
-    company: ex.sampleExperience.company,
+  const experiences: WorkExperience[] = (ex.sampleExperiences ?? []).map((se, idx) => ({
+    id: crypto.randomUUID ? crypto.randomUUID() : `exp-${Date.now()}-${idx}`,
+    job_title: se.role,
+    company: se.company,
     location: '',
-    start_date: `${startYear}-01`,
-    end_date: '',
-    is_current: true,
+    start_date: idx === 0 ? `${year - 3}-01` : idx === 1 ? `${year - 6}-01` : `${year - 9}-01`,
+    end_date: idx === 0 ? '' : idx === 1 ? `${year - 3}-12` : `${year - 6}-12`,
+    is_current: idx === 0,
     description: '',
-    achievements: ex.sampleExperience.bullets,
-  };
+    achievements: se.bullets,
+  }));
 
   const skills: Skill[] = ex.skills.map((name, i) => ({
     id: `skill-${i}`,
@@ -137,7 +135,7 @@ export function exampleToResumeData(ex: ResumeExample): ResumeData {
       location: '',
     },
     summary: ex.sampleSummary,
-    work_experience: [firstExperience],
+    work_experience: experiences,
     education: [],
     skills,
     certifications: [],

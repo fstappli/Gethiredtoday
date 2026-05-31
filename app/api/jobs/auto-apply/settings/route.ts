@@ -31,10 +31,14 @@ export async function PUT(req: NextRequest) {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('subscription_status, subscription_ends_at')
+      .select('subscription_status, subscription_ends_at, created_at')
       .eq('id', user.id)
       .single();
-    if (!isProActive(profile)) {
+    const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
+    const inTrial = profile?.created_at
+      ? Date.now() - new Date(profile.created_at).getTime() < TRIAL_MS
+      : false;
+    if (!isProActive(profile) && !inTrial) {
       return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
     }
 

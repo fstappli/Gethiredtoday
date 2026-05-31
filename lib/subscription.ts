@@ -125,15 +125,11 @@ export async function getUserPlan(): Promise<Plan> {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('subscription_status')
+      .select('subscription_status, subscription_ends_at')
       .eq('id', user.id)
       .single();
 
-    const status = profile?.subscription_status;
-    if (status === 'active' || status === 'trialing' || status === 'pro') {
-      return 'pro';
-    }
-    return 'free';
+    return isProActive(profile) ? 'pro' : 'free';
   } catch {
     return 'free';
   }

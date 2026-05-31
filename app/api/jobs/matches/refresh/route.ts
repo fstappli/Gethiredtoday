@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
+import { isProActive } from '@/lib/subscription';
 import { searchJobs, isAdzunaConfigured } from '@/lib/jobs/adzuna';
 import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
 import { searchJobsJobicy } from '@/lib/jobs/jobicy';
@@ -28,6 +29,19 @@ export async function POST() {
     const supabase = await createServerSupabaseClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    const { data: subProfile } = await supabase
+      .from('profiles')
+      .select('subscription_status, subscription_ends_at, created_at')
+      .eq('id', user.id)
+      .single();
+    const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
+    const inTrial = subProfile?.created_at
+      ? Date.now() - new Date(subProfile.created_at).getTime() < TRIAL_MS
+      : false;
+    if (!isProActive(subProfile) && !inTrial) {
+      return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
+    }
 
     if (!isAdzunaConfigured() && !isJSearchConfigured()) {
       return NextResponse.json({

@@ -97,8 +97,10 @@ function formatEdited(dateStr: string): string {
   const now = new Date();
   const diffMs = now.getTime() - d.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-  if (diffHours < 2) return 'Edited 2 hours ago';
-  if (diffHours < 24) return `Edited ${diffHours} hours ago`;
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  if (diffMins < 1) return 'Edited just now';
+  if (diffMins < 60) return `Edited ${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+  if (diffHours < 24) return `Edited ${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
   const diffDays = Math.floor(diffHours / 24);
   if (diffDays === 1) return 'Edited yesterday';
   if (diffDays < 7) return `Edited ${diffDays} days ago`;
@@ -344,7 +346,7 @@ export default function DashboardPage() {
   const [coverLetters, setCoverLetters] = useState<CoverLetterRow[]>([]);
   const [loadingCoverLetters, setLoadingCoverLetters] = useState(true);
 
-  const [creatingResume] = useState(false);
+  const [creatingResume, setCreatingResume] = useState(false);
   const [creatingCoverLetter, setCreatingCoverLetter] = useState(false);
 
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
@@ -378,7 +380,7 @@ export default function DashboardPage() {
   const showToast = (msg: string) => setToastMessage(msg);
 
   const handleNewResume = async () => {
-    // Route to the new guided wizard — it handles template picking + creation.
+    setCreatingResume(true);
     router.push('/builder/wizard');
   };
 
@@ -1099,8 +1101,11 @@ export default function DashboardPage() {
                     onDuplicate={handleDuplicateCoverLetter}
                     onDownloadPdf={(id) => {
                       setDownloadingId(id);
-                      showToast('Opening builder to download PDF...');
-                      setTimeout(() => setDownloadingId(null), 1200);
+                      showToast('Opening cover letter to download PDF...');
+                      setTimeout(() => {
+                        setDownloadingId(null);
+                        router.push(`/builder/cover-letter/${id}?download=1`);
+                      }, 600);
                     }}
                     onShare={(id) => handleShare(id, 'cover-letter')}
                   />
@@ -1285,7 +1290,7 @@ function ResumeCard({
   onDelete: (id: string) => void;
   onDuplicate: (r: ResumeRow) => void;
   onDownloadPdf: (id: string) => void;
-  onDownloadWord: () => void;
+  onDownloadWord: (id: string) => void;
   onShare: (id: string) => void;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1409,7 +1414,7 @@ function ResumeCard({
           {/* Word download */}
           <button
             title="Download Word (.docx)"
-            onClick={onDownloadWord}
+            onClick={() => onDownloadWord(resume.id)}
             className="w-8 h-8 rounded-lg bg-slate-50 hover:bg-teal-50 flex items-center justify-center text-slate-400 hover:text-teal-600 transition-all border border-slate-200 hover:border-teal-300"
           >
             <FileText className="w-3.5 h-3.5" />

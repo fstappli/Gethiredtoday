@@ -80,6 +80,7 @@ export default async function ExamplePage({ params }: Props) {
       linkedin: `linkedin.com/in/${ex.slug}`,
       website: '',
       github: '',
+      photo_url: ex.photoUrl ?? '',
     },
   };
 
@@ -164,12 +165,12 @@ export default async function ExamplePage({ params }: Props) {
             <h2 className="text-xl font-bold text-gray-900 mb-4">Sample Work Experience Entry</h2>
             <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
               <div className="flex items-baseline justify-between mb-1">
-                <span className="font-bold text-gray-900 text-base">{ex.sampleExperience.role}</span>
-                <span className="text-xs text-gray-400">Jan 2022 – Present</span>
+                <span className="font-bold text-gray-900 text-base">{ex.sampleExperiences[0].role}</span>
+                <span className="text-xs text-gray-400">{ex.sampleExperiences[0].dates}</span>
               </div>
-              <div className="text-sm font-semibold text-teal mb-3">{ex.sampleExperience.company}</div>
+              <div className="text-sm font-semibold text-teal mb-3">{ex.sampleExperiences[0].company}</div>
               <ul className="space-y-2">
-                {ex.sampleExperience.bullets.map((b, i) => (
+                {ex.sampleExperiences[0].bullets.map((b, i) => (
                   <li key={i} className="flex gap-2 text-sm text-gray-700">
                     <span className="text-teal font-bold mt-0.5 flex-shrink-0">›</span>
                     <span>{b}</span>

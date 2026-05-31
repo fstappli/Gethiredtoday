@@ -6,12 +6,13 @@ export interface ResumeExample {
   gradient: string;
   description: string;
   skills: string[];
+  photoUrl: string;
   metaTitle: string;
   metaDescription: string;
   intro: string;
   mustHave: string[];
   sampleSummary: string;
-  sampleExperience: { role: string; company: string; bullets: string[] };
+  sampleExperiences: Array<{ role: string; company: string; dates: string; bullets: string[] }>;
   tips: string[];
 }
 
@@ -24,20 +25,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-blue-500 to-cyan-600",
     description: "Full-stack developer with React, Node.js, and cloud experience.",
     skills: ["React", "TypeScript", "AWS", "Node.js", "SQL"],
+    photoUrl: "https://randomuser.me/api/portraits/men/33.jpg",
     metaTitle: "Software Engineer Resume Example 2025 — ATS-Optimized",
     metaDescription: "See a real software engineer resume example with ATS tips, key skills, and a sample summary. Copy the structure and build yours free.",
     intro: "A strong software engineer resume highlights your technical stack, measurable impact, and problem-solving ability. Recruiters spend under 10 seconds on a first pass — your resume needs to communicate value instantly.",
     mustHave: ["Technical skills section with languages/frameworks/tools", "Quantified achievements (e.g., reduced load time by 40%)", "Links to GitHub and portfolio", "ATS keywords: React, TypeScript, CI/CD, Agile, REST API"],
     sampleSummary: "Full-stack software engineer with 5+ years building scalable web applications in React and Node.js. Reduced API response times by 60% at Acme Corp through query optimization. Passionate about clean architecture and developer experience.",
-    sampleExperience: {
-      role: "Software Engineer",
-      company: "Acme Corp",
-      bullets: [
-        "Built and shipped 12 product features used by 200K+ monthly active users",
-        "Reduced API p95 latency from 800ms to 320ms through query optimization and caching",
-        "Led migration from monolith to microservices, cutting deploy times from 40min to 6min",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Software Engineer",
+        company: "Acme Corp",
+        dates: "2022 – Present",
+        bullets: [
+          "Built and shipped 12 product features used by 200K+ monthly active users",
+          "Reduced API p95 latency from 800ms to 320ms through query optimization and caching",
+          "Led migration from monolith to microservices, cutting deploy times from 40 min to 6 min",
+        ],
+      },
+      {
+        role: "Frontend Developer",
+        company: "WebSolutions Inc",
+        dates: "2020 – 2022",
+        bullets: [
+          "Developed React component library adopted by 3 product teams, reducing UI dev time 30%",
+          "Shipped 6 features across two quarterly cycles in a cross-functional team of 8 engineers",
+          "Mentored 2 junior developers through pair programming and weekly code review sessions",
+        ],
+      },
+      {
+        role: "Junior Software Engineer",
+        company: "DevShop",
+        dates: "2018 – 2020",
+        bullets: [
+          "Built RESTful APIs in Node.js and Express for 3 client-facing web applications",
+          "Resolved 50+ bugs per sprint maintaining 99.2% test suite pass rate",
+          "Contributed 14 PRs to an open-source React library; component now has 900+ GitHub stars",
+        ],
+      },
+    ],
     tips: [
       "Use exact keywords from the job description — ATS systems match them literally",
       "Lead every bullet with a strong action verb: Built, Reduced, Led, Shipped",
@@ -53,20 +78,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-orange-500 to-red-600",
     description: "Digital marketing leader with B2B and B2C campaign expertise.",
     skills: ["SEO", "Google Analytics", "HubSpot", "Campaign Management", "Paid Media"],
+    photoUrl: "https://randomuser.me/api/portraits/women/44.jpg",
     metaTitle: "Marketing Manager Resume Example 2025 — Get Hired Faster",
     metaDescription: "A real marketing manager resume example with ATS keywords, sample summary, and writing tips. Use it as your template and build yours free.",
     intro: "Marketing manager resumes need to prove ROI. Hiring managers want to see that you've driven revenue, grown audiences, and managed budgets — not just that you 'managed campaigns'.",
     mustHave: ["Revenue and lead generation metrics (e.g., generated $2M pipeline)", "Tools: HubSpot, Salesforce, Google Analytics, SEMrush", "Team management experience if applicable", "ATS keywords: digital marketing, demand generation, content strategy, SEO/SEM"],
     sampleSummary: "Results-driven marketing manager with 7 years scaling B2B demand generation. Grew organic traffic 280% at TechCo through SEO-led content programs. Managed $1.2M annual paid media budget with 3.8x ROAS.",
-    sampleExperience: {
-      role: "Senior Marketing Manager",
-      company: "TechCo",
-      bullets: [
-        "Grew organic search traffic by 280% in 18 months through targeted content and technical SEO",
-        "Managed $1.2M annual paid media budget across Google, LinkedIn, and Meta with average 3.8x ROAS",
-        "Built and led a team of 6 marketers across content, design, and paid channels",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Senior Marketing Manager",
+        company: "TechCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Grew organic search traffic by 280% in 18 months through targeted content and technical SEO",
+          "Managed $1.2M annual paid media budget across Google, LinkedIn, and Meta with average 3.8x ROAS",
+          "Built and led a team of 6 marketers across content, design, and paid channels",
+        ],
+      },
+      {
+        role: "Marketing Manager",
+        company: "GrowthStartup",
+        dates: "2019 – 2022",
+        bullets: [
+          "Scaled email subscriber list from 8K to 52K through lead magnet and nurture campaigns",
+          "Managed 3 agency relationships and $400K content production budget, on time and on scope",
+          "Launched product into EMEA market, driving $820K incremental revenue in year one",
+        ],
+      },
+      {
+        role: "Digital Marketing Specialist",
+        company: "AgencyCo",
+        dates: "2017 – 2019",
+        bullets: [
+          "Managed Google Ads campaigns across 8 client accounts with combined $200K monthly spend",
+          "Improved client average CPC by 28% through refined audience targeting and ad copy iteration",
+          "Produced 40+ SEO-optimized articles that ranked on page 1 within 90 days of publication",
+        ],
+      },
+    ],
     tips: [
       "Always quantify: traffic growth %, leads generated, revenue influenced, budget managed",
       "Show channel expertise: SEO, paid, email, content — specify, don't generalize",
@@ -82,20 +131,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-emerald-500 to-teal-600",
     description: "Experienced RN specializing in critical care and patient management.",
     skills: ["Critical Care", "EMR / Epic", "Patient Education", "ACLS", "IV Therapy"],
+    photoUrl: "https://randomuser.me/api/portraits/women/55.jpg",
     metaTitle: "Registered Nurse Resume Example 2025 — RN Resume Tips",
     metaDescription: "A strong registered nurse resume example with certifications, clinical skills, and sample bullet points. Download free and build yours.",
     intro: "Nursing resumes must lead with licensure, certifications, and specialties. ATS systems in healthcare are aggressive — missing keywords like ACLS, Epic, or your specialty will filter you out before a human sees your resume.",
     mustHave: ["RN license and state (e.g., RN, CA License #XXXXXX)", "Certifications: ACLS, BLS, PALS, specialty certs", "EMR experience: Epic, Cerner, Meditech", "Patient-to-nurse ratio experience"],
     sampleSummary: "Registered Nurse with 6 years of ICU experience at Level 1 trauma centers. ACLS/PALS certified. Expert in Epic EMR and high-acuity patient management. Maintained 98% patient satisfaction score across 4 consecutive quarters.",
-    sampleExperience: {
-      role: "ICU Registered Nurse",
-      company: "St. Mary's Medical Center",
-      bullets: [
-        "Managed care for 4–6 ICU patients per shift in 24-bed Level 1 trauma unit",
-        "Achieved 98% patient satisfaction score across 4 consecutive quarters",
-        "Trained 8 new graduate nurses as preceptor, reducing orientation period by 20%",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "ICU Registered Nurse",
+        company: "St. Mary's Medical Center",
+        dates: "2022 – Present",
+        bullets: [
+          "Managed care for 4–6 ICU patients per shift in 24-bed Level 1 trauma unit",
+          "Achieved 98% patient satisfaction score across 4 consecutive quarters",
+          "Trained 8 new graduate nurses as preceptor, reducing orientation period by 20%",
+        ],
+      },
+      {
+        role: "Registered Nurse, Emergency Department",
+        company: "General Hospital",
+        dates: "2019 – 2022",
+        bullets: [
+          "Triaged and treated 25–30 patients per 12-hour shift in high-acuity emergency department",
+          "Implemented sepsis protocol reducing time-to-antibiotics from 90 to 48 minutes for ED patients",
+          "Served as charge RN for 6 months, coordinating care across 18-bed unit",
+        ],
+      },
+      {
+        role: "Staff RN, Medical-Surgical",
+        company: "Community Medical Center",
+        dates: "2017 – 2019",
+        bullets: [
+          "Managed 8-patient caseload on 32-bed med-surg unit, consistently achieving 5/5 HCAHPS scores",
+          "Served as Code Blue responder for floor and two adjacent units",
+          "Participated in hospital-wide EMR transition from Cerner to Epic, training 12 staff members",
+        ],
+      },
+    ],
     tips: [
       "Put your RN license and state in your contact section or immediately below your name",
       "List all certifications with expiry dates (ACLS, BLS, specialty certs)",
@@ -111,20 +184,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-cyan-500 to-teal-700",
     description: "Agile PM with mobile and platform product experience at scale.",
     skills: ["Roadmapping", "Agile / Scrum", "SQL", "User Research", "Jira", "Mixpanel"],
+    photoUrl: "https://randomuser.me/api/portraits/men/46.jpg",
     metaTitle: "Product Manager Resume Example 2025 — PM Resume Tips & Template",
     metaDescription: "A real product manager resume with sample summary, impact metrics, and ATS keywords. Build yours free with our AI-powered tool.",
     intro: "Product manager resumes need to demonstrate strategic thinking, cross-functional leadership, and measurable product outcomes. The best PM resumes are product-like themselves: clear, structured, and outcome-driven.",
     mustHave: ["Product metrics: DAU/MAU, retention, NPS, revenue impact", "Cross-functional collaboration (engineering, design, data)", "Methodology: Agile, Scrum, OKRs, roadmapping", "ATS keywords: product strategy, go-to-market, A/B testing, user stories"],
     sampleSummary: "Senior Product Manager with 6 years building B2C mobile products with 1M+ users. Launched subscription feature that added $3.2M ARR at AppCo. Led cross-functional team of 12 across engineering, design, and data.",
-    sampleExperience: {
-      role: "Senior Product Manager",
-      company: "AppCo",
-      bullets: [
-        "Owned roadmap for flagship iOS app with 1.2M MAU, growing retention 22% YoY",
-        "Launched subscription paywall that added $3.2M ARR in first 6 months post-launch",
-        "Led discovery for 3 major features through 60+ user interviews and A/B testing framework",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Senior Product Manager",
+        company: "AppCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Owned roadmap for flagship iOS app with 1.2M MAU, growing 30-day retention 22% YoY",
+          "Launched subscription paywall that added $3.2M ARR in first 6 months post-launch",
+          "Led discovery for 3 major features through 60+ user interviews and A/B testing framework",
+        ],
+      },
+      {
+        role: "Product Manager",
+        company: "DataPlatform Inc",
+        dates: "2019 – 2022",
+        bullets: [
+          "Shipped analytics dashboard used by 300+ enterprise customers, rated 4.6/5 in NPS surveys",
+          "Defined and executed roadmap across 4 engineering squads totaling 18 engineers",
+          "Increased feature adoption from 42% to 71% through targeted in-app onboarding redesign",
+        ],
+      },
+      {
+        role: "Associate Product Manager",
+        company: "StartupX",
+        dates: "2017 – 2019",
+        bullets: [
+          "Launched MVP mobile app in 6 months, growing to 12K active users with zero paid acquisition",
+          "Ran 24 A/B tests; 9 reached significance, contributing 14% lift in 30-day retention",
+          "Partnered with design on complete UI overhaul, reducing support ticket volume by 33%",
+        ],
+      },
+    ],
     tips: [
       "Lead with business outcomes, not activities — 'launched X that drove Y' beats 'responsible for X'",
       "Show data fluency: mention SQL, Mixpanel, Amplitude, or your analytics tool",
@@ -140,20 +237,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-indigo-500 to-blue-700",
     description: "ML engineer with deep learning, NLP, and production model deployment.",
     skills: ["Python", "TensorFlow", "PyTorch", "SQL", "Spark", "MLflow"],
+    photoUrl: "https://randomuser.me/api/portraits/men/22.jpg",
     metaTitle: "Data Scientist Resume Example 2025 — ML Resume Tips",
     metaDescription: "A real data scientist resume example with Python, ML skills, and quantified impact. See what works and build yours free.",
     intro: "Data scientist resumes need to balance technical depth with business impact. Show what models you built AND what they achieved for the business. ATS systems look hard for specific tools and frameworks.",
     mustHave: ["Programming languages: Python, R, SQL (be specific)", "ML frameworks: TensorFlow, PyTorch, scikit-learn, XGBoost", "Big data tools: Spark, Databricks, Hadoop", "Business impact of your models (revenue, cost savings, accuracy improvement)"],
     sampleSummary: "Data scientist with 5 years in NLP and recommender systems. Built fraud detection model saving $4M annually at FinCo. PhD in Statistics from UCL. Strong in Python, PyTorch, and production ML pipelines.",
-    sampleExperience: {
-      role: "Senior Data Scientist",
-      company: "FinCo",
-      bullets: [
-        "Built fraud detection model (XGBoost + neural network) achieving 94.3% precision, saving $4M annually",
-        "Developed real-time recommendation engine serving 8M users, increasing CTR by 18%",
-        "Led team of 3 data scientists, establishing MLOps best practices and model monitoring framework",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Senior Data Scientist",
+        company: "FinCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Built fraud detection model (XGBoost + neural network) achieving 94.3% precision, saving $4M annually",
+          "Developed real-time recommendation engine serving 8M users, increasing CTR by 18%",
+          "Led team of 3 data scientists, establishing MLOps practices and model monitoring framework",
+        ],
+      },
+      {
+        role: "Data Scientist",
+        company: "RetailTech Corp",
+        dates: "2019 – 2022",
+        bullets: [
+          "Built customer segmentation model improving campaign targeting efficiency by 31%",
+          "Developed demand forecasting ML pipeline reducing overstock costs by $1.2M annually",
+          "Created A/B testing framework adopted by 3 product teams across the organization",
+        ],
+      },
+      {
+        role: "Junior Data Analyst",
+        company: "InsightGroup",
+        dates: "2017 – 2019",
+        bullets: [
+          "Analyzed marketing attribution across 5 channels, informing $500K budget reallocation",
+          "Automated weekly data pipeline reducing manual ETL effort from 8 hours to 45 minutes",
+          "Produced monthly business intelligence reports for executive leadership team",
+        ],
+      },
+    ],
     tips: [
       "List every ML/data tool explicitly — ATS scans for Python, TensorFlow, SQL as exact keywords",
       "Quantify model performance: accuracy, precision/recall, revenue impact, cost savings",
@@ -169,20 +290,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-violet-500 to-purple-700",
     description: "CFA-track analyst with financial modeling and valuation expertise.",
     skills: ["Financial Modeling", "Excel / VBA", "Bloomberg", "DCF Valuation", "SQL"],
+    photoUrl: "https://randomuser.me/api/portraits/men/36.jpg",
     metaTitle: "Financial Analyst Resume Example 2025 — Finance Resume Tips",
     metaDescription: "A strong financial analyst resume with Excel, modeling skills, and CFA details. Free template and AI builder included.",
     intro: "Financial analyst resumes are scrutinized for technical precision. Every number matters. Show your modeling skills, data tools, and analytical impact — not just the analyses you ran, but what decisions they informed.",
     mustHave: ["CFA level (if applicable) prominently placed", "Excel skills: advanced formulas, pivot tables, VBA, Power Query", "Financial modeling types: DCF, LBO, M&A, three-statement", "Bloomberg, FactSet, or Capital IQ experience"],
     sampleSummary: "CFA Level II candidate with 4 years in equity research and financial modeling. Built 3-statement models for 14 companies in consumer sector. Recognized as top analyst 2 years running at BankCorp.",
-    sampleExperience: {
-      role: "Financial Analyst",
-      company: "BankCorp",
-      bullets: [
-        "Built comprehensive 3-statement and DCF models for 14 consumer sector companies",
-        "Produced weekly sector reports read by 40+ portfolio managers managing $2.8B AUM",
-        "Reduced quarterly reporting cycle from 5 days to 2 days by automating Excel processes with VBA",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Financial Analyst",
+        company: "BankCorp",
+        dates: "2022 – Present",
+        bullets: [
+          "Built comprehensive 3-statement and DCF models for 14 consumer sector companies",
+          "Produced weekly sector reports read by 40+ portfolio managers managing $2.8B AUM",
+          "Reduced quarterly reporting cycle from 5 days to 2 days by automating Excel processes with VBA",
+        ],
+      },
+      {
+        role: "Junior Analyst, Investment Banking",
+        company: "MidCap Advisors",
+        dates: "2019 – 2022",
+        bullets: [
+          "Supported 3 M&A transactions totaling $840M in deal value across the consumer sector",
+          "Built LBO models for 8 acquisition targets, including a $200M buyout closed in Q3 2021",
+          "Managed data room and due diligence materials for 2 buy-side mandates",
+        ],
+      },
+      {
+        role: "Financial Planning Analyst",
+        company: "RetailGroup",
+        dates: "2017 – 2019",
+        bullets: [
+          "Built annual budgeting model consolidating inputs from 12 business units across 3 regions",
+          "Reduced quarterly forecast variance from ±9% to ±4% through improved driver-based modeling",
+          "Prepared monthly CFO reporting package distributed to board of directors",
+        ],
+      },
+    ],
     tips: [
       "Put CFA or CFA candidate status right next to your name or in the header",
       "Be specific about modeling: DCF, LBO, M&A comps, three-statement — ATS matches these",
@@ -198,20 +343,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-pink-500 to-rose-600",
     description: "User-centered designer with expertise in Figma and design systems.",
     skills: ["Figma", "User Research", "Prototyping", "Design Systems", "Usability Testing"],
+    photoUrl: "https://randomuser.me/api/portraits/women/65.jpg",
     metaTitle: "UX Designer Resume Example 2025 — Portfolio & Resume Tips",
     metaDescription: "A real UX designer resume example with Figma, research skills, and portfolio tips. Build yours free with our designer-friendly templates.",
     intro: "UX designer resumes need to tell a clear story: your process, your tools, and the impact of your designs on real users and business metrics. The resume opens the door — your portfolio closes it.",
     mustHave: ["Portfolio URL (the most important link on your resume)", "Tools: Figma, Sketch, InVision, Miro, Maze", "Design process: discovery, wireframing, prototyping, user testing, iteration", "Business impact: conversion rate lift, task completion rate, NPS improvement"],
     sampleSummary: "Senior UX designer with 7 years creating user-centered digital products for fintech and SaaS. Redesigned onboarding flow at PayApp, increasing activation rate from 34% to 67%. Expert in Figma, design systems, and mixed-methods research.",
-    sampleExperience: {
-      role: "Senior UX Designer",
-      company: "PayApp",
-      bullets: [
-        "Led end-to-end redesign of onboarding flow, increasing user activation from 34% to 67%",
-        "Built and maintained design system used by 8 product teams across 3 platforms",
-        "Conducted 40+ usability studies per year, translating insights into product improvements",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Senior UX Designer",
+        company: "PayApp",
+        dates: "2022 – Present",
+        bullets: [
+          "Led end-to-end redesign of onboarding flow, increasing user activation from 34% to 67%",
+          "Built and maintained design system used by 8 product teams across 3 platforms",
+          "Conducted 40+ usability studies per year, translating insights into product improvements",
+        ],
+      },
+      {
+        role: "UX / UI Designer",
+        company: "FinTechCo",
+        dates: "2019 – 2022",
+        bullets: [
+          "Redesigned mobile checkout flow reducing cart abandonment from 58% to 31%",
+          "Ran 15 moderated usability studies, iterating on 3 major feature releases with measurable lift",
+          "Established design tokens and component library adopted across web and iOS platforms",
+        ],
+      },
+      {
+        role: "Product Designer",
+        company: "AgencyXYZ",
+        dates: "2017 – 2019",
+        bullets: [
+          "Designed UI for 8 client products across healthcare, fintech, and consumer sectors",
+          "Created 40+ user journey maps and wireframe sets from stakeholder discovery interviews",
+          "Won 2 industry design awards for healthcare dashboard — featured in UX Collective",
+        ],
+      },
+    ],
     tips: [
       "Put your portfolio URL prominently — before LinkedIn, before GitHub",
       "Show process outcomes, not just deliverables: 'designed checkout that increased conversions 23%'",
@@ -227,20 +396,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-green-500 to-emerald-700",
     description: "Enterprise AE consistently exceeding 120% quota with 7-figure deal experience.",
     skills: ["Salesforce", "Solution Selling", "Enterprise Sales", "Negotiation", "Forecasting"],
+    photoUrl: "https://randomuser.me/api/portraits/men/51.jpg",
     metaTitle: "Account Executive Resume Example 2025 — Sales Resume That Gets Interviews",
     metaDescription: "A real account executive resume with quota attainment, deal sizes, and AE-specific keywords. Build yours free.",
     intro: "Sales resumes live and die by numbers. Every AE resume must answer one question immediately: did you hit your number? Lead with quota attainment, deal sizes, and revenue generated. Everything else is secondary.",
     mustHave: ["Quota attainment percentage (e.g., 127% of quota)", "Average deal size and largest deal closed", "Sales methodology: MEDDIC, SPIN, Challenger, BANT", "CRM: Salesforce, HubSpot, Outreach, Gong"],
     sampleSummary: "Enterprise Account Executive with 6 years in SaaS, consistently exceeding quota (avg 124% attainment). Closed $8.4M in ARR in 2024. Specializes in 6–12 month complex sales cycles with C-suite stakeholders.",
-    sampleExperience: {
-      role: "Senior Account Executive",
-      company: "SaaSCo",
-      bullets: [
-        "Closed $8.4M ARR in 2024, achieving 134% of $6.3M annual quota",
-        "Landed largest deal in company history: $2.1M 3-year enterprise contract with Fortune 500 retailer",
-        "Reduced average sales cycle from 9 months to 6 months by implementing MEDDIC qualification framework",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Senior Account Executive",
+        company: "SaaSCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Closed $8.4M ARR in 2024, achieving 134% of $6.3M annual quota",
+          "Landed largest deal in company history: $2.1M 3-year enterprise contract with Fortune 500 retailer",
+          "Reduced average sales cycle from 9 months to 6 months by implementing MEDDIC qualification",
+        ],
+      },
+      {
+        role: "Account Executive, Mid-Market",
+        company: "CloudSoft",
+        dates: "2019 – 2022",
+        bullets: [
+          "Closed $3.1M ARR exceeding 118% of $2.6M annual quota across 3 consecutive years",
+          "Expanded 4 existing accounts through upsell and cross-sell, adding $780K in net new ARR",
+          "Reduced account churn from 12% to 6% by launching quarterly executive business reviews",
+        ],
+      },
+      {
+        role: "Sales Development Representative",
+        company: "TechVenture",
+        dates: "2017 – 2019",
+        bullets: [
+          "Generated 35+ qualified opportunities monthly; 22% converted to closed-won",
+          "Promoted to Account Executive after 14 months (top 10% of SDR cohort of 18)",
+          "Built Salesforce sequences and ZoomInfo targeting lists adopted by full SDR team",
+        ],
+      },
+    ],
     tips: [
       "Open with your quota attainment number — it's the first thing every sales manager reads",
       "Show deal sizes: average, largest, total ARR closed",
@@ -256,20 +449,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-teal-500 to-cyan-700",
     description: "Process optimization expert with supply chain and logistics experience.",
     skills: ["Process Improvement", "Lean / Six Sigma", "ERP Systems", "KPI Management", "SAP"],
+    photoUrl: "https://randomuser.me/api/portraits/men/38.jpg",
     metaTitle: "Operations Manager Resume Example 2025 — Ops Resume Tips",
     metaDescription: "A real operations manager resume with process improvement metrics, Lean skills, and ERP tools. Build yours free.",
     intro: "Operations manager resumes need to demonstrate your ability to improve efficiency, reduce costs, and lead teams. Show before/after metrics for every process you touched.",
     mustHave: ["Cost reduction and efficiency improvement metrics", "Lean, Six Sigma, or Kaizen certifications if applicable", "ERP systems: SAP, Oracle, NetSuite, MS Dynamics", "Team size managed and budget scope"],
     sampleSummary: "Operations manager with 9 years optimizing manufacturing and logistics operations. Reduced operational costs by $2.1M at ManufactureCo through Lean process redesign. Six Sigma Green Belt certified. Led cross-functional teams of 40+.",
-    sampleExperience: {
-      role: "Operations Manager",
-      company: "ManufactureCo",
-      bullets: [
-        "Reduced operational costs by $2.1M annually through Lean process redesign and waste elimination",
-        "Improved on-time delivery rate from 78% to 96% in 12 months by redesigning logistics workflow",
-        "Led team of 42 across production, logistics, and quality assurance functions",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Operations Manager",
+        company: "ManufactureCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Reduced operational costs by $2.1M annually through Lean process redesign and waste elimination",
+          "Improved on-time delivery rate from 78% to 96% in 12 months by redesigning logistics workflow",
+          "Led team of 42 across production, logistics, and quality assurance",
+        ],
+      },
+      {
+        role: "Supply Chain Manager",
+        company: "DistribGroup",
+        dates: "2019 – 2022",
+        bullets: [
+          "Reduced logistics costs by $680K through carrier renegotiation and route optimization",
+          "Implemented cycle-counting program eliminating $240K annual inventory discrepancy",
+          "Led team of 18 across warehouse operations, shipping, and receiving",
+        ],
+      },
+      {
+        role: "Operations Analyst",
+        company: "ConsultingFirm",
+        dates: "2017 – 2019",
+        bullets: [
+          "Analyzed process flows for 6 manufacturing clients, identifying $2.8M in combined savings",
+          "Deployed 5S methodology across 3 production lines improving throughput by 18%",
+          "Built SAP reporting suite reducing weekly manual reporting from 12 hours to 3 hours",
+        ],
+      },
+    ],
     tips: [
       "Before/after metrics are gold: 'reduced X from Y to Z' beats 'improved operations'",
       "Include Lean, Six Sigma, or other methodologies and certification level",
@@ -285,20 +502,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-amber-500 to-yellow-600",
     description: "Passionate educator with curriculum development and classroom management skills.",
     skills: ["Curriculum Design", "Classroom Management", "Google Classroom", "Differentiated Instruction", "IEP"],
+    photoUrl: "https://randomuser.me/api/portraits/women/43.jpg",
     metaTitle: "High School Teacher Resume Example 2025 — Education Resume Tips",
     metaDescription: "A real high school teacher resume with subject expertise, classroom management, and curriculum keywords. Build yours free.",
     intro: "Teaching resumes need to show your subject expertise, your approach to student engagement, and any measurable impact on student outcomes. Student achievement data is worth more than a list of responsibilities.",
     mustHave: ["Teaching license and state certification", "Subject area and grade levels taught", "Curriculum frameworks: Common Core, IB, AP, etc.", "Student outcome data if available"],
     sampleSummary: "Certified high school English teacher with 4 years raising student literacy outcomes. Improved AP English pass rate from 61% to 84% in two academic years. Skilled in Google Classroom, project-based learning, and differentiated instruction.",
-    sampleExperience: {
-      role: "High School English Teacher",
-      company: "Lincoln High School",
-      bullets: [
-        "Improved AP English Language pass rate from 61% to 84% over two academic years",
-        "Developed project-based curriculum integrating multimedia and real-world writing skills",
-        "Mentored 3 student teachers and contributed to district-wide literacy framework review",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "High School English Teacher",
+        company: "Lincoln High School",
+        dates: "2022 – Present",
+        bullets: [
+          "Improved AP English Language pass rate from 61% to 84% over two academic years",
+          "Developed project-based curriculum integrating multimedia and real-world writing skills",
+          "Mentored 3 student teachers and contributed to district-wide literacy framework review",
+        ],
+      },
+      {
+        role: "English Teacher",
+        company: "Westside Academy",
+        dates: "2019 – 2022",
+        bullets: [
+          "Taught 5 sections of 10th and 11th grade English, averaging 28 students per class",
+          "Implemented flipped classroom model improving homework submission rates by 40%",
+          "Led after-school tutoring program where 85% of participants improved by one letter grade",
+        ],
+      },
+      {
+        role: "Teaching Assistant",
+        company: "City School District",
+        dates: "2017 – 2019",
+        bullets: [
+          "Supported 3 lead teachers across AP Literature, Creative Writing, and ESL courses",
+          "Managed classroom of 25+ students independently during extended teacher absences",
+          "Developed differentiated reading assignments for students with IEPs, reviewed by curriculum team",
+        ],
+      },
+    ],
     tips: [
       "Certifications and state licensure must be visible — many ATS systems filter for them",
       "Include standardized test scores or proficiency improvements where you have them",
@@ -314,20 +555,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-lime-500 to-green-600",
     description: "Results-driven sales professional with SaaS and B2B closing experience.",
     skills: ["Salesforce", "Cold Outreach", "Negotiation", "HubSpot", "Lead Generation"],
+    photoUrl: "https://randomuser.me/api/portraits/men/25.jpg",
     metaTitle: "Sales Representative Resume Example 2025 — Entry-Level Sales Tips",
     metaDescription: "A sales representative resume that gets interviews — quota numbers, tools, and skills. Build yours free.",
     intro: "Entry-level sales resumes need to prove hustle and coachability even before you have a track record. Show any quota attainment from internships, part-time sales, or related experience. Activity metrics work when revenue metrics aren't available yet.",
     mustHave: ["Any quota attainment or sales volume numbers", "CRM tools: Salesforce, HubSpot, Outreach", "Prospecting methods: cold calling, email sequences, LinkedIn outreach", "Communication and soft skills backed by examples"],
     sampleSummary: "Energetic sales representative with 2 years B2B SaaS experience. Consistently hit 110% of monthly quota at StartupCo. Skilled in Salesforce, cold outreach, and discovery calls. Quick learner with strong competitive drive.",
-    sampleExperience: {
-      role: "Sales Development Representative",
-      company: "StartupCo",
-      bullets: [
-        "Averaged 110% of monthly quota over 18-month tenure (top 15% of 22-person SDR team)",
-        "Generated 48 qualified opportunities per month through cold calling, email, and LinkedIn outreach",
-        "Booked 3 of the company's top 10 largest deals by sourcing and qualifying enterprise accounts",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Sales Development Representative",
+        company: "StartupCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Averaged 110% of monthly quota over 18-month tenure (top 15% of 22-person SDR team)",
+          "Generated 48 qualified opportunities per month through cold calling, email, and LinkedIn outreach",
+          "Booked 3 of the company's top 10 largest deals by sourcing and qualifying enterprise accounts",
+        ],
+      },
+      {
+        role: "Inside Sales Representative",
+        company: "TechBrand",
+        dates: "2019 – 2022",
+        bullets: [
+          "Closed 45 SMB deals per quarter averaging $12K ACV with 94% first-year renewal rate",
+          "Managed territory of 200+ accounts, maintaining CRM hygiene for all active pipeline stages",
+          "Trained 3 new SDRs in outreach sequencing and discovery call frameworks",
+        ],
+      },
+      {
+        role: "Sales Associate",
+        company: "RetailChain",
+        dates: "2017 – 2019",
+        bullets: [
+          "Ranked top 5% in monthly sales among 80-person regional team for 14 consecutive months",
+          "Converted 28% of walk-in customers to loyalty program (vs 19% team average)",
+          "Selected as training buddy for 4 new team members joining the floor",
+        ],
+      },
+    ],
     tips: [
       "Even at entry level, show numbers: calls made per day, emails sent, meetings booked",
       "Quota attainment percentage is the single most important metric for sales hiring managers",
@@ -343,20 +608,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-sky-500 to-blue-600",
     description: "Business intelligence analyst with SQL, Tableau, and Python experience.",
     skills: ["SQL", "Python", "Tableau", "Excel", "Power BI", "dbt"],
+    photoUrl: "https://randomuser.me/api/portraits/women/28.jpg",
     metaTitle: "Data Analyst Resume Example 2025 — SQL & Analytics Resume Tips",
     metaDescription: "A real data analyst resume with SQL skills, dashboard examples, and business impact metrics. Build yours free.",
     intro: "Data analyst resumes need to bridge technical skills and business outcomes. Hiring managers want to see that you can query data AND communicate insights that drive decisions.",
     mustHave: ["SQL proficiency level and databases used (PostgreSQL, BigQuery, Snowflake)", "Visualization tools: Tableau, Power BI, Looker, Metabase", "Programming: Python (pandas, NumPy) or R", "Business impact: decisions informed, cost savings, efficiency gains"],
     sampleSummary: "Data analyst with 4 years building dashboards and driving data-backed decisions at GrowthCo. Automated 12 weekly reports saving 20 hours/week across 4 departments. Expert in SQL, Tableau, and Python (pandas).",
-    sampleExperience: {
-      role: "Data Analyst",
-      company: "GrowthCo",
-      bullets: [
-        "Built executive dashboard in Tableau tracking 18 KPIs, used weekly by C-suite in strategy reviews",
-        "Automated 12 weekly reports using Python scripts, saving 20 hours/week across 4 business units",
-        "Identified $340K in recoverable revenue through customer churn analysis, enabling targeted win-back campaign",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Data Analyst",
+        company: "GrowthCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Built executive Tableau dashboard tracking 18 KPIs, used weekly by C-suite in strategy reviews",
+          "Automated 12 weekly reports using Python scripts, saving 20 hours/week across 4 business units",
+          "Identified $340K in recoverable revenue through customer churn analysis enabling targeted win-back campaign",
+        ],
+      },
+      {
+        role: "Business Intelligence Analyst",
+        company: "EcomCo",
+        dates: "2019 – 2022",
+        bullets: [
+          "Created Looker dashboards monitoring $140M annual revenue across 6 product lines",
+          "Reduced customer return rate 12% after identifying root causes through SQL cohort analysis",
+          "Partnered with finance to automate month-end close reporting, saving 16 hours per cycle",
+        ],
+      },
+      {
+        role: "Marketing Analyst",
+        company: "BrandAgency",
+        dates: "2017 – 2019",
+        bullets: [
+          "Analyzed campaign performance across 12 client accounts using GA4 and Meta Ads Manager",
+          "Built multi-touch attribution model improving media budget allocation efficiency by 22%",
+          "Trained 6 account managers on self-service Tableau reports, reducing analyst backlog by 40%",
+        ],
+      },
+    ],
     tips: [
       "Be specific about SQL: name the databases (PostgreSQL, BigQuery, Snowflake, Redshift)",
       "Show dashboard adoption: who uses them, how often, what decisions they inform",
@@ -372,20 +661,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-slate-500 to-slate-700",
     description: "PMP-certified project manager with Agile and waterfall delivery experience.",
     skills: ["PMP", "Agile / Scrum", "MS Project", "JIRA", "Risk Management", "Stakeholder Management"],
+    photoUrl: "https://randomuser.me/api/portraits/men/49.jpg",
     metaTitle: "Project Manager Resume Example 2025 — PMP Resume Tips",
     metaDescription: "A real project manager resume with PMP certification, delivery metrics, and Agile keywords. Build yours free.",
     intro: "Project manager resumes are about delivery. On time, on budget, on scope. Every project you list should include whether it was delivered successfully and what the business impact was.",
     mustHave: ["PMP, PRINCE2, or Agile certifications (prominently placed)", "Project scale: budget, team size, duration, stakeholders", "Delivery track record: on-time %, budget variance", "Tools: MS Project, JIRA, Asana, Monday, Smartsheet"],
     sampleSummary: "PMP-certified project manager with 7 years delivering technology and infrastructure projects on time and on budget. Delivered $12M ERP implementation 3 weeks ahead of schedule at ConsultCo. Led cross-functional teams up to 25 people.",
-    sampleExperience: {
-      role: "Senior Project Manager",
-      company: "ConsultCo",
-      bullets: [
-        "Delivered $12M ERP implementation 3 weeks ahead of schedule and $180K under budget",
-        "Managed portfolio of 8 concurrent projects totaling $28M with zero critical failures over 3 years",
-        "Reduced project risk incidents by 40% by implementing structured risk register and weekly mitigation reviews",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Senior Project Manager",
+        company: "ConsultCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Delivered $12M ERP implementation 3 weeks ahead of schedule and $180K under budget",
+          "Managed portfolio of 8 concurrent projects totaling $28M with zero critical failures over 3 years",
+          "Reduced risk incidents by 40% by implementing structured risk register and weekly mitigation reviews",
+        ],
+      },
+      {
+        role: "Project Manager",
+        company: "FinServ Inc",
+        dates: "2019 – 2022",
+        bullets: [
+          "Delivered 6 compliance and systems projects totaling $7M on time and within 5% of budget",
+          "Managed stakeholder communication across 4 business units and 3 external vendors",
+          "Reduced project change requests by 28% through improved scope definition in the planning phase",
+        ],
+      },
+      {
+        role: "Associate Project Manager",
+        company: "TechImplement",
+        dates: "2017 – 2019",
+        bullets: [
+          "Supported delivery of 4 enterprise software implementations for 3,000+ end users",
+          "Maintained risk register, escalating 2 critical risks that averted $300K in estimated delays",
+          "Earned PMP certification while managing 2 concurrent project assignments",
+        ],
+      },
+    ],
     tips: [
       "Put PMP or other certifications directly after your name (e.g., John Smith, PMP)",
       "Every project: include budget, timeline, team size, and outcome",
@@ -401,20 +714,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-fuchsia-500 to-purple-600",
     description: "Creative brand designer with Adobe Suite and motion graphics experience.",
     skills: ["Adobe Illustrator", "Photoshop", "After Effects", "Figma", "Brand Identity"],
+    photoUrl: "https://randomuser.me/api/portraits/women/63.jpg",
     metaTitle: "Graphic Designer Resume Example 2025 — Design Resume & Portfolio Tips",
     metaDescription: "A graphic designer resume that shows your tools, clients, and creative impact. Portfolio tips included. Build yours free.",
     intro: "Graphic designer resumes need to be visually polished — it's part of your portfolio. The content should show client work, brand outcomes, and the scope of your design experience.",
     mustHave: ["Portfolio URL (absolutely mandatory)", "Adobe CC tools: Illustrator, Photoshop, InDesign, After Effects", "Types of work: brand identity, print, digital, motion, packaging", "Client or campaign names/industries if not confidential"],
     sampleSummary: "Graphic designer with 5 years creating brand identities, campaigns, and digital assets for consumer and tech clients. Designed visual identity for 14 brand launches. Expert in Adobe Illustrator, Photoshop, and Figma.",
-    sampleExperience: {
-      role: "Senior Graphic Designer",
-      company: "DesignStudio",
-      bullets: [
-        "Designed brand identities for 14 product launches including 3 now serving 100K+ users",
-        "Created complete marketing asset libraries (social, digital, print) for 6 enterprise clients",
-        "Reduced design production time 35% by building reusable Figma component library",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Senior Graphic Designer",
+        company: "DesignStudio",
+        dates: "2022 – Present",
+        bullets: [
+          "Designed brand identities for 14 product launches, including 3 brands now serving 100K+ users",
+          "Created complete marketing asset libraries (social, digital, print) for 6 enterprise clients",
+          "Reduced design production time 35% by building reusable Figma component library",
+        ],
+      },
+      {
+        role: "Graphic Designer",
+        company: "MarketingAgency",
+        dates: "2019 – 2022",
+        bullets: [
+          "Designed digital and print campaigns for 9 consumer brands with budgets of $50K–$300K",
+          "Created motion graphics and video assets for 3 major product launch campaigns",
+          "Reviewed and quality-checked junior designer output before client delivery",
+        ],
+      },
+      {
+        role: "Junior Graphic Designer",
+        company: "BrandHouse",
+        dates: "2017 – 2019",
+        bullets: [
+          "Produced 200+ social media assets per month for 5 B2C clients across fashion and lifestyle",
+          "Supported art direction for 3 photoshoots and managed post-production retouching",
+          "Designed packaging for 4 product SKUs distributed nationally across retail chains",
+        ],
+      },
+    ],
     tips: [
       "Portfolio link belongs in your contact header — it's your most important credential",
       "List all Adobe tools explicitly: Illustrator, Photoshop, InDesign, After Effects, Premiere",
@@ -430,20 +767,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-rose-400 to-pink-600",
     description: "HR leader with talent acquisition, HRIS, and employee relations expertise.",
     skills: ["Talent Acquisition", "Workday", "HRIS", "Employee Relations", "Performance Management"],
+    photoUrl: "https://randomuser.me/api/portraits/women/72.jpg",
     metaTitle: "HR Manager Resume Example 2025 — Human Resources Resume Tips",
     metaDescription: "A real HR manager resume with hiring metrics, HRIS tools, and employee relations keywords. Build yours free.",
     intro: "HR manager resumes need to demonstrate that you can attract talent, develop culture, and drive people strategy. Quantify everything: time-to-hire, retention rates, headcount managed, cost-per-hire.",
     mustHave: ["Hiring volume and time-to-hire metrics", "HRIS platforms: Workday, BambooHR, ADP, SuccessFactors", "SHRM-CP or SHRM-SCP certification if held", "Employee relations, compliance, and performance management"],
     sampleSummary: "SHRM-CP certified HR manager with 8 years scaling people operations at fast-growth startups. Hired 150+ employees in 18 months at ScaleupCo, reducing time-to-hire from 52 to 28 days. Expert in Workday and OKR-based performance management.",
-    sampleExperience: {
-      role: "HR Manager",
-      company: "ScaleupCo",
-      bullets: [
-        "Hired 150+ employees across 12 departments in 18 months while reducing time-to-hire from 52 to 28 days",
-        "Implemented Workday HRIS, migrating 300+ employee records and cutting HR admin time by 30%",
-        "Achieved 89% employee satisfaction score (top quartile for industry) through engagement program redesign",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "HR Manager",
+        company: "ScaleupCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Hired 150+ employees across 12 departments in 18 months while reducing time-to-hire from 52 to 28 days",
+          "Implemented Workday HRIS, migrating 300+ employee records and cutting HR admin time by 30%",
+          "Achieved 89% employee satisfaction score through engagement program redesign",
+        ],
+      },
+      {
+        role: "HR Business Partner",
+        company: "MidCo",
+        dates: "2019 – 2022",
+        bullets: [
+          "Served as HRBP for 200-person engineering and product organization",
+          "Reduced annual voluntary turnover from 18% to 11% through structured stay interview program",
+          "Designed compensation benchmarking framework using Radford and Mercer survey data",
+        ],
+      },
+      {
+        role: "HR Coordinator",
+        company: "CorpGroup",
+        dates: "2017 – 2019",
+        bullets: [
+          "Coordinated full-cycle recruiting for 50+ roles across 4 departments in 18 months",
+          "Administered benefits enrollment for 180 employees and managed data in ADP Workforce Now",
+          "Developed onboarding program achieving 92% new-hire satisfaction score in first year",
+        ],
+      },
+    ],
     tips: [
       "Quantify hiring: number of hires, time-to-hire, cost-per-hire, offer acceptance rate",
       "SHRM-CP, SHRM-SCP, or PHR certifications should be next to your name",
@@ -459,20 +820,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-teal-400 to-green-500",
     description: "Recent bootcamp or CS grad with a portfolio of React and Python projects.",
     skills: ["JavaScript", "React", "Python", "Git / GitHub", "HTML/CSS"],
+    photoUrl: "https://randomuser.me/api/portraits/men/18.jpg",
     metaTitle: "Junior Developer Resume Example 2025 — Entry-Level Dev Resume Tips",
     metaDescription: "A junior developer resume that gets noticed — portfolio projects, bootcamp, internship tips. Build yours free.",
     intro: "Entry-level developer resumes should lead with projects and GitHub, not work history. Hiring managers for junior roles look for initiative, learning ability, and a portfolio that shows you can actually build things.",
     mustHave: ["GitHub profile link (projects are your experience)", "3–5 portfolio projects with descriptions and tech stack", "Tech stack listed precisely: React, Node.js, PostgreSQL, Python, etc.", "Coursework or bootcamp name and graduation date"],
     sampleSummary: "Full-stack developer (React, Node.js, PostgreSQL) with bootcamp training and 3 deployed side projects. Built a task management app with 200+ active users. Fast learner with strong CS fundamentals and collaborative mindset.",
-    sampleExperience: {
-      role: "Software Developer Intern",
-      company: "DevAgency",
-      bullets: [
-        "Built and shipped 4 client-facing features in React, reviewed and merged by senior engineers",
-        "Fixed 18 production bugs in first month, earning early promotion to mid-level intern responsibilities",
-        "Wrote unit tests achieving 83% coverage for payment module using Jest and React Testing Library",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Software Developer Intern",
+        company: "DevAgency",
+        dates: "2022 – Present",
+        bullets: [
+          "Built and shipped 4 client-facing features in React, reviewed and merged by senior engineers",
+          "Fixed 18 production bugs in first month, earning early promotion to mid-level intern responsibilities",
+          "Wrote unit tests achieving 83% coverage for payment module using Jest and React Testing Library",
+        ],
+      },
+      {
+        role: "Freelance Web Developer",
+        company: "Self-Employed",
+        dates: "2020 – 2022",
+        bullets: [
+          "Built 8 client websites using React and WordPress, 5 still in active use",
+          "Developed custom e-commerce checkout flow reducing a client's cart abandonment by 20%",
+          "Maintained 3 long-term client relationships generating $28K total revenue",
+        ],
+      },
+      {
+        role: "CS Teaching Assistant",
+        company: "State University",
+        dates: "2018 – 2020",
+        bullets: [
+          "Assisted professor in weekly Python lab sections of 25 students in data structures and algorithms",
+          "Graded 200+ assignments and provided detailed code review feedback each semester",
+          "Developed 3 supplementary coding exercises that were adopted into the official course curriculum",
+        ],
+      },
+    ],
     tips: [
       "GitHub link is mandatory — hiring managers click it before reading your resume",
       "List each project: what it does, what tech you used, and a link if deployed",
@@ -488,20 +873,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-red-500 to-orange-600",
     description: "Content strategist driving organic growth through SEO and storytelling.",
     skills: ["Content Strategy", "SEO", "WordPress", "Google Analytics", "Email Marketing"],
+    photoUrl: "https://randomuser.me/api/portraits/women/32.jpg",
     metaTitle: "Content Marketing Manager Resume Example 2025 — Content Resume Tips",
     metaDescription: "A real content marketing resume with SEO traffic metrics, content ROI, and campaign keywords. Build yours free.",
     intro: "Content marketing resumes need to show organic growth, content ROI, and editorial strategy. Show traffic numbers, rankings, and how your content contributed to pipeline or revenue.",
     mustHave: ["Organic traffic growth metrics (% increase, monthly visits)", "Content types: blog, video, podcast, email, social, whitepapers", "SEO tools: SEMrush, Ahrefs, Google Search Console, Screaming Frog", "Content's contribution to pipeline or leads generated"],
     sampleSummary: "Content marketing manager with 6 years growing organic traffic and generating inbound pipeline for B2B SaaS. Grew blog from 12K to 180K monthly organic visitors at ContentCo. Generated 340 MQLs per month through content programs.",
-    sampleExperience: {
-      role: "Content Marketing Manager",
-      company: "ContentCo",
-      bullets: [
-        "Grew organic blog traffic from 12K to 180K monthly visitors in 24 months through SEO-driven strategy",
-        "Generated 340+ MQLs per month through gated content and lead magnet program",
-        "Built editorial team of 4 freelancers, managing $180K annual content production budget",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Content Marketing Manager",
+        company: "ContentCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Grew organic blog traffic from 12K to 180K monthly visitors in 24 months through SEO-driven strategy",
+          "Generated 340+ MQLs per month through gated content and lead magnet programs",
+          "Built editorial team of 4 freelancers, managing $180K annual content production budget",
+        ],
+      },
+      {
+        role: "Senior Content Writer / SEO Specialist",
+        company: "BlogGrowth",
+        dates: "2019 – 2022",
+        bullets: [
+          "Wrote 120+ long-form articles; 48 ranked in top 3 positions for their primary keyword",
+          "Managed editorial calendar and content operations for 6-person distributed writing team",
+          "Launched lead magnet program generating 1,200+ new email subscribers per month",
+        ],
+      },
+      {
+        role: "Content Writer",
+        company: "StartupBlog",
+        dates: "2017 – 2019",
+        bullets: [
+          "Published 3 articles per week driving 15% average monthly traffic growth for 18 months",
+          "Ghostwrote thought leadership pieces for C-suite executives published in Forbes and HBR",
+          "Launched company podcast, growing to 4,000 subscribers within first year",
+        ],
+      },
+    ],
     tips: [
       "Traffic numbers are your primary metric — before/after is very compelling",
       "Show content-to-pipeline contribution: MQLs, SQLs, influenced revenue",
@@ -517,20 +926,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-slate-600 to-slate-800",
     description: "Seasoned CTO with 15+ years scaling engineering teams and products.",
     skills: ["Technical Strategy", "Team Leadership", "Cloud Architecture", "Agile", "M&A Technical Due Diligence"],
+    photoUrl: "https://randomuser.me/api/portraits/men/60.jpg",
     metaTitle: "CTO Resume Example 2025 — Executive Tech Resume Tips",
     metaDescription: "A real CTO resume with engineering team scale, technical strategy, and board-level communication. Build yours free.",
     intro: "CTO resumes need to demonstrate technical credibility AND business leadership. Board members read these — show company outcomes, team scale, technical vision, and how engineering enabled revenue growth.",
     mustHave: ["Engineering team scale: headcount, org structure, budget", "Technical transformation outcomes: migration, modernization, scaling events", "Business metrics engineering enabled: revenue, uptime, release velocity", "Board and investor communication experience"],
     sampleSummary: "CTO with 15 years leading engineering at B2B SaaS companies from $10M to $200M ARR. Scaled engineering from 12 to 95 engineers at TechCo while tripling release velocity. Led AWS migration reducing infrastructure costs by $2.1M annually.",
-    sampleExperience: {
-      role: "Chief Technology Officer",
-      company: "TechCo",
-      bullets: [
-        "Scaled engineering organization from 12 to 95 engineers while maintaining sub-8% voluntary attrition",
-        "Led AWS cloud migration eliminating $2.1M annual infrastructure costs and achieving 99.97% uptime",
-        "Architected platform serving 2M daily users; enabled 40% YoY revenue growth through product velocity improvements",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Chief Technology Officer",
+        company: "TechCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Scaled engineering organization from 12 to 95 engineers while maintaining sub-8% voluntary attrition",
+          "Led AWS cloud migration eliminating $2.1M annual infrastructure costs and achieving 99.97% uptime",
+          "Architected platform serving 2M daily users; enabled 40% YoY revenue growth through product velocity improvements",
+        ],
+      },
+      {
+        role: "VP of Engineering",
+        company: "GrowthSaaS",
+        dates: "2019 – 2022",
+        bullets: [
+          "Led 45 engineers across backend, frontend, data, and SRE teams through Series B and C rounds",
+          "Reduced time-to-production from 3 weeks to 4 days through CI/CD pipeline and trunk-based development",
+          "Hired and onboarded 18 engineers in 10 months while maintaining engineering culture and technical bar",
+        ],
+      },
+      {
+        role: "Senior Engineering Manager",
+        company: "PlatformCorp",
+        dates: "2017 – 2019",
+        bullets: [
+          "Managed 3 engineering squads (22 engineers) delivering platform services to 500+ enterprise clients",
+          "Drove 99.95% uptime through incident response improvements and architectural hardening",
+          "Mentored 6 senior engineers to staff/principal level, reducing external senior hiring costs by $400K",
+        ],
+      },
+    ],
     tips: [
       "Lead with team scale and business outcomes, not technical architecture details",
       "Board-level communication experience is highly valued — mention it explicitly",
@@ -546,20 +979,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-sky-400 to-blue-500",
     description: "Recent graduate with internship experience in procurement and logistics.",
     skills: ["SAP", "Excel / Power BI", "Procurement", "Inventory Management", "Data Analysis"],
+    photoUrl: "https://randomuser.me/api/portraits/women/21.jpg",
     metaTitle: "Supply Chain Analyst Resume Example 2025 — Entry-Level Ops Resume",
     metaDescription: "A supply chain analyst resume with SAP, procurement, and data analysis skills. Entry-level tips included. Build yours free.",
     intro: "Supply chain analyst resumes at entry level need to show analytical tools, process understanding, and any measurable impact from internships or academic projects.",
     mustHave: ["ERP: SAP, Oracle, NetSuite (even intern-level exposure)", "Excel proficiency: VLOOKUP, pivot tables, Power Query", "Procurement, inventory, or logistics internship experience", "Any cost savings or efficiency improvements, even from projects"],
     sampleSummary: "Supply chain analyst with internship experience in procurement and demand planning. Reduced excess inventory by $120K during co-op at LogiCo using SAP inventory analysis. Strong in Excel, Power BI, and data-driven decision making.",
-    sampleExperience: {
-      role: "Supply Chain Intern",
-      company: "LogiCo",
-      bullets: [
-        "Analyzed 6-month inventory data in SAP, identifying $120K in excess stock eligible for clearance",
-        "Built demand forecasting model in Excel reducing forecast error from 22% to 14%",
-        "Supported RFQ process for 8 supplier negotiations, contributing to $85K in annual cost savings",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "Supply Chain Intern",
+        company: "LogiCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Analyzed 6-month inventory data in SAP, identifying $120K in excess stock eligible for clearance",
+          "Built demand forecasting model in Excel reducing forecast error from 22% to 14%",
+          "Supported RFQ process for 8 supplier negotiations contributing to $85K in annual cost savings",
+        ],
+      },
+      {
+        role: "Operations Intern",
+        company: "RetailLogistics",
+        dates: "2020 – 2022",
+        bullets: [
+          "Supported demand planning team with weekly inventory reports using SAP and Excel pivot tables",
+          "Assisted in supplier qualification process for 15 new vendor relationships across 3 product categories",
+          "Analyzed carrier performance data identifying 3 underperforming routes flagged for renegotiation",
+        ],
+      },
+      {
+        role: "Research Assistant, Supply Chain",
+        company: "State University",
+        dates: "2018 – 2020",
+        bullets: [
+          "Assisted faculty in research on last-mile delivery optimization published in peer-reviewed journal",
+          "Collected and cleaned datasets from 4 industry partners for procurement cost analysis",
+          "Presented supply chain resilience findings to 3 industry sponsors at annual review",
+        ],
+      },
+    ],
     tips: [
       "SAP is the most important keyword in supply chain — even basic exposure should be listed",
       "Excel skills matter enormously: be specific (VLOOKUP, pivot tables, Power Query, macros)",
@@ -575,20 +1032,44 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     gradient: "from-rose-500 to-red-700",
     description: "Senior marketing leader with P&L ownership and team of 30+ across 5 regions.",
     skills: ["Brand Management", "Demand Generation", "Budget Planning", "Team Leadership", "GTM Strategy"],
+    photoUrl: "https://randomuser.me/api/portraits/men/57.jpg",
     metaTitle: "Marketing Director Resume Example 2025 — Executive Marketing Resume",
     metaDescription: "A marketing director resume with P&L ownership, team scale, and revenue metrics. Build yours free.",
     intro: "Marketing director resumes are about revenue ownership and organizational leadership. Show budget size, team scale, revenue contribution, and the strategic initiatives you led — not just campaigns you ran.",
     mustHave: ["Marketing budget owned and ROAS / efficiency metrics", "Team size and structure across channels/regions", "Revenue contributed: pipeline generated, influenced revenue, ARR growth", "GTM launches: number of products, markets, or campaigns at scale"],
     sampleSummary: "Marketing director with 12 years leading global marketing at B2B SaaS companies. Owned $8M annual marketing budget at ExpCo, delivering $42M in influenced pipeline. Led team of 28 across demand gen, brand, content, and field marketing.",
-    sampleExperience: {
-      role: "VP of Marketing",
-      company: "ExpCo",
-      bullets: [
-        "Owned $8M annual marketing budget delivering $42M in marketing-influenced pipeline (5.25x ROI)",
-        "Led team of 28 across demand generation, brand, content, product marketing, and field marketing",
-        "Launched company into 3 new markets (DACH, ANZ, SEA) contributing $6.2M incremental ARR in year one",
-      ],
-    },
+    sampleExperiences: [
+      {
+        role: "VP of Marketing",
+        company: "ExpCo",
+        dates: "2022 – Present",
+        bullets: [
+          "Owned $8M annual marketing budget delivering $42M in marketing-influenced pipeline (5.25x ROI)",
+          "Led team of 28 across demand generation, brand, content, product marketing, and field marketing",
+          "Launched company into 3 new markets contributing $6.2M incremental ARR in year one",
+        ],
+      },
+      {
+        role: "Director of Demand Generation",
+        company: "ScaleUp Inc",
+        dates: "2019 – 2022",
+        bullets: [
+          "Owned $3.2M demand generation budget delivering 3.6x pipeline ROI consistently over 3 years",
+          "Built and led team of 12 across paid media, email, and events marketing functions",
+          "Launched ABM program targeting 250 enterprise accounts; 31 converted to closed-won within 12 months",
+        ],
+      },
+      {
+        role: "Senior Marketing Manager",
+        company: "GrowthBrand",
+        dates: "2017 – 2019",
+        bullets: [
+          "Led product launch generating $4.1M ARR in first 6 months across 3 market segments",
+          "Managed $1.5M annual paid media budget across Google, LinkedIn, and programmatic channels",
+          "Built competitive intelligence program and briefed executive team on market positioning quarterly",
+        ],
+      },
+    ],
     tips: [
       "Budget size and ROI are the executive-level equivalents of quota attainment",
       "Show leadership breadth: size of team, span of functions, geographic scope",

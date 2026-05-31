@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import { runAutoApplyForUser } from '@/lib/jobs/auto-apply-runner';
+import { isProActive } from '@/lib/subscription';
 
 /**
  * Daily auto-apply cron.
@@ -33,14 +34,36 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ processed: 0, message: 'No users with auto-apply enabled.' });
   }
 
+  // Filter to only users with active Pro or within the 2-day trial window
+  const userIds = activeSettings.map((s) => s.user_id);
+  const { data: profiles } = await admin
+    .from('profiles')
+    .select('id, subscription_status, subscription_ends_at, created_at')
+    .in('id', userIds);
+
+  const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+  const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
+  const eligibleSettings = activeSettings.filter((s) => {
+    const p = profileMap.get(s.user_id);
+    if (!p) return false;
+    if (isProActive(p)) return true;
+    return p.created_at
+      ? Date.now() - new Date(p.created_at).getTime() < TRIAL_MS
+      : false;
+  });
+
+  if (eligibleSettings.length === 0) {
+    return NextResponse.json({ processed: 0, message: 'No eligible users with active Pro or trial.' });
+  }
+
   // Run for each user — cap concurrency at 3 to avoid rate-limiting job APIs.
   // Add 1s pause between batches so API quotas are not exhausted.
   const results: { userId: string; queued: number; message: string }[] = [];
   const batchSize = 3;
 
-  for (let i = 0; i < activeSettings.length; i += batchSize) {
+  for (let i = 0; i < eligibleSettings.length; i += batchSize) {
     if (i > 0) await new Promise((r) => setTimeout(r, 1000));
-    const batch = activeSettings.slice(i, i + batchSize);
+    const batch = eligibleSettings.slice(i, i + batchSize);
     const batchResults = await Promise.allSettled(
       batch.map((s) => runAutoApplyForUser(s.user_id))
     );

@@ -75,15 +75,8 @@ export default function BillingPage() {
     window.location.href = `/upgrade?from=${encodeURIComponent(from)}`;
   };
 
-  const handleManageSubscription = async () => {
-    setUpgradeLoading(true);
-    try {
-      const res = await fetch('/api/lemonsqueezy/portal', { method: 'POST' });
-      const json = await res.json();
-      if (json.url) window.location.href = json.url;
-    } catch {
-      setUpgradeLoading(false);
-    }
+  const handleManageSubscription = () => {
+    window.open('https://app.gumroad.com/library', '_blank', 'noopener,noreferrer');
   };
 
   const handleCancelSubscription = async () => {
