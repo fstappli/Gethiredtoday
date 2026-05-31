@@ -191,9 +191,9 @@ function ShareModal({ id, type, onClose }: { id: string; type: 'resume' | 'cover
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 animate-fade-in backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6"
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6 animate-page-enter"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">
@@ -246,13 +246,18 @@ function ShareModal({ id, type, onClose }: { id: string; type: 'resume' | 'cover
 
 // ── Toast ────────────────────────────────────────────────────────────────────
 function Toast({ message, onDone }: { message: string; onDone: () => void }) {
+  const [exiting, setExiting] = useState(false);
+
   useEffect(() => {
-    const t = setTimeout(onDone, 3000);
-    return () => clearTimeout(t);
+    const exit = setTimeout(() => setExiting(true), 2600);
+    const done = setTimeout(onDone, 3000);
+    return () => { clearTimeout(exit); clearTimeout(done); };
   }, [onDone]);
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-full shadow-lg">
+    <div
+      className={`fixed bottom-6 left-1/2 z-50 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-full shadow-lg pointer-events-none ${exiting ? 'animate-toast-exit' : 'animate-toast-enter'}`}
+    >
       {message}
     </div>
   );
@@ -683,13 +688,13 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div className="min-h-full bg-white">
+    <div className="min-h-full bg-white animate-page-enter">
       {/* Top area */}
       <div className="border-b border-slate-100 px-6 lg:px-8 py-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-              <Sparkles className="w-6 h-6 shrink-0" style={{ color: '#4AB7A6' }} />
+              <Sparkles className="w-6 h-6 shrink-0 animate-sparkle" style={{ color: '#4AB7A6' }} />
               {greeting}{firstName ? `, ${firstName}` : ''}
             </h1>
             <p className="text-slate-500 mt-1 text-sm">
@@ -742,14 +747,16 @@ export default function DashboardPage() {
               <Link
                 key={stat.label}
                 href={stat.href}
-                className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-sm hover:border-[#4AB7A6] hover:shadow-md transition-all"
+                className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-sm hover:border-[#4AB7A6] card-hover animate-fade-up"
+                style={{ '--stagger-delay': `${stats.indexOf(stat) * 60}ms` } as React.CSSProperties}
               >
                 {inner}
               </Link>
             ) : (
               <div
                 key={stat.label}
-                className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-sm"
+                className="bg-white border border-slate-200 rounded-xl p-5 flex items-center gap-4 shadow-sm animate-fade-up"
+                style={{ '--stagger-delay': `${stats.indexOf(stat) * 60}ms` } as React.CSSProperties}
               >
                 {inner}
               </div>
@@ -899,7 +906,7 @@ export default function DashboardPage() {
             {(loadingMatches || hasFinalizedResume === null) ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="h-28 bg-slate-100 rounded-xl animate-pulse" />
+                  <div key={i} className="h-28 rounded-xl overflow-hidden skeleton-shimmer" />
                 ))}
               </div>
             ) : !hasFinalizedResume ? (
@@ -945,7 +952,7 @@ export default function DashboardPage() {
                   if (!job) return null;
                   const appStatus = match.application_status as string | null;
                   return (
-                    <div key={match.id} className="border border-slate-200 rounded-xl p-4 hover:shadow-sm transition-shadow">
+                    <div key={match.id} className="border border-slate-200 rounded-xl p-4 card-hover bg-white">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <h3 className="font-medium text-slate-900 text-sm line-clamp-1">{job.title}</h3>
                         <span
@@ -1038,8 +1045,10 @@ export default function DashboardPage() {
             </div>
 
             {loadingResumes ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="min-h-[220px] rounded-2xl overflow-hidden skeleton-shimmer" />
+                ))}
               </div>
             ) : resumeError ? (
               <Card className="border-red-100 shadow-none">
@@ -1062,7 +1071,7 @@ export default function DashboardPage() {
                 <button
                   onClick={handleNewResume}
                   disabled={creatingResume}
-                  className="min-h-[220px] rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-[#4AB7A6] hover:text-[#4AB7A6] transition-colors"
+                  className="min-h-[220px] rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-[#4AB7A6] hover:text-[#4AB7A6] card-hover transition-colors active:scale-[0.98]"
                 >
                   {creatingResume ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus className="w-6 h-6" />}
                   <span className="text-sm font-medium">New Resume</span>
@@ -1087,8 +1096,10 @@ export default function DashboardPage() {
             </div>
 
             {loadingCoverLetters ? (
-              <div className="flex items-center justify-center py-16">
-                <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {Array.from({ length: 2 }).map((_, i) => (
+                  <div key={i} className="min-h-[140px] rounded-2xl overflow-hidden skeleton-shimmer" />
+                ))}
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -1132,7 +1143,8 @@ export default function DashboardPage() {
                   <Link
                     key={action.href}
                     href={action.href}
-                    className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-[#4AB7A6] hover:shadow-md transition-all group"
+                    className="bg-white border border-slate-200 rounded-2xl p-5 hover:border-[#4AB7A6] card-hover group"
+                    style={{ '--stagger-delay': `${QUICK_ACTIONS.indexOf(action) * 60}ms` } as React.CSSProperties}
                   >
                     <div
                       className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
@@ -1200,9 +1212,9 @@ export default function DashboardPage() {
                 <button
                   onClick={handleNewResume}
                   disabled={creatingResume}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-teal-50 hover:text-teal-700 transition-all duration-150 active:scale-[0.97] text-left"
                 >
-                  <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-teal-50">
+                  <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-teal-50 transition-transform duration-150 group-hover:scale-110">
                     <Plus className="w-4 h-4" style={{ color: '#4AB7A6' }} />
                   </div>
                   New Resume
@@ -1210,7 +1222,7 @@ export default function DashboardPage() {
                 <button
                   onClick={handleNewCoverLetter}
                   disabled={creatingCoverLetter}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition-all duration-150 active:scale-[0.97] text-left"
                 >
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-blue-50">
                     <Mail className="w-4 h-4 text-blue-500" />
@@ -1219,7 +1231,7 @@ export default function DashboardPage() {
                 </button>
                 <Link
                   href="/dashboard/ats-checker"
-                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-700 transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-700 hover:bg-green-50 hover:text-green-700 transition-all duration-150 active:scale-[0.97]"
                 >
                   <div className="w-7 h-7 rounded-lg flex items-center justify-center bg-green-50">
                     <Target className="w-4 h-4 text-green-600" />
@@ -1304,7 +1316,7 @@ function ResumeCard({
   const meta = TEMPLATE_META[resume.template_id] ?? TEMPLATE_META['classic'];
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover">
       {/* Resume preview thumbnail */}
       <div className="relative overflow-hidden bg-slate-100" style={{ height: '160px' }}>
         <div className="absolute inset-0 flex items-stretch justify-stretch p-2">
@@ -1355,11 +1367,12 @@ function ResumeCard({
             </div>
             <div className="h-1.5 rounded-full bg-slate-100 overflow-hidden">
               <div
-                className="h-full rounded-full transition-all duration-500"
+                className="h-full rounded-full animate-bar-grow"
                 style={{
                   width: `${resume.ats_score}%`,
                   backgroundColor: atsColor(resume.ats_score),
-                }}
+                  '--bar-delay': '400ms',
+                } as React.CSSProperties}
               />
             </div>
           </div>
@@ -1372,9 +1385,13 @@ function ResumeCard({
             {[0, 1, 2].map((i) => (
               <div
                 key={i}
-                className="h-1.5 flex-1 rounded-full transition-all duration-500"
+                className="h-1.5 flex-1 rounded-full"
                 style={{
                   backgroundColor: i < filledSegments ? segmentColors[i] : '#e2e8f0',
+                  transition: `background-color 400ms ease, transform 300ms ease`,
+                  transitionDelay: `${i * 80}ms`,
+                  transform: i < filledSegments ? 'scaleX(1)' : 'scaleX(0.85)',
+                  transformOrigin: 'left',
                 }}
               />
             ))}
@@ -1439,7 +1456,7 @@ function ResumeCard({
               <MoreHorizontal className="w-3.5 h-3.5" />
             </button>
             {menuOpen && (
-              <div className="absolute right-0 bottom-10 bg-white border border-slate-200 rounded-xl shadow-lg py-1 w-40 z-10">
+              <div className="absolute right-0 bottom-10 bg-white border border-slate-200 rounded-xl shadow-lg py-1 w-40 z-10 animate-slide-up-fade">
                 <button
                   className="w-full flex items-center gap-2 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
                   onClick={() => { onDuplicate(resume); setMenuOpen(false); }}
@@ -1486,7 +1503,7 @@ function CoverLetterCard({
   const isDownloading = downloadingId === coverLetter.id;
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover">
       <div className="p-5 flex flex-col gap-3">
         <div className="flex items-start gap-3">
           <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">

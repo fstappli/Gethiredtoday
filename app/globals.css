@@ -161,30 +161,189 @@
   }
 }
 
+/* ── Keyframes ───────────────────────────────────────────────────────────── */
+
+@keyframes shimmer {
+  0%   { background-position: -800px 0; }
+  100% { background-position:  800px 0; }
+}
+
+@keyframes page-enter {
+  0%   { opacity: 0; transform: translateY(12px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+@keyframes fade-up {
+  0%   { opacity: 0; transform: translateY(24px); }
+  100% { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes toast-enter {
+  0%   { opacity: 0; transform: translate(-50%, 16px) scale(0.95); }
+  60%  { transform: translate(-50%, -2px) scale(1.01); }
+  100% { opacity: 1; transform: translate(-50%, 0)    scale(1);    }
+}
+
+@keyframes toast-exit {
+  0%   { opacity: 1; transform: translate(-50%, 0)    scale(1);    }
+  100% { opacity: 0; transform: translate(-50%, 12px) scale(0.95); }
+}
+
+@keyframes badge-pop {
+  0%   { opacity: 0; transform: scale(0.7);  }
+  70%  { transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1);    }
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.6; transform: scale(0.92); }
+}
+
+@keyframes score-ring-fill {
+  0%   { stroke-dasharray: 0 999; }
+}
+
+@keyframes mobile-menu-enter {
+  0%   { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes slide-up-fade {
+  0%   { opacity: 0; transform: translateY(6px);  }
+  100% { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes bar-grow {
+  0%   { width: 0 !important; }
+}
+
+@keyframes card-hover-enter {
+  0%   { transform: translateY(0);   box-shadow: none; }
+  100% { transform: translateY(-4px); }
+}
+
 @layer utilities {
+  /* ── Buttons ──────────────────────────────────────────────────────────── */
   .btn-teal {
-    @apply bg-[var(--teal)] text-white font-semibold rounded-full px-6 py-2.5 hover:opacity-90 transition-opacity;
+    @apply bg-[var(--teal)] text-white font-semibold rounded-full px-6 py-2.5;
+    transition: opacity 180ms ease, transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 180ms ease;
   }
+  .btn-teal:hover  { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 6px 20px -4px oklch(0.672 0.116 178 / 0.4); }
+  .btn-teal:active { opacity: 1;   transform: scale(0.97) translateY(0); box-shadow: none; }
+
   .btn-teal-outline {
-    @apply border-2 border-[var(--teal)] text-[var(--teal)] font-semibold rounded-full px-6 py-2.5 hover:bg-[var(--teal)] hover:text-white transition-colors;
+    @apply border-2 border-[var(--teal)] text-[var(--teal)] font-semibold rounded-full px-6 py-2.5;
+    transition: background-color 180ms ease, color 180ms ease, transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1);
   }
+  .btn-teal-outline:hover  { @apply bg-[var(--teal)] text-white; transform: translateY(-1px); }
+  .btn-teal-outline:active { transform: scale(0.97); }
+
+  /* ── Shadows ──────────────────────────────────────────────────────────── */
   .card-shadow {
     box-shadow: 0 2px 12px 0 oklch(0 0 0 / 0.07), 0 1px 3px 0 oklch(0 0 0 / 0.05);
   }
   .card-shadow-md {
     box-shadow: 0 4px 24px 0 oklch(0 0 0 / 0.08), 0 2px 6px 0 oklch(0 0 0 / 0.05);
   }
+
+  /* ── Card hover lift ──────────────────────────────────────────────────── */
+  .card-hover {
+    transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 240ms cubic-bezier(0.22, 1, 0.36, 1), border-color 200ms ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px -8px oklch(0 0 0 / 0.12), 0 4px 12px -4px oklch(0 0 0 / 0.07);
+  }
+
+  /* ── Gradient / colors ────────────────────────────────────────────────── */
   .gradient-teal {
     background: linear-gradient(135deg, oklch(0.672 0.116 178), oklch(0.58 0.11 165));
   }
-  .text-teal {
-    color: var(--teal);
+  .text-teal { color: var(--teal); }
+  .bg-teal   { background-color: var(--teal); }
+  .bg-mint   { background-color: var(--mint); }
+
+  /* ── Shimmer skeleton ─────────────────────────────────────────────────── */
+  .skeleton-shimmer {
+    background: linear-gradient(90deg, #f1f5f9 25%, #e8edf2 50%, #f1f5f9 75%);
+    background-size: 800px 100%;
+    animation: shimmer 1.6s infinite linear;
   }
-  .bg-teal {
-    background-color: var(--teal);
+
+  /* ── Page enter ───────────────────────────────────────────────────────── */
+  .animate-page-enter {
+    animation: page-enter 420ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-  .bg-mint {
-    background-color: var(--mint);
+
+  /* ── Staggered fade-up (use --stagger-delay CSS var per item) ─────────── */
+  .animate-fade-up {
+    animation: fade-up 480ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--stagger-delay, 0ms);
   }
+
+  /* ── Toast ────────────────────────────────────────────────────────────── */
+  .animate-toast-enter {
+    animation: toast-enter 380ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  .animate-toast-exit {
+    animation: toast-exit 260ms ease-in both;
+  }
+
+  /* ── Badge pop ────────────────────────────────────────────────────────── */
+  .animate-badge-pop {
+    animation: badge-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    animation-delay: var(--stagger-delay, 0ms);
+  }
+
+  /* ── Sparkle ──────────────────────────────────────────────────────────── */
+  .animate-sparkle {
+    animation: sparkle-pulse 2.4s ease-in-out infinite;
+  }
+
+  /* ── Mobile menu ──────────────────────────────────────────────────────── */
+  .animate-mobile-menu {
+    animation: mobile-menu-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ── Slide up fade (dropdowns) ────────────────────────────────────────── */
+  .animate-slide-up-fade {
+    animation: slide-up-fade 200ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ── Score ring (apply class to the fill circle) ─────────────────────── */
+  .animate-score-ring {
+    animation: score-ring-fill 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 300ms;
+  }
+
+  /* ── Progress bar grow ────────────────────────────────────────────────── */
+  .animate-bar-grow {
+    animation: bar-grow 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--bar-delay, 200ms);
+  }
+
+  /* ── Link underline grow ──────────────────────────────────────────────── */
+  .link-animated {
+    position: relative;
+    text-underline-offset: 3px;
+    transition: color 200ms ease;
+  }
+  .link-animated::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    width: 0;
+    height: 1.5px;
+    background-color: currentColor;
+    transition: width 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-animated:hover::after { width: 100%; }
 }
 

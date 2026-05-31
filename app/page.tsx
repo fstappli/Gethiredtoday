@@ -15,6 +15,7 @@ import Footer from "@/components/footer";
 import { TemplatePreview } from "@/components/template-preview";
 import type { TemplateLayout } from "@/components/template-preview";
 import EmailCapture from "@/components/email-capture";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DATA
@@ -527,15 +528,16 @@ function HomeFAQ() {
           </p>
         </div>
         <div className="space-y-3">
-          {faqs.map((faq) => (
+          {faqs.map((faq, idx) => (
+            <ScrollReveal key={faq.q} delay={idx * 40}>
             <div
-              key={faq.q}
-              className="bg-white rounded-2xl px-6 py-5"
+              className="bg-white rounded-2xl px-6 py-5 page-card-hover"
               style={{ border: "1px solid #e2e8f0", boxShadow: "0 1px 4px rgba(15,23,42,0.04)" }}
             >
               <p className="font-semibold text-base mb-2" style={{ color: "#0f172a" }}>{faq.q}</p>
               <p className="text-sm leading-relaxed" style={{ color: "#64748b" }}>{faq.a}</p>
             </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>
@@ -604,28 +606,38 @@ export default function HomePage() {
         /* ── Button hover states ── */
         .page-btn-primary {
           box-shadow: 0 4px 14px -2px rgba(74,183,166,0.35);
-          transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+          transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.18s ease, opacity 0.18s ease;
         }
         .page-btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 24px -4px rgba(74,183,166,0.45);
+          box-shadow: 0 8px 24px -4px rgba(74,183,166,0.50);
+        }
+        .page-btn-primary:active {
+          transform: scale(0.97) translateY(0);
+          box-shadow: 0 2px 8px -2px rgba(74,183,166,0.30);
         }
         .page-btn-outline {
-          transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+          transition: transform 0.15s cubic-bezier(0.34,1.56,0.64,1), border-color 0.18s ease, box-shadow 0.18s ease;
         }
         .page-btn-outline:hover {
           transform: translateY(-2px);
           border-color: #94a3b8;
           box-shadow: 0 4px 12px rgba(15,23,42,0.06);
         }
+        .page-btn-outline:active {
+          transform: scale(0.97) translateY(0);
+        }
 
         /* ── Section card hover lift ── */
         .page-card-hover {
-          transition: transform 0.22s ease, box-shadow 0.22s ease;
+          transition: transform 0.24s cubic-bezier(0.22,1,0.36,1), box-shadow 0.24s cubic-bezier(0.22,1,0.36,1), border-color 0.20s ease;
         }
         .page-card-hover:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 16px 40px -8px rgba(15,23,42,0.12) !important;
+          transform: translateY(-5px);
+          box-shadow: 0 20px 48px -10px rgba(15,23,42,0.13) !important;
+        }
+        .page-card-hover:active {
+          transform: translateY(-1px) scale(0.99);
         }
 
         /* ── Section heading serif accent ── */
@@ -788,8 +800,9 @@ export default function HomePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
               {/* Step 1 */}
+              <ScrollReveal delay={0}>
               <div
-                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5"
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5 h-full"
                 style={{ border: "1px solid #e8edf3", boxShadow: "0 2px 12px rgba(15,23,42,0.05)" }}
               >
                 <div className="flex items-start gap-3">
@@ -830,10 +843,12 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
+              </ScrollReveal>
 
               {/* Step 2 */}
+              <ScrollReveal delay={80}>
               <div
-                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5"
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5 h-full"
                 style={{ border: "1px solid #e8edf3", boxShadow: "0 2px 12px rgba(15,23,42,0.05)" }}
               >
                 <div className="flex items-start gap-3">
@@ -873,10 +888,12 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
+              </ScrollReveal>
 
               {/* Step 3 */}
+              <ScrollReveal delay={160}>
               <div
-                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5"
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5 h-full"
                 style={{ border: "1px solid #e8edf3", boxShadow: "0 2px 12px rgba(15,23,42,0.05)" }}
               >
                 <div className="flex items-start gap-3">
@@ -916,13 +933,15 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
+              </ScrollReveal>
 
               {/* Step 4 */}
+              <ScrollReveal delay={240}>
               <div
-                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5 relative overflow-hidden"
+                className="page-card-hover bg-white rounded-2xl p-7 flex flex-col gap-5 relative overflow-hidden h-full"
                 style={{ border: "1.5px solid #4AB7A6", boxShadow: "0 4px 24px rgba(74,183,166,0.12)" }}
               >
-                <div className="absolute top-3 right-3 text-[9px] font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: "#4AB7A6" }}>
+                <div className="absolute top-3 right-3 text-[9px] font-bold px-2 py-0.5 rounded-full text-white animate-badge-pop" style={{ backgroundColor: "#4AB7A6" }}>
                   NEW
                 </div>
                 <div className="flex items-start gap-3">
@@ -957,6 +976,7 @@ export default function HomePage() {
                   ))}
                 </div>
               </div>
+              </ScrollReveal>
             </div>
           </div>
         </section>
@@ -1179,7 +1199,7 @@ export default function HomePage() {
                 <Link
                   key={item.title}
                   href="/resume-examples"
-                  className="group bg-white rounded-xl p-5 flex flex-col gap-3 transition-all hover:-translate-y-0.5"
+                  className="group bg-white rounded-xl p-5 flex flex-col gap-3 page-card-hover"
                   style={{
                     border: "1px solid #e2e8f0",
                     boxShadow: "0 1px 4px rgba(15,23,42,0.05)",
@@ -1233,10 +1253,10 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {templates.map((tpl) => (
+              {templates.map((tpl, idx) => (
+                <ScrollReveal key={tpl.name} delay={idx * 70}>
                 <div
-                  key={tpl.name}
-                  className="group relative rounded-2xl overflow-hidden"
+                  className="group relative rounded-2xl overflow-hidden page-card-hover"
                   style={{ border: "1px solid #e2e8f0", boxShadow: "0 2px 12px rgba(15,23,42,0.06)" }}
                 >
                   {/* Rich resume preview */}
@@ -1266,7 +1286,7 @@ export default function HomePage() {
 
                     {/* PRO badge */}
                     {tpl.isPro && (
-                      <div className="absolute top-3 left-3 text-[10px] font-bold bg-amber-400 text-amber-900 rounded-full px-2 py-0.5 shadow-sm">
+                      <div className="absolute top-3 left-3 text-[10px] font-bold bg-amber-400 text-amber-900 rounded-full px-2 py-0.5 shadow-sm animate-badge-pop">
                         PRO
                       </div>
                     )}
@@ -1290,6 +1310,7 @@ export default function HomePage() {
                     </span>
                   </div>
                 </div>
+                </ScrollReveal>
               ))}
             </div>
 
@@ -1324,10 +1345,10 @@ export default function HomePage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {testimonials.map((t) => (
+              {testimonials.map((t, idx) => (
+                <ScrollReveal key={t.name} delay={idx * 100}>
                 <div
-                  key={t.name}
-                  className="page-card-hover bg-white rounded-2xl p-8 flex flex-col gap-4"
+                  className="page-card-hover bg-white rounded-2xl p-8 flex flex-col gap-4 h-full"
                   style={{
                     border: "1px solid #e8edf3",
                     boxShadow: "0 2px 12px rgba(15,23,42,0.05)",
@@ -1371,6 +1392,7 @@ export default function HomePage() {
                     Hired at {t.hiredAt}
                   </div>
                 </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>

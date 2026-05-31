@@ -55,9 +55,11 @@ export default function Navbar() {
 
   return (
     <header
-      className="sticky top-0 z-50 transition-all duration-200"
+      className="sticky top-0 z-50 transition-all duration-300"
       style={{
-        backgroundColor: "#ffffff",
+        backgroundColor: scrolled ? "rgba(255,255,255,0.96)" : "#ffffff",
+        backdropFilter: scrolled ? "blur(12px) saturate(180%)" : "none",
+        WebkitBackdropFilter: scrolled ? "blur(12px) saturate(180%)" : "none",
         borderBottom: "1px solid #f1f5f9",
         boxShadow: scrolled
           ? "0 4px 24px 0 rgba(15,23,42,0.08), 0 1px 4px 0 rgba(15,23,42,0.04)"
@@ -78,7 +80,7 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5"
+                  className="px-3 py-2 text-sm font-medium rounded-lg flex items-center gap-1.5 transition-all duration-150 hover:bg-slate-50 active:scale-[0.97]"
                   style={{
                     color: isActive ? "#4AB7A6" : "#475569",
                     backgroundColor: isActive ? "#f0fdf9" : "transparent",
@@ -90,10 +92,10 @@ export default function Navbar() {
                     if (!isActive) e.currentTarget.style.color = "#475569";
                   }}
                 >
-                  {link.badge === "NEW" && <Zap className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#4AB7A6" }} />}
+                  {link.badge === "NEW" && <Zap className="w-3.5 h-3.5 flex-shrink-0 animate-sparkle" style={{ color: "#4AB7A6" }} />}
                   {link.label}
                   {link.badge && (
-                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white leading-none" style={{ backgroundColor: "#4AB7A6" }}>
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full text-white leading-none animate-badge-pop" style={{ backgroundColor: "#4AB7A6" }}>
                       {link.badge}
                     </span>
                   )}
@@ -109,7 +111,7 @@ export default function Navbar() {
             ) : isAuthed ? (
               <Link
                 href="/dashboard"
-                className="px-5 py-2 text-sm font-semibold text-white rounded-full transition-opacity hover:opacity-90 flex items-center gap-2"
+                className="px-5 py-2 text-sm font-semibold text-white rounded-full flex items-center gap-2 btn-teal"
                 style={{ backgroundColor: "#4AB7A6" }}
               >
                 <LayoutDashboard className="w-4 h-4" />
@@ -119,13 +121,13 @@ export default function Navbar() {
               <>
                 <Link
                   href="/login"
-                  className="px-4 py-2 text-sm font-medium text-slate-700 hover:underline transition-all"
+                  className="px-4 py-2 text-sm font-medium text-slate-700 link-animated transition-colors hover:text-slate-900"
                 >
                   Log In
                 </Link>
                 <Link
                   href="/builder/wizard"
-                  className="px-5 py-2 text-sm font-semibold text-white rounded-full transition-opacity hover:opacity-90"
+                  className="px-5 py-2 text-sm font-semibold text-white rounded-full btn-teal"
                   style={{ backgroundColor: "#4AB7A6" }}
                 >
                   Build Free Resume
@@ -149,7 +151,7 @@ export default function Navbar() {
       {/* Mobile menu — slide down */}
       {mobileOpen && (
         <div
-          className="lg:hidden border-t border-slate-100"
+          className="lg:hidden border-t border-slate-100 animate-mobile-menu"
           style={{ backgroundColor: "#ffffff" }}
         >
           <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
