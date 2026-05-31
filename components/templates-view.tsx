@@ -249,27 +249,31 @@ export default function TemplatesView() {
   return (
     <>
       {/* Header */}
-      <section className="bg-slate-50 py-14 border-b border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-4 py-1.5 text-sm text-slate-600 mb-5 shadow-sm">
+      <section className="relative overflow-hidden py-14 border-b border-slate-100 animate-page-enter" style={{
+        background: 'linear-gradient(180deg, #f0fdf9 0%, #f8fafc 60%, #ffffff 100%)',
+      }}>
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse 70% 60% at 50% 0%, rgba(74,183,166,0.08) 0%, transparent 70%)',
+        }} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+          <div className="animate-badge-pop inline-flex items-center gap-2 bg-white border border-teal-200 rounded-full px-4 py-1.5 text-sm text-teal-700 mb-5 shadow-sm">
             <Check className="w-3.5 h-3.5" style={{ color: '#4AB7A6' }} />
             ATS-Optimized · Recruiter-Approved · Free to Try
           </div>
-          <h1 className="text-4xl sm:text-5xl font-bold text-slate-900 mb-4 tracking-tight">
+          <h1 className="animate-fade-up text-4xl sm:text-5xl font-bold text-slate-900 mb-4 tracking-tight" style={{ '--stagger-delay': '60ms' } as React.CSSProperties}>
             Professional Resume Templates
           </h1>
-          <p className="text-lg text-slate-500 max-w-2xl mx-auto mb-6 leading-relaxed">
+          <p className="animate-fade-up text-lg text-slate-500 max-w-2xl mx-auto mb-6 leading-relaxed" style={{ '--stagger-delay': '120ms' } as React.CSSProperties}>
             60+ templates designed by professional resume writers and tested with Fortune 500 recruiters.
             Every template passes ATS screening and looks stunning to human eyes.
           </p>
-          <div className="flex items-center justify-center gap-6 text-sm font-medium text-slate-500">
-            <span>60+ Templates</span>
-            <span className="w-1 h-1 rounded-full bg-slate-300" />
-            <span>127,000+ Downloads</span>
-            <span className="w-1 h-1 rounded-full bg-slate-300" />
-            <span>6 Layout Types</span>
-            <span className="w-1 h-1 rounded-full bg-slate-300" />
-            <span>Fully Customisable</span>
+          <div className="animate-fade-up flex items-center justify-center gap-6 text-sm font-medium text-slate-500" style={{ '--stagger-delay': '180ms' } as React.CSSProperties}>
+            {['60+ Templates', '127,000+ Downloads', '6 Layout Types', 'Fully Customisable'].map((stat, i) => (
+              <>
+                {i > 0 && <span key={`dot-${i}`} className="w-1 h-1 rounded-full bg-slate-300" />}
+                <span key={stat}>{stat}</span>
+              </>
+            ))}
           </div>
         </div>
       </section>
@@ -334,43 +338,54 @@ export default function TemplatesView() {
         <div className="max-w-7xl mx-auto">
           {filtered.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {filtered.map((template) => (
+              {filtered.map((template, idx) => (
                 <div
                   key={template.id}
-                  className="group flex flex-col rounded-2xl border border-slate-200 overflow-hidden hover:border-[#4AB7A6] hover:shadow-xl transition-all duration-200 bg-white"
-                  style={{ boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}
+                  className="group flex flex-col rounded-2xl border border-slate-200 overflow-hidden card-hover bg-white animate-fade-up"
+                  style={{
+                    boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
+                    '--stagger-delay': `${(idx % 12) * 40}ms`,
+                  } as React.CSSProperties}
                 >
-                  {/* Preview */}
-                  <div className="relative overflow-hidden bg-slate-100" style={{ height: "220px" }}>
-                    <div className="absolute inset-0 p-2">
+                  {/* Preview with doc-frame bg */}
+                  <div className="relative overflow-hidden doc-frame" style={{ height: "220px" }}>
+                    {/* Chrome bar */}
+                    <div className="relative z-10 flex items-center gap-1 px-2.5 py-1.5" style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(6px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+                      <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
+                      <div className="flex-1 mx-2 h-3 rounded bg-slate-200/60" />
+                    </div>
+                    {/* Document */}
+                    <div className="absolute inset-0 top-[22px] z-10 p-2">
                       <div
-                        className="w-full h-full rounded-lg overflow-hidden"
-                        style={{ boxShadow: "0 2px 12px rgba(0,0,0,0.10), 0 1px 3px rgba(0,0,0,0.08)" }}
+                        className="w-full h-full rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
+                        style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.08)" }}
                       >
                         <TemplateThumbnail templateId={template.templateId} accent={template.accent} />
                       </div>
                     </div>
 
                     {/* Hover overlay */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
+                    <div className="absolute inset-0 z-20 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); handleUseTemplate(template); }}
                         disabled={creatingTemplate === template.id}
-                        className="opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-200 bg-white font-semibold rounded-full px-5 py-2 text-sm shadow-lg flex items-center gap-1.5 disabled:opacity-70"
+                        className="opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-200 bg-white font-semibold rounded-full px-5 py-2 text-sm shadow-lg flex items-center gap-1.5 disabled:opacity-70 active:scale-95"
                         style={{ color: '#4AB7A6' }}
                       >
                         {creatingTemplate === template.id ? (
                           <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Opening…</>
                         ) : (
-                          <>Use Template →</>
+                          <>✏ Use Template</>
                         )}
                       </button>
                     </div>
 
                     {/* PRO badge */}
                     {template.pro && (
-                      <div className="absolute top-3 left-3 text-[10px] font-bold bg-amber-400 text-amber-900 rounded-full px-2 py-0.5 shadow-sm">
+                      <div className="absolute top-8 left-3 z-30 text-[10px] font-bold bg-amber-400 text-amber-900 rounded-full px-2 py-0.5 shadow-sm animate-badge-pop">
                         PRO
                       </div>
                     )}

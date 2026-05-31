@@ -5,6 +5,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import PricingToggle from "@/components/pricing-toggle";
 import PricingFAQ from "@/components/pricing-faq";
+import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 export const metadata: Metadata = {
   title: "Pricing — Simple Plans for Every Job Seeker",
@@ -78,22 +79,33 @@ export default function PricingPage() {
     <div className="flex flex-col min-h-screen bg-white">
       <Navbar />
 
-      <main className="flex-1">
+      <main className="flex-1 animate-page-enter">
 
         {/* ── HERO ──────────────────────────────────────────────── */}
-        <section className="bg-slate-50 py-20 lg:py-28 px-4 border-b border-slate-100">
-          <div className="max-w-3xl mx-auto text-center">
+        <section className="relative overflow-hidden py-20 lg:py-28 px-4 border-b border-slate-100" style={{
+          background: 'linear-gradient(180deg, #f0fdf9 0%, #f8fafc 60%, #ffffff 100%)',
+        }}>
+          {/* Background orbs */}
+          <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full pointer-events-none" style={{
+            background: 'radial-gradient(circle, rgba(74,183,166,0.08) 0%, transparent 70%)',
+          }} />
+          <div className="absolute bottom-0 right-1/4 w-64 h-64 rounded-full pointer-events-none" style={{
+            background: 'radial-gradient(circle, rgba(74,183,166,0.05) 0%, transparent 70%)',
+          }} />
+
+          <div className="max-w-3xl mx-auto text-center relative z-10">
             {/* Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium bg-white border border-slate-200 text-slate-600 mb-8 shadow-sm">
+            <div className="animate-badge-pop inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-medium bg-white border border-teal-200 text-teal-700 mb-8 shadow-sm" style={{ '--stagger-delay': '0ms' } as React.CSSProperties}>
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-sparkle" />
               Transparent Pricing — No Hidden Fees
             </div>
 
-            <h1 className="text-5xl sm:text-6xl font-bold text-slate-900 leading-tight tracking-tight mb-6">
+            <h1 className="animate-fade-up text-5xl sm:text-6xl font-bold text-slate-900 leading-tight tracking-tight mb-6" style={{ '--stagger-delay': '60ms' } as React.CSSProperties}>
               Simple Pricing.{" "}
               <span style={{ color: "#4AB7A6" }}>Real Value.</span>
             </h1>
 
-            <p className="text-xl text-slate-600 leading-relaxed mb-10 max-w-2xl mx-auto">
+            <p className="animate-fade-up text-xl text-slate-600 leading-relaxed mb-10 max-w-2xl mx-auto" style={{ '--stagger-delay': '120ms' } as React.CSSProperties}>
               Everything you need to get hired — unlimited resumes, cover letters, AI
               writing, and ATS scoring — for <span className="font-bold text-slate-900">$9.99/month</span>.
               Our goal is to remove cost as a barrier to getting hired.
@@ -105,10 +117,11 @@ export default function PricingPage() {
                 "14-Day Money-Back Guarantee",
                 "Cancel Anytime",
                 "No Hidden Fees",
-              ].map((pill) => (
+              ].map((pill, i) => (
                 <span
                   key={pill}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-700 shadow-sm"
+                  className="animate-fade-up inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-slate-200 rounded-full text-sm font-medium text-slate-700 shadow-sm hover:border-teal-300 hover:shadow-md transition-all duration-200 cursor-default"
+                  style={{ '--stagger-delay': `${180 + i * 60}ms` } as React.CSSProperties}
                 >
                   <Check className="w-3.5 h-3.5 flex-shrink-0" style={{ color: "#4AB7A6" }} />
                   {pill}
@@ -151,9 +164,9 @@ export default function PricingPage() {
 
               {/* Rows */}
               {comparisonRows.map((row, idx) => (
+                <ScrollReveal key={row.feature} delay={idx * 30}>
                 <div
-                  key={row.feature}
-                  className={`grid grid-cols-3 px-6 py-4 items-center border-b border-slate-50 last:border-0 ${
+                  className={`grid grid-cols-3 px-6 py-4 items-center border-b border-slate-50 last:border-0 transition-colors duration-150 hover:bg-teal-50/40 ${
                     idx % 2 === 1 ? "bg-slate-50/60" : "bg-white"
                   }`}
                 >
@@ -165,6 +178,7 @@ export default function PricingPage() {
                     <ProCell value={row.pro} />
                   </div>
                 </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -195,11 +209,16 @@ export default function PricingPage() {
 
         {/* ── BOTTOM CTA ────────────────────────────────────────── */}
         <section
-          className="py-20 lg:py-28 px-4"
-          style={{ backgroundColor: "#4AB7A6" }}
+          className="py-20 lg:py-28 px-4 relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #3da090 0%, #4AB7A6 50%, #56c9b8 100%)' }}
         >
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4">
+          {/* Decorative orbs */}
+          <div className="absolute top-8 right-16 w-48 h-48 rounded-full pointer-events-none" style={{ background: 'rgba(255,255,255,0.06)' }} />
+          <div className="absolute bottom-8 left-16 w-32 h-32 rounded-full pointer-events-none" style={{ background: 'rgba(255,255,255,0.04)' }} />
+
+          <div className="max-w-3xl mx-auto text-center relative z-10">
+            <ScrollReveal>
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
               Start Building for Free Today
             </h2>
             <p className="text-xl text-white/80 mb-10">
@@ -207,15 +226,16 @@ export default function PricingPage() {
             </p>
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 px-10 py-4 rounded-full text-base font-bold bg-white transition-colors hover:bg-slate-50"
-              style={{ color: "#4AB7A6" }}
+              className="inline-flex items-center gap-2 px-10 py-4 rounded-full text-base font-bold bg-white transition-all duration-150 hover:bg-slate-50 hover:shadow-xl hover:-translate-y-1 active:scale-[0.97]"
+              style={{ color: "#4AB7A6", boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}
             >
-              Create My Free Resume →
+              Create My Free Resume
               <ArrowRight className="w-5 h-5" />
             </Link>
             <p className="text-sm text-white/60 mt-5">
               14-day money-back guarantee · Cancel anytime
             </p>
+            </ScrollReveal>
           </div>
         </section>
 

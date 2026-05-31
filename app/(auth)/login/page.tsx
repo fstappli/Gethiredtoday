@@ -155,18 +155,19 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-7">
       {/* Heading */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Welcome back</h1>
+      <div className="animate-auth-slide" style={{ '--stagger-delay': '0ms' } as React.CSSProperties}>
+        <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Welcome back</h1>
         <p className="mt-2 text-slate-500">Sign in to continue building your resume</p>
       </div>
 
       {/* Google button */}
+      <div className="animate-auth-slide" style={{ '--stagger-delay': '60ms' } as React.CSSProperties}>
       <Button
         type="button"
         variant="outline"
-        className="w-full h-12 rounded-full font-medium border-slate-200 text-slate-700 hover:bg-slate-50"
+        className="w-full h-12 rounded-full font-medium border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-all duration-150 active:scale-[0.98]"
         onClick={handleGoogleSignIn}
         disabled={googleLoading || isSubmitting}
       >
@@ -177,9 +178,10 @@ export default function LoginPage() {
         )}
         Continue with Google
       </Button>
+      </div>
 
       {/* OR divider */}
-      <div className="relative">
+      <div className="relative animate-auth-slide" style={{ '--stagger-delay': '100ms' } as React.CSSProperties}>
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t border-slate-200" />
         </div>
@@ -251,7 +253,7 @@ export default function LoginPage() {
         )}
 
         {/* Email */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-auth-slide" style={{ '--stagger-delay': '140ms' } as React.CSSProperties}>
           <Label htmlFor="email" className="text-sm font-medium text-slate-700">
             Email address
           </Label>
@@ -260,25 +262,26 @@ export default function LoginPage() {
             type="email"
             autoComplete="email"
             placeholder="you@example.com"
-            className={`h-12 rounded-xl border-slate-200 focus-visible:ring-[#4AB7A6] ${
+            className={`h-12 rounded-xl border-slate-200 focus-visible:ring-[#4AB7A6] transition-all duration-150 ${
               errors.email ? 'border-red-400 focus-visible:ring-red-300' : ''
             }`}
             {...register('email')}
           />
           {errors.email && (
-            <p className="text-xs text-red-500">{errors.email.message}</p>
+            <p className="text-xs text-red-500 animate-fade-up">{errors.email.message}</p>
           )}
         </div>
 
         {/* Password */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 animate-auth-slide" style={{ '--stagger-delay': '190ms' } as React.CSSProperties}>
           <div className="flex items-center justify-between">
             <Label htmlFor="password" className="text-sm font-medium text-slate-700">
               Password
             </Label>
             <Link
               href="/forgot-password"
-              className="text-xs font-medium text-[#4AB7A6] hover:underline"
+              className="text-xs font-medium link-animated"
+              style={{ color: '#4AB7A6' }}
             >
               Forgot password?
             </Link>
@@ -289,19 +292,17 @@ export default function LoginPage() {
               type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="••••••••"
-              className={`h-12 pr-11 rounded-xl border-slate-200 focus-visible:ring-[#4AB7A6] ${
+              className={`h-12 pr-11 rounded-xl border-slate-200 focus-visible:ring-[#4AB7A6] transition-all duration-150 ${
                 errors.password ? 'border-red-400 focus-visible:ring-red-300' : ''
               }`}
               onKeyDown={(e) => {
-                // Passwords never contain spaces. Blocking the space key stops
-                // stray trailing spaces that would cause "wrong password" errors.
                 if (e.key === ' ') e.preventDefault();
               }}
               {...register('password')}
             />
             <button
               type="button"
-              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-all duration-150 hover:scale-110"
               onClick={() => setShowPassword((v) => !v)}
               tabIndex={-1}
               aria-label={showPassword ? 'Hide password' : 'Show password'}
@@ -310,14 +311,15 @@ export default function LoginPage() {
             </button>
           </div>
           {errors.password && (
-            <p className="text-xs text-red-500">{errors.password.message}</p>
+            <p className="text-xs text-red-500 animate-fade-up">{errors.password.message}</p>
           )}
         </div>
 
+        <div className="animate-auth-slide" style={{ '--stagger-delay': '240ms' } as React.CSSProperties}>
         <Button
           type="submit"
-          className="w-full h-12 font-semibold rounded-full text-white"
-          style={{ backgroundColor: '#4AB7A6' }}
+          className="w-full h-12 font-semibold rounded-full text-white active:scale-[0.98]"
+          style={{ backgroundColor: '#4AB7A6', boxShadow: '0 4px 14px rgba(74,183,166,0.35)' }}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
@@ -329,14 +331,16 @@ export default function LoginPage() {
             'Sign In'
           )}
         </Button>
+        </div>
       </form>
 
       {/* Sign up link */}
-      <p className="text-center text-sm text-slate-500">
+      <p className="text-center text-sm text-slate-500 animate-auth-slide" style={{ '--stagger-delay': '300ms' } as React.CSSProperties}>
         Don&apos;t have an account?{' '}
         <Link
           href="/signup"
-          className="font-semibold text-[#4AB7A6] hover:underline"
+          className="font-semibold link-animated"
+          style={{ color: '#4AB7A6' }}
         >
           Create one free →
         </Link>

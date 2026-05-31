@@ -223,6 +223,46 @@
   0%   { width: 0 !important; }
 }
 
+@keyframes checkmark-draw {
+  0%   { stroke-dashoffset: 40; opacity: 0; }
+  30%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; }
+}
+
+@keyframes success-burst {
+  0%   { transform: scale(0.6); opacity: 0; }
+  60%  { transform: scale(1.12); }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes float-up-down {
+  0%, 100% { transform: translateY(0px);  }
+  50%       { transform: translateY(-6px); }
+}
+
+@keyframes subtle-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(74,183,166,0); }
+  50%       { box-shadow: 0 0 24px 4px rgba(74,183,166,0.18); }
+}
+
+@keyframes grain {
+  0%, 100% { transform: translate(0, 0);     }
+  10%       { transform: translate(-2%, -2%); }
+  20%       { transform: translate(2%, 2%);   }
+  30%       { transform: translate(-1%, 1%);  }
+  40%       { transform: translate(1%, -1%);  }
+  50%       { transform: translate(-2%, 2%);  }
+  60%       { transform: translate(2%, -2%);  }
+  70%       { transform: translate(-1%, -1%); }
+  80%       { transform: translate(1%, 1%);   }
+  90%       { transform: translate(-2%, 1%);  }
+}
+
+@keyframes auth-slide-in {
+  0%   { opacity: 0; transform: translateX(-16px); }
+  100% { opacity: 1; transform: translateX(0);     }
+}
+
 @keyframes card-hover-enter {
   0%   { transform: translateY(0);   box-shadow: none; }
   100% { transform: translateY(-4px); }
@@ -326,6 +366,51 @@
   .animate-bar-grow {
     animation: bar-grow 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: var(--bar-delay, 200ms);
+  }
+
+  /* ── Success burst ───────────────────────────────────────────────────── */
+  .animate-success-burst {
+    animation: success-burst 500ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+
+  /* ── Checkmark draw ───────────────────────────────────────────────────── */
+  .animate-checkmark {
+    stroke-dasharray: 40;
+    stroke-dashoffset: 40;
+    animation: checkmark-draw 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 200ms;
+  }
+
+  /* ── Float (hero widgets) ──────────────────────────────────────────────── */
+  .animate-float {
+    animation: float-up-down 4s ease-in-out infinite;
+    animation-delay: var(--float-delay, 0ms);
+  }
+
+  /* ── Glow pulse ───────────────────────────────────────────────────────── */
+  .animate-glow {
+    animation: subtle-glow 3s ease-in-out infinite;
+  }
+
+  /* ── Auth form slide ──────────────────────────────────────────────────── */
+  .animate-auth-slide {
+    animation: auth-slide-in 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--stagger-delay, 0ms);
+  }
+
+  /* ── Document thumbnail frame ─────────────────────────────────────────── */
+  .doc-frame {
+    background: radial-gradient(ellipse at 30% 20%, #e8f4f2 0%, #dde8f0 40%, #cfd9e8 100%);
+    position: relative;
+  }
+  .doc-frame::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.04) 1px, transparent 1px);
+    background-size: 12px 12px;
+    pointer-events: none;
+    z-index: 0;
   }
 
   /* ── Link underline grow ──────────────────────────────────────────────── */

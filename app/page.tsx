@@ -16,6 +16,7 @@ import { TemplatePreview } from "@/components/template-preview";
 import type { TemplateLayout } from "@/components/template-preview";
 import EmailCapture from "@/components/email-capture";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
+import FeatureVisualTemplates from "@/components/feature-visual-templates";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DATA
@@ -450,31 +451,6 @@ function FeatureVisualAutoApply() {
   );
 }
 
-function FeatureVisualTemplates() {
-  const colors = ["#4AB7A6", "#334155", "#1d4ed8", "#7c3aed"];
-  return (
-    <div className="grid grid-cols-2 gap-3">
-      {colors.map((color, i) => (
-        <div
-          key={i}
-          className="rounded-xl overflow-hidden"
-          style={{ border: "1px solid #e2e8f0", boxShadow: "0 2px 8px rgba(15,23,42,0.06)" }}
-        >
-          {/* Header stripe */}
-          <div className="h-10" style={{ backgroundColor: color }} />
-          {/* Body */}
-          <div className="bg-white p-3 space-y-1.5">
-            <div className="h-2 w-3/4 rounded-full bg-slate-800" />
-            <div className="h-1.5 w-1/2 rounded-full bg-slate-300" />
-            <div className="h-1 w-full rounded-full bg-slate-200 mt-2" />
-            <div className="h-1 w-5/6 rounded-full bg-slate-200" />
-            <div className="h-1 w-4/5 rounded-full bg-slate-200" />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
 
 /* ─────────────────────────────────────────────────────────────────────────────
    FAQ
@@ -1131,46 +1107,61 @@ export default function HomePage() {
               </div>
 
               {/* Feature C — text left, visual right */}
+              <ScrollReveal>
               <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
                 <div>
-                  <div className="text-xs font-bold uppercase tracking-widest mb-3" style={{ color: "#4AB7A6" }}>
-                    PROFESSIONAL TEMPLATES
+                  <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-4 px-3 py-1.5 rounded-full" style={{ color: "#4AB7A6", backgroundColor: "rgba(74,183,166,0.08)", border: "1px solid rgba(74,183,166,0.2)" }}>
+                    <Layout className="w-3 h-3" />
+                    Professional Templates
                   </div>
-                  <h3 className="text-3xl font-bold mb-4" style={{ color: "#0f172a" }}>
-                    60+ Templates Designed to Get Interviews
+                  <h3 className="text-3xl sm:text-4xl font-bold mb-5 leading-tight" style={{ color: "#0f172a" }}>
+                    60+ Templates Designed<br />
+                    <span className="section-heading" style={{ color: "#4AB7A6" }}>to Get Interviews</span>
                   </h3>
-                  <p className="leading-relaxed mb-6" style={{ color: "#64748b" }}>
+                  <p className="leading-relaxed mb-7 text-base" style={{ color: "#64748b", maxWidth: 440 }}>
                     Every template was designed with input from professional recruiters and tested
                     against major ATS systems. Choose from modern, classic, creative, executive, and
-                    academic styles. All templates are fully customizable — change colors, fonts, and
-                    section order with one click.
+                    academic styles — all fully customizable with one click.
                   </p>
-                  <ul className="space-y-2.5 mb-8">
+
+                  {/* Feature pills */}
+                  <ul className="space-y-3 mb-9">
                     {[
-                      "ATS-tested formats",
-                      "Recruiter-approved designs",
-                      "One-click customization",
-                      "New templates added monthly",
+                      { label: "ATS-tested formats", sub: "Passes all major applicant tracking systems" },
+                      { label: "Recruiter-approved designs", sub: "Vetted by Fortune 500 hiring teams" },
+                      { label: "One-click customization", sub: "Colors, fonts, and layout in seconds" },
+                      { label: "New templates monthly", sub: "Always fresh, always relevant" },
                     ].map((item) => (
-                      <li key={item} className="flex items-center gap-2.5 text-sm font-medium" style={{ color: "#0f172a" }}>
-                        <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} />
-                        {item}
+                      <li key={item.label} className="flex items-start gap-3 group">
+                        <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-transform duration-200 group-hover:scale-110" style={{ backgroundColor: "rgba(74,183,166,0.12)" }}>
+                          <Check className="w-3 h-3" style={{ color: "#4AB7A6" }} strokeWidth={3} />
+                        </div>
+                        <div>
+                          <span className="text-sm font-semibold block" style={{ color: "#0f172a" }}>{item.label}</span>
+                          <span className="text-xs" style={{ color: "#94a3b8" }}>{item.sub}</span>
+                        </div>
                       </li>
                     ))}
                   </ul>
-                  <Link
-                    href="/resume-templates"
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold hover:gap-2.5 transition-all"
-                    style={{ color: "#4AB7A6" }}
-                  >
-                    Browse Templates
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
+
+                  {/* CTA row */}
+                  <div className="flex items-center gap-4">
+                    <Link
+                      href="/resume-templates"
+                      className="page-btn-primary inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white rounded-full"
+                      style={{ backgroundColor: "#4AB7A6" }}
+                    >
+                      Browse All Templates
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                    <span className="text-xs text-slate-400">Free to use · No signup needed</span>
+                  </div>
                 </div>
-                <div>
+                <div className="flex justify-center lg:justify-end">
                   <FeatureVisualTemplates />
                 </div>
               </div>
+              </ScrollReveal>
 
             </div>
           </div>

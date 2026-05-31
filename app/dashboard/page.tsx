@@ -1316,13 +1316,22 @@ function ResumeCard({
   const meta = TEMPLATE_META[resume.template_id] ?? TEMPLATE_META['classic'];
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover">
+    <div className="group/card bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden card-hover">
       {/* Resume preview thumbnail */}
-      <div className="relative overflow-hidden bg-slate-100" style={{ height: '160px' }}>
-        <div className="absolute inset-0 flex items-stretch justify-stretch p-2">
+      <div className="relative overflow-hidden doc-frame" style={{ height: '172px' }}>
+        {/* Subtle top chrome bar */}
+        <div className="relative z-10 flex items-center gap-1.5 px-3 py-2" style={{ backgroundColor: 'rgba(255,255,255,0.7)', backdropFilter: 'blur(8px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
+          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#ff5f57' }} />
+          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#febc2e' }} />
+          <div className="w-2 h-2 rounded-full" style={{ backgroundColor: '#28c840' }} />
+          <div className="flex-1" />
+          <div className="text-[8px] font-mono text-slate-400 truncate max-w-[80px]">{resume.title.slice(0,16)}.pdf</div>
+        </div>
+        {/* Document */}
+        <div className="relative z-10 absolute inset-0 top-[28px] flex items-stretch justify-stretch px-3 pb-2">
           <div
-            className="flex-1 rounded-lg overflow-hidden"
-            style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.09), 0 1px 2px rgba(0,0,0,0.06)' }}
+            className="flex-1 rounded-lg overflow-hidden transition-transform duration-300 group-hover/card:scale-[1.02]"
+            style={{ boxShadow: '0 4px 20px rgba(0,0,0,0.14), 0 1px 4px rgba(0,0,0,0.08)' }}
           >
             <TemplatePreview layout={meta.layout} accent={meta.accent} content={previewFromResumeData(resume.data)} />
           </div>
@@ -1330,10 +1339,10 @@ function ResumeCard({
         {/* Edit overlay */}
         <Link
           href={`/builder/resume/${resume.id}`}
-          className="absolute inset-0 flex items-center justify-center bg-black/0 hover:bg-black/30 transition-colors group/thumb"
+          className="group/thumb absolute inset-0 z-20 flex items-center justify-center bg-black/0 hover:bg-black/25 transition-colors"
         >
-          <span className="opacity-0 group-hover/thumb:opacity-100 transition-opacity bg-white text-xs font-semibold rounded-full px-4 py-1.5 shadow" style={{ color: '#4AB7A6' }}>
-            Edit Resume
+          <span className="opacity-0 group-hover/thumb:opacity-100 transition-all duration-200 scale-95 group-hover/thumb:scale-100 bg-white text-xs font-semibold rounded-full px-4 py-2 shadow-lg" style={{ color: '#4AB7A6' }}>
+            ✏ Edit Resume
           </span>
         </Link>
       </div>
