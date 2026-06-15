@@ -4,12 +4,12 @@ import Footer from "@/components/footer";
 import TemplatesView from "@/components/templates-view";
 
 export const metadata: Metadata = {
-  title: "Free Resume Templates — ATS-Friendly Professional Designs",
-  description: "Choose from 60+ ATS-tested resume templates designed by professional writers. Classic, modern, creative, and executive styles. Free to use — download as PDF.",
+  title: "Resume Templates — ATS-Friendly Professional Designs",
+  description: "Choose from 60+ ATS-tested resume templates designed by professional writers. Classic, modern, creative, and executive styles — all included with Pro at $9.99/month.",
   alternates: { canonical: "https://hiredtodayapp.com/resume-templates" },
   openGraph: {
-    title: "Free Resume Templates — ATS-Friendly Professional Designs",
-    description: "60+ ATS-tested resume templates for every industry and career level. Free to use.",
+    title: "Resume Templates — ATS-Friendly Professional Designs",
+    description: "60+ ATS-tested resume templates for every industry and career level. All included with Pro.",
     url: "https://hiredtodayapp.com/resume-templates",
   },
 };

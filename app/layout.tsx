@@ -14,15 +14,15 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://hiredtodayapp.com"),
   title: {
-    default: "Free AI Resume Builder — Get Hired Today | GetHiredToday",
+    default: "AI Resume Builder — Get Hired Today | GetHiredToday",
     template: "%s | GetHiredToday",
   },
   description:
-    "Build an ATS-friendly resume in 3 minutes with AI. Free to start. Tailored bullet points, professional templates, and an ATS checker that gets you past the bots and in front of real recruiters.",
+    "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checker, and Auto-Apply — everything you need to get hired, for $9.99/month.",
   keywords: [
-    "AI resume builder", "free resume builder", "ATS-friendly resume", "resume maker",
+    "AI resume builder", "ATS-friendly resume", "resume maker",
     "AI resume writer", "ATS checker", "resume templates 2026", "cover letter builder",
-    "professional resume", "resume builder free", "online resume builder", "CV builder",
+    "professional resume", "online resume builder", "CV builder",
   ],
   authors: [{ name: "GetHiredToday", url: "https://hiredtodayapp.com" }],
   creator: "GetHiredToday",
@@ -33,14 +33,14 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://hiredtodayapp.com",
     siteName: "GetHiredToday",
-    title: "Free AI Resume Builder — Get Hired Today",
-    description: "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, and ATS compatibility checking. Free to start.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "GetHiredToday — Free AI Resume Builder" }],
+    title: "AI Resume Builder — Get Hired Today",
+    description: "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checking, and Auto-Apply — $9.99/month.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "GetHiredToday — AI Resume Builder" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free AI Resume Builder — Get Hired Today",
-    description: "Build an ATS-friendly resume in 3 minutes with AI. Free to start.",
+    title: "AI Resume Builder — Get Hired Today",
+    description: "Build an ATS-friendly resume in 3 minutes with AI. $9.99/month — cancel anytime.",
     images: ["/og-image.png"],
     creator: "@hiredtodayapp",
   },
@@ -88,8 +88,8 @@ export default function RootLayout({
             "applicationCategory": "BusinessApplication",
             "operatingSystem": "Web",
             "url": "https://hiredtodayapp.com",
-            "description": "Free AI resume builder with ATS compatibility checking, professional templates, and one-click PDF download.",
-            "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+            "description": "AI resume builder with ATS compatibility checking, professional templates, Auto-Apply, and one-click PDF download.",
+            "offers": { "@type": "Offer", "price": "9.99", "priceCurrency": "USD" },
             "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "247" }
           })}}
         />

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { truncate } from '@/lib/utils';
+import { ProFeatureGate } from '@/components/pro-feature-gate';
 
 interface CoverLetterRow {
   id: string;
@@ -29,6 +30,14 @@ export default function CoverLettersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [isPro, setIsPro] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    fetch('/api/user/subscription-status')
+      .then((r) => r.json())
+      .then((d) => setIsPro(d.isPro ?? false))
+      .catch(() => setIsPro(false));
+  }, []);
 
   const handleNewCoverLetter = async () => {
     setCreating(true);
@@ -97,6 +106,30 @@ export default function CoverLettersPage() {
       if (createRes.ok) fetchCoverLetters();
     } catch {}
   };
+
+  if (isPro === null) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!isPro) {
+    return (
+      <ProFeatureGate
+        title="AI Cover Letter Builder"
+        description="Generate tailored cover letters in seconds. Match your cover letter to your resume template automatically."
+        features={[
+          'AI-powered cover letters in seconds',
+          'Auto-matches your resume template & colors',
+          'Customise tone, length, and style',
+          'Export as PDF or Word',
+        ]}
+        from="/dashboard/cover-letters"
+      />
+    );
+  }
 
   return (
     <div className="p-4 sm:p-6 lg:p-8">

@@ -5,28 +5,24 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    q: "Is the free plan actually free?",
-    a: "Yes — forever. No credit card required. You can create and download your resume on the free plan without ever entering payment details. Upgrade only when you want more.",
-  },
-  {
     q: "What's included in the $9.99/month Pro plan?",
-    a: "Everything: unlimited resumes, all 60+ templates, PDF and Word downloads, full AI content generation, AI bullet point writer, real-time ATS scoring, cover letter builder, priority support, and new templates added every month.",
+    a: "Everything — unlimited resumes, all 60+ templates, PDF and Word downloads, full AI content generation, AI bullet point writer, real-time ATS scoring, cover letter builder, Auto-Apply (up to 50 jobs/day), priority support, and new templates added every month. There are no feature tiers or hidden upgrades.",
   },
   {
     q: "Can I cancel anytime?",
-    a: "Absolutely. Cancel in one click from your account settings. No penalties, no questions, no runaround. You keep access to Pro features through the end of your billing period.",
+    a: "Absolutely. Cancel in one click from your account settings. No penalties, no questions, no runaround. You keep access to all Pro features through the end of your billing period.",
   },
   {
     q: "What payment methods do you accept?",
-    a: "We accept all major credit and debit cards (Visa, Mastercard, American Express, Discover) via Gumroad. PayPal is also supported.",
-  },
-  {
-    q: "Is there a money-back guarantee?",
-    a: "Yes — 14 days, no questions asked. If you're not completely satisfied within 14 days of upgrading to Pro, contact our support team and we'll issue a full refund immediately.",
+    a: "We accept all major credit and debit cards (Visa, Mastercard, American Express, Discover) via Gumroad. PayPal is also supported. Your payment information is handled securely by Gumroad — we never store card details.",
   },
   {
     q: "Why is GetHiredToday priced at $9.99/month?",
-    a: "We believe everyone deserves access to great career tools without paying premium SaaS prices. Our AI runs on modern cloud infrastructure that costs pennies per session — we pass those savings through. $9.99/month covers unlimited resumes, unlimited cover letters, AI writing, PDF + Word download, and our 30-point ATS checker. No hidden fees, cancel anytime.",
+    a: "We believe everyone deserves access to professional career tools without paying enterprise SaaS prices. $9.99/month covers unlimited resumes, unlimited cover letters, full AI writing, PDF + Word download, our 30-point ATS checker, and Auto-Apply. One price, everything included, no hidden fees.",
+  },
+  {
+    q: "How does the subscription work?",
+    a: "Sign up and get instant access to every Pro feature. Your subscription renews monthly on the same date. You can cancel anytime before your next renewal and retain access until the end of your current billing period.",
   },
 ];
 

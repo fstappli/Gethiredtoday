@@ -64,7 +64,7 @@ export function welcomeEmail(firstName: string): { subject: string; html: string
         <li><strong>Check your ATS score</strong> — see if your resume passes automated screening</li>
         <li><strong>Browse templates</strong> — 60+ designs for every industry</li>
       </ul>
-      ${btn("Build My Resume — Free →", `${brand.url}/builder/resume`)}
+      ${btn("Build My Resume →", `${brand.url}/builder/resume`)}
       ${divider()}
       ${p("Questions? Just reply to this email — I read every one.")}
       <p style="margin:0;font-size:15px;color:#475569;">— Haroon, Founder of ${brand.name}</p>
@@ -86,8 +86,8 @@ export function atsEducationEmail(firstName: string): { subject: string; html: s
         <li>Non-standard section headings (e.g., "Career Journey" instead of "Experience")</li>
         <li>Wrong file format (some ATS systems can't read PDFs from certain editors)</li>
       </ul>
-      ${p("Our free ATS Checker scans your resume against 30+ criteria and tells you exactly what to fix.")}
-      ${btn("Check My ATS Score Free →", `${brand.url}/ats-checker`)}
+      ${p("Our ATS Checker scans your resume against 30+ criteria and tells you exactly what to fix.")}
+      ${btn("Check My ATS Score →", `${brand.url}/ats-checker`)}
       ${divider()}
       ${p("See you tomorrow with more tips.")}
       <p style="margin:0;font-size:15px;color:#475569;">— Haroon</p>
@@ -126,7 +126,7 @@ export function upgradeOfferEmail(firstName: string): { subject: string; html: s
     html: base(`
       ${h1(`${firstName || 'Hey'}, one last thing.`)}
       ${p("You've started building. Now let's finish strong.")}
-      ${p("Pro users get access to everything that free users miss:")}
+      ${p("Pro gives you everything you need to land interviews:")}
       <ul style="margin:0 0 16px;padding-left:20px;color:#475569;font-size:15px;line-height:2;">
         <li><strong>Unlimited resumes</strong> — apply to different roles with tailored versions</li>
         <li><strong>PDF download</strong> — the format recruiters actually want</li>
@@ -148,8 +148,8 @@ export function day10LastChanceEmail(firstName: string): { subject: string; html
     subject: "Your resume is built. The interviews aren't coming yet.",
     html: base(`
       ${h1(`${firstName || 'Hey'} — 10 days in. Time for real talk.`)}
-      ${p("You built a resume on the free plan. Nicely done. But I can see you haven't upgraded yet, and I want to be straight with you about what that's probably costing you.")}
-      ${p("The free plan gives you 3 AI suggestions total. If you're actively job hunting, that runs out in one application. After that, you're applying with a static resume against jobs that each want different keywords — and getting filtered out before a human reads them.")}
+      ${p("You built a resume on GetHiredToday. Nicely done. But I can see you haven't subscribed yet, and I want to be straight with you about what that's probably costing you.")}
+      ${p("Without Pro, AI suggestions are limited. If you're actively job hunting, you need unlimited rewrites tailored to each job description. After that, you're applying with a static resume against jobs that each want different keywords — and getting filtered out before a human reads them.")}
       ${p("Pro fixes that. Unlimited AI rewrites, unlimited ATS checks, clean downloads — for less than the cost of a coffee.")}
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#f8fafc;border-radius:12px;padding:20px;text-align:center;">
         <div style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin-bottom:8px;">Pro pricing</div>
@@ -181,7 +181,7 @@ export function day14WinbackEmail(firstName: string): { subject: string; html: s
         <div style="font-size:15px;line-height:1.6;color:#475569;margin-bottom:12px;">Pro is $9.99/mo. Less than a coffee. No autorenew trap — cancel any time, no questions. If $9.99 is the wall, hit reply instead and tell me why.</div>
         <a href="${brand.url}/pricing" style="display:inline-block;background:${brand.color};color:#ffffff;font-weight:700;font-size:14px;padding:10px 20px;border-radius:50px;text-decoration:none;">Upgrade to Pro →</a>
       </td></tr></table>
-      ${p("After this email, I'll stop bugging you unless you come back. Your account stays — the free tier is yours forever. Thanks for giving it a try. Really.")}
+      ${p("After this email, I'll stop bugging you unless you come back. Your account stays active — you can subscribe anytime. Thanks for giving it a try. Really.")}
       <p style="margin:0;font-size:15px;color:#475569;">— Haroon</p>
       ${divider()}
       <p style="margin:0;font-size:13px;line-height:1.6;color:#94a3b8;font-style:italic;">P.S. If you did land a job — I'd love a one-sentence story for our reader wins page. Total opt-in. But those stories are the whole reason I built this.</p>

@@ -4,28 +4,21 @@ import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import { isProActive } from '@/lib/subscription';
 import type { Job } from '@/types/jobs';
 
-const TRIAL_MS = 2 * 24 * 60 * 60 * 1000; // 48 hours
-
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // Gate: Pro OR within 2-day trial window
     const { data: profile } = await supabase
       .from('profiles')
-      .select('subscription_status, subscription_ends_at, created_at')
+      .select('subscription_status, subscription_ends_at')
       .eq('id', user.id)
       .single();
 
     const isPro = isProActive(profile);
-    const accountAgeMs = profile?.created_at
-      ? Date.now() - new Date(profile.created_at).getTime()
-      : Infinity;
-    const inTrial = accountAgeMs < TRIAL_MS;
 
-    if (!isPro && !inTrial) {
+    if (!isPro) {
       return NextResponse.json(
         { error: 'pro_required', message: 'Upgrade to Pro to apply to jobs.' },
         { status: 403 }

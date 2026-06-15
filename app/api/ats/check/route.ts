@@ -1,7 +1,28 @@
 import { NextResponse } from 'next/server';
+import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { isProActive } from '@/lib/subscription';
 import { calculateATSScore } from '@/lib/ats';
 
+const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
+
 export async function POST(req: Request) {
+  const supabase = await createServerSupabaseClient();
+  const { data: { user }, error: authError } = await supabase.auth.getUser();
+  if (authError || !user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  if (user.email !== ADMIN_EMAIL) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_status, subscription_ends_at')
+      .eq('id', user.id)
+      .single();
+    if (!isProActive(profile)) {
+      return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
+    }
+  }
+
   let body: unknown;
   try {
     body = await req.json();

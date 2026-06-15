@@ -32,14 +32,10 @@ export async function POST() {
 
     const { data: subProfile } = await supabase
       .from('profiles')
-      .select('subscription_status, subscription_ends_at, created_at')
+      .select('subscription_status, subscription_ends_at')
       .eq('id', user.id)
       .single();
-    const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
-    const inTrial = subProfile?.created_at
-      ? Date.now() - new Date(subProfile.created_at).getTime() < TRIAL_MS
-      : false;
-    if (!isProActive(subProfile) && !inTrial) {
+    if (!isProActive(subProfile)) {
       return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
     }
 

@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Eye, EyeOff, Loader2, Check, Zap, Mail, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Check, Mail, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,8 +30,6 @@ const signupSchema = z
   });
 
 type SignupFormValues = z.infer<typeof signupSchema>;
-type Plan = 'free' | 'pro';
-
 const GoogleIcon = () => (
   <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" aria-hidden="true">
     <path
@@ -101,55 +99,28 @@ function PasswordStrengthBar({ password }: { password: string }) {
   );
 }
 
-const PLANS: Array<{
-  id: Plan;
-  name: string;
-  price: string;
-  period: string;
-  badge?: string;
-  features: string[];
-}> = [
-  {
-    id: 'free',
-    name: 'Free',
-    price: '$0',
-    period: 'forever',
-    features: ['1 resume', '3 templates', 'Basic ATS check', 'TXT download only'],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '$9.99',
-    period: 'per month',
-    badge: 'Recommended',
-    features: ['Unlimited resumes', 'All 60+ templates', 'PDF + Word download', 'AI writing tools', 'Cover letter builder'],
-  },
-];
+
+function safeRedirect(raw: string | null): string {
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/dashboard';
+  return raw;
+}
 
 function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const redirectUrl = safeRedirect(searchParams.get('redirect') ?? searchParams.get('next'));
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<Plan>('free');
   const [serverError, setServerError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [passwordValue, setPasswordValue] = useState('');
-  // When Supabase has email confirmation enabled, signUp() returns a user but
-  // no session. We surface a dedicated "check your inbox" state so the user is
-  // never left wondering why they can't log in.
   const [pendingConfirmation, setPendingConfirmation] = useState<{
     email: string;
   } | null>(null);
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
   const [resendCooldownUntil, setResendCooldownUntil] = useState<number>(0);
-
-  useEffect(() => {
-    if (searchParams.get('plan') === 'pro') {
-      setSelectedPlan('pro');
-    }
-  }, [searchParams]);
 
   const {
     register,
@@ -176,10 +147,7 @@ function SignupForm() {
       password: values.password,
       options: {
         data: { full_name: values.fullName },
-        // Send the user back to our auth callback after they click the
-        // confirmation link. The callback exchanges the code for a session
-        // and redirects to /dashboard.
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
       },
     });
 
@@ -193,18 +161,8 @@ function SignupForm() {
     // kicked the user back to /login — now we show a clear "check your
     // inbox" state with a resend button so the user always knows what to do.
     if (data.user && !data.session) {
-      // Save pro intent so dashboard can resume checkout after email confirmation
-      if (selectedPlan === 'pro') {
-        try { sessionStorage.setItem('pending_plan', 'pro'); } catch {}
-      }
       setPendingConfirmation({ email: values.email });
-      // Light 60-second cooldown to discourage hammering the resend button
       setResendCooldownUntil(Date.now() + 60_000);
-      return;
-    }
-
-    if (selectedPlan === 'pro' && data.user) {
-      window.location.href = '/upgrade?from=%2Fdashboard';
       return;
     }
 
@@ -224,7 +182,7 @@ function SignupForm() {
       sessionStorage.setItem('dashboard_toast', 'Account created! Welcome to GetHiredToday.');
     } catch {}
     setTimeout(() => {
-      router.push('/dashboard');
+      router.push(redirectUrl);
     }, 1500);
   };
 
@@ -247,7 +205,7 @@ function SignupForm() {
       type: 'signup',
       email: pendingConfirmation.email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
       },
     });
 
@@ -272,7 +230,7 @@ function SignupForm() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
       },
     });
     if (error) {
@@ -399,9 +357,9 @@ function SignupForm() {
     <div className="space-y-8">
       {/* Heading */}
       <div>
-        <h1 className="text-3xl font-bold text-slate-900">Create your free account</h1>
+        <h1 className="text-3xl font-bold text-slate-900">Create your account</h1>
         <p className="mt-2 text-slate-500">
-          Get <span className="font-semibold text-teal-600">2 days of full access free</span> — no credit card required. After that, upgrade to Pro for $9.99/month.
+          Join thousands of job seekers landing interviews with AI-powered resumes.
         </p>
       </div>
 
@@ -546,56 +504,6 @@ function SignupForm() {
           )}
         </div>
 
-        {/* Plan selector */}
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-slate-700">Choose your plan</Label>
-          <div className="grid grid-cols-2 gap-3">
-            {PLANS.map((plan) => {
-              const isSelected = selectedPlan === plan.id;
-              return (
-                <button
-                  key={plan.id}
-                  type="button"
-                  onClick={() => setSelectedPlan(plan.id)}
-                  className={`relative rounded-xl border-2 p-4 text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-[#4AB7A6] ${
-                    isSelected
-                      ? 'border-[#4AB7A6] bg-[#f0fdf9]'
-                      : 'border-slate-200 bg-white hover:border-slate-300'
-                  }`}
-                >
-                  {plan.badge && (
-                    <span
-                      className="absolute -top-2.5 right-3 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white"
-                      style={{ backgroundColor: '#4AB7A6' }}
-                    >
-                      <Zap className="w-2.5 h-2.5" />
-                      {plan.badge}
-                    </span>
-                  )}
-                  <div className="font-semibold text-slate-900 text-sm">{plan.name}</div>
-                  <div className="flex items-baseline gap-0.5 mt-0.5">
-                    <span
-                      className="text-xl font-bold"
-                      style={{ color: isSelected ? '#4AB7A6' : '#0f172a' }}
-                    >
-                      {plan.price}
-                    </span>
-                    <span className="text-xs text-slate-400">/{plan.period}</span>
-                  </div>
-                  <ul className="mt-2.5 space-y-1">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-1.5 text-xs text-slate-600">
-                        <Check className="w-3 h-3 flex-shrink-0 mt-0.5" style={{ color: '#4AB7A6' }} />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
         <Button
           type="submit"
           className="w-full h-12 font-semibold rounded-full text-white"
@@ -623,7 +531,10 @@ function SignupForm() {
       {/* Sign in link */}
       <p className="text-center text-sm text-slate-500">
         Already have an account?{' '}
-        <Link href="/login" className="font-semibold text-[#4AB7A6] hover:underline">
+        <Link
+          href={`/login${redirectUrl !== '/dashboard' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`}
+          className="font-semibold text-[#4AB7A6] hover:underline"
+        >
           Sign in
         </Link>
       </p>

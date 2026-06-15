@@ -1,5 +1,8 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { isProActive } from '@/lib/subscription';
 import { NextResponse } from 'next/server';
+
+const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
 
 // GET /api/resume — list all resumes for the authenticated user
 export async function GET() {
@@ -11,9 +14,6 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Never return user_id in the response — it's redundant (the request is
-    // already authenticated) and leaking it encourages the frontend to build
-    // flows that rely on the user id being in the DOM / network tab.
     const { data: resumes, error } = await supabase
       .from('resumes')
       .select('id, title, template_id, ats_score, color_scheme, font_size, is_public, data, created_at, updated_at, finalized_at')
@@ -40,6 +40,27 @@ export async function POST(req: Request) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Enforce free-tier resume limit server-side
+    if (user.email !== ADMIN_EMAIL) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_status, subscription_ends_at')
+        .eq('id', user.id)
+        .single();
+      if (!isProActive(profile)) {
+        const { count } = await supabase
+          .from('resumes')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        if ((count ?? 0) >= 1) {
+          return NextResponse.json(
+            { error: 'Free plan is limited to 1 resume. Upgrade to Pro for unlimited resumes.' },
+            { status: 403 }
+          );
+        }
+      }
     }
 
     const body = await req.json();

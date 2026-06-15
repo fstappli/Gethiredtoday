@@ -1,12 +1,26 @@
 import { getAnthropicClient } from '@/lib/ai';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { isProActive } from '@/lib/subscription';
+
+const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
 
 export async function POST(req: Request) {
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+    if (user.email !== ADMIN_EMAIL) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_status, subscription_ends_at')
+        .eq('id', user.id)
+        .single();
+      if (!isProActive(profile)) {
+        return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
+      }
+    }
 
     const body = await req.json();
 

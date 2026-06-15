@@ -13,25 +13,7 @@ interface ApplyButtonProps {
   onStatusChange?: (status: ApplicationStatus) => void;
   size?: 'sm' | 'default';
   isPro?: boolean;
-  accountCreatedAt?: string | null;
-}
-
-const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
-
-function getTrialState(isPro: boolean, accountCreatedAt: string | null | undefined): {
-  canApply: boolean;
-  inTrial: boolean;
-  trialDaysLeft: number;
-} {
-  if (isPro) return { canApply: true, inTrial: false, trialDaysLeft: 0 };
-  if (!accountCreatedAt) return { canApply: false, inTrial: false, trialDaysLeft: 0 };
-  const ageMs = Date.now() - new Date(accountCreatedAt).getTime();
-  if (ageMs < TRIAL_MS) {
-    const msLeft = TRIAL_MS - ageMs;
-    const daysLeft = Math.max(1, Math.ceil(msLeft / (24 * 60 * 60 * 1000)));
-    return { canApply: true, inTrial: true, trialDaysLeft: daysLeft };
-  }
-  return { canApply: false, inTrial: false, trialDaysLeft: 0 };
+  accountCreatedAt?: string | null; // kept for prop-compat, unused
 }
 
 export function ApplyButton({
@@ -48,8 +30,6 @@ export function ApplyButton({
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [applicationId, setApplicationId] = useState<string | null>(null);
-
-  const { canApply, inTrial, trialDaysLeft } = getTrialState(isPro, accountCreatedAt);
 
   const handleApply = async () => {
     if (status === 'applied') return;
@@ -150,45 +130,32 @@ export function ApplyButton({
     );
   }
 
-  // Locked — trial expired and not Pro
-  if (!canApply) {
+  // Not Pro — prompt upgrade
+  if (!isPro) {
     return (
-      <div className="flex flex-col items-end gap-1">
-        <a
-          href={`/upgrade?from=%2Fdashboard%2Ffind-jobs`}
-          className={`inline-flex items-center gap-1.5 font-semibold text-white rounded-full transition-all hover:-translate-y-0.5 ${size === 'sm' ? 'text-xs px-3 py-1.5' : 'text-sm px-4 py-2'}`}
-          style={{
-            background: 'linear-gradient(135deg, #4AB7A6 0%, #3aa492 100%)',
-            boxShadow: '0 4px 12px -3px rgba(74,183,166,0.4)',
-          }}
-        >
-          <Crown className="w-3.5 h-3.5" />
-          Upgrade to Apply
-        </a>
-        {size !== 'sm' && (
-          <p className="text-[11px] text-slate-400">Free trial ended · Pro required</p>
-        )}
-      </div>
+      <a
+        href={`/upgrade?from=%2Fdashboard%2Ffind-jobs`}
+        className={`inline-flex items-center gap-1.5 font-semibold text-white rounded-full transition-all hover:-translate-y-0.5 ${size === 'sm' ? 'text-xs px-3 py-1.5' : 'text-sm px-4 py-2'}`}
+        style={{
+          background: 'linear-gradient(135deg, #4AB7A6 0%, #3aa492 100%)',
+          boxShadow: '0 4px 12px -3px rgba(74,183,166,0.4)',
+        }}
+      >
+        <Crown className="w-3.5 h-3.5" />
+        Upgrade to Apply
+      </a>
     );
   }
 
-  // Free trial still active — show Apply with trial countdown
   return (
-    <div className="flex flex-col items-end gap-1">
-      <Button
-        size={size}
-        className="bg-[#4AB7A6] hover:bg-[#3da090] text-white"
-        onClick={handleApply}
-        disabled={loading}
-      >
-        {loading ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <ExternalLink className="w-4 h-4 mr-1.5" />}
-        Apply
-      </Button>
-      {inTrial && (
-        <span className="text-[11px] text-amber-600 font-medium">
-          {trialDaysLeft === 1 ? 'Last day free' : `${trialDaysLeft} day${trialDaysLeft !== 1 ? 's' : ''} free left`}
-        </span>
-      )}
-    </div>
+    <Button
+      size={size}
+      className="bg-[#4AB7A6] hover:bg-[#3da090] text-white"
+      onClick={handleApply}
+      disabled={loading}
+    >
+      {loading ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <ExternalLink className="w-4 h-4 mr-1.5" />}
+      Apply
+    </Button>
   );
 }

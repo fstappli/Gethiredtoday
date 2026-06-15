@@ -5,6 +5,7 @@ import { CheckCircle2, Clock, Eye, Calendar, XCircle, Award, ExternalLink, Loade
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ProFeatureGate } from '@/components/pro-feature-gate';
 import type { Application, ApplicationStatus } from '@/types/jobs';
 
 const STATUS_TABS: { value: ApplicationStatus | 'all'; label: string }[] = [
@@ -55,11 +56,19 @@ function formatDate(dateStr: string | null): string {
 }
 
 export default function AppliedJobsPage() {
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
   const [counts, setCounts] = useState({ applied: 0, redirected: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<ApplicationStatus | 'all'>('all');
   const [applyingId, setApplyingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch('/api/user/subscription-status')
+      .then((r) => r.json())
+      .then((d) => setIsPro(d.isPro ?? false))
+      .catch(() => setIsPro(false));
+  }, []);
 
   const fetchApplications = useCallback(async (status: ApplicationStatus | 'all') => {
     setLoading(true);
@@ -109,6 +118,30 @@ export default function AppliedJobsPage() {
       setApplyingId(null);
     }
   };
+
+  if (isPro === null) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!isPro) {
+    return (
+      <ProFeatureGate
+        title="Job Application Tracker"
+        description="Track every application you send — see what's pending, viewed, or moving to interview stage."
+        features={[
+          'Track status: Applied, Viewed, Interview, Offer',
+          'Automatically updated when employers open your application',
+          'Filter and search across all applications',
+          'One-click re-apply to pending roles',
+        ]}
+        from="/dashboard/applied-jobs"
+      />
+    );
+  }
 
   return (
     <div className="min-h-full bg-white">

@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -40,14 +40,19 @@ const GoogleIcon = () => (
   </svg>
 );
 
-export default function LoginPage() {
+function safeRedirect(raw: string | null): string {
+  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return '/dashboard';
+  return raw;
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectUrl = safeRedirect(searchParams.get('redirect') ?? searchParams.get('next'));
+
   const [showPassword, setShowPassword] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const [googleLoading, setGoogleLoading] = useState(false);
-  // When Supabase returns "Email not confirmed", we capture the email so we
-  // can offer the user a one-click "Resend confirmation email" button. Much
-  // better than a cryptic error that offers no path forward.
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
   const [resending, setResending] = useState(false);
   const [resendMessage, setResendMessage] = useState<{ kind: 'ok' | 'err'; text: string } | null>(null);
@@ -72,15 +77,10 @@ export default function LoginPage() {
     });
 
     if (error) {
-      // Supabase returns "Email not confirmed" (and sometimes status 400 with
-      // `email_not_confirmed` code) when the user never clicked the
-      // confirmation link. Detect that specifically and offer a resend action
-      // inline, instead of just showing a dead-end error message.
       const raw = error.message ?? '';
       const isUnconfirmed =
         /email not confirmed/i.test(raw) ||
         /email_not_confirmed/i.test(raw) ||
-        // Supabase older message variant
         /confirm your email/i.test(raw);
 
       if (isUnconfirmed) {
@@ -93,17 +93,14 @@ export default function LoginPage() {
       return;
     }
 
-    // Stash a success toast the dashboard will pick up on first render.
     try {
       sessionStorage.setItem('dashboard_toast', 'Login successful. Welcome back!');
     } catch {}
 
-    router.push('/dashboard');
+    router.push(redirectUrl);
     router.refresh();
   };
 
-  // Resend the signup confirmation email. Rate-limited client-side to align
-  // with Supabase's own 60s throttle.
   const handleResendConfirmation = async () => {
     if (!unconfirmedEmail) return;
     if (Date.now() < resendCooldownUntil) {
@@ -119,7 +116,7 @@ export default function LoginPage() {
       type: 'signup',
       email: unconfirmedEmail,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
       },
     });
     setResending(false);
@@ -145,7 +142,7 @@ export default function LoginPage() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectUrl)}`,
       },
     });
     if (error) {
@@ -198,9 +195,6 @@ export default function LoginPage() {
           </div>
         )}
 
-        {/* Unconfirmed-email state — shown when login fails because the user
-            hasn't clicked their confirmation link yet. Gives them a clear
-            path forward instead of a dead-end error. */}
         {unconfirmedEmail && (
           <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 space-y-3">
             <div className="flex items-start gap-3">
@@ -338,13 +332,21 @@ export default function LoginPage() {
       <p className="text-center text-sm text-slate-500 animate-auth-slide" style={{ '--stagger-delay': '300ms' } as React.CSSProperties}>
         Don&apos;t have an account?{' '}
         <Link
-          href="/signup"
+          href={`/signup${redirectUrl !== '/dashboard' ? `?redirect=${encodeURIComponent(redirectUrl)}` : ''}`}
           className="font-semibold link-animated"
           style={{ color: '#4AB7A6' }}
         >
-          Create one free →
+          Create one →
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

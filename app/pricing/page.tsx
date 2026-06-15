@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Check, Minus, ArrowRight } from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import PricingToggle from "@/components/pricing-toggle";
@@ -8,69 +8,34 @@ import PricingFAQ from "@/components/pricing-faq";
 import { ScrollReveal } from "@/components/ui/scroll-reveal";
 
 export const metadata: Metadata = {
-  title: "Pricing — Simple Plans for Every Job Seeker",
-  description: "GetHiredToday is free to start. Upgrade to Pro for unlimited resumes, all templates, PDF downloads, full AI writing, and ATS checking. Cancel anytime.",
+  title: "Pricing — $9.99/month for Everything",
+  description: "GetHiredToday Pro gives you unlimited resumes, all 60+ templates, PDF + Word downloads, full AI writing, ATS checking, and Auto-Apply — all for $9.99/month. Cancel anytime.",
   alternates: { canonical: "https://hiredtodayapp.com/pricing" },
   openGraph: {
-    title: "Pricing — Simple Plans for Every Job Seeker | GetHiredToday",
-    description: "Free plan available. Pro plan unlocks unlimited resumes, AI writing, PDF downloads, and full ATS checking.",
+    title: "Pricing — $9.99/month | GetHiredToday",
+    description: "Everything you need to get hired: unlimited resumes, AI writing, PDF downloads, ATS checking, and Auto-Apply for $9.99/month.",
     url: "https://hiredtodayapp.com/pricing",
   },
 };
 
-/* ─── Comparison table data ──────────────────────────────────────────── */
+/* ─── Feature list data ──────────────────────────────────────────────── */
 
-type CellValue = boolean | string;
-
-interface ComparisonRow {
-  feature: string;
-  free: CellValue;
-  pro: CellValue;
-}
-
-const comparisonRows: ComparisonRow[] = [
-  { feature: "Number of Resumes",       free: "1",        pro: "Unlimited"       },
-  { feature: "Templates",               free: "3 basic",  pro: "All 60+"         },
-  { feature: "PDF Download",            free: false,      pro: true              },
-  { feature: "Word Download",           free: false,      pro: true              },
-  { feature: "AI Content Suggestions",  free: false,      pro: true              },
-  { feature: "AI Bullet Point Writer",  free: false,      pro: true              },
-  { feature: "AI Professional Summary", free: false,      pro: true              },
-  { feature: "ATS Score & Checker",     free: "Basic",    pro: "Full 30-point"   },
-  { feature: "Cover Letter Builder",    free: false,      pro: true              },
-  { feature: "Auto-Apply (50 jobs/day)", free: false,     pro: true              },
-  { feature: "Keyword Targeting",       free: false,      pro: true              },
-  { feature: "Priority Support",        free: false,      pro: true              },
-  { feature: "New Templates Monthly",   free: false,      pro: true              },
+const proFeatures: string[] = [
+  "Unlimited resumes",
+  "All 60+ professional templates",
+  "PDF download",
+  "Word (.docx) download",
+  "AI content suggestions",
+  "AI bullet point writer",
+  "AI professional summary",
+  "Full 30-point ATS Score & Checker",
+  "AI cover letter builder",
+  "Auto-Apply (50 jobs/day)",
+  "Keyword targeting",
+  "Priority support",
+  "New templates added monthly",
 ];
 
-/* ─── Cell renderer ──────────────────────────────────────────────────── */
-
-function FreeCell({ value }: { value: CellValue }) {
-  if (typeof value === "boolean") {
-    return value ? (
-      <Check className="w-[18px] h-[18px] mx-auto" style={{ color: "#4AB7A6" }} />
-    ) : (
-      <Minus className="w-[18px] h-[18px] mx-auto text-slate-300" />
-    );
-  }
-  return <span className="text-sm text-slate-500">{value}</span>;
-}
-
-function ProCell({ value }: { value: CellValue }) {
-  if (typeof value === "boolean") {
-    return value ? (
-      <Check className="w-[18px] h-[18px] mx-auto" style={{ color: "#4AB7A6" }} />
-    ) : (
-      <Minus className="w-[18px] h-[18px] mx-auto text-slate-300" />
-    );
-  }
-  return (
-    <span className="text-sm font-semibold" style={{ color: "#4AB7A6" }}>
-      {value}
-    </span>
-  );
-}
 
 /* ─── Page ───────────────────────────────────────────────────────────── */
 
@@ -101,22 +66,22 @@ export default function PricingPage() {
             </div>
 
             <h1 className="animate-fade-up text-5xl sm:text-6xl font-bold text-slate-900 leading-tight tracking-tight mb-6" style={{ '--stagger-delay': '60ms' } as React.CSSProperties}>
-              Simple Pricing.{" "}
-              <span style={{ color: "#4AB7A6" }}>Real Value.</span>
+              One Plan.{" "}
+              <span style={{ color: "#4AB7A6" }}>Everything Included.</span>
             </h1>
 
             <p className="animate-fade-up text-xl text-slate-600 leading-relaxed mb-10 max-w-2xl mx-auto" style={{ '--stagger-delay': '120ms' } as React.CSSProperties}>
-              Everything you need to get hired — unlimited resumes, cover letters, AI
-              writing, and ATS scoring — for <span className="font-bold text-slate-900">$9.99/month</span>.
-              Our goal is to remove cost as a barrier to getting hired.
+              Unlimited resumes, cover letters, AI writing, ATS scoring, and Auto-Apply — all for{" "}
+              <span className="font-bold text-slate-900">$9.99/month</span>.
+              Cancel anytime. No commitments.
             </p>
 
             {/* Trust pills */}
             <div className="flex flex-wrap items-center justify-center gap-3">
               {[
-                "14-Day Money-Back Guarantee",
                 "Cancel Anytime",
                 "No Hidden Fees",
+                "One Plan, Everything Included",
               ].map((pill, i) => (
                 <span
                   key={pill}
@@ -138,48 +103,38 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* ── COMPARISON TABLE ──────────────────────────────────── */}
+        {/* ── FEATURES INCLUDED ─────────────────────────────────── */}
         <section className="bg-slate-50 py-16 lg:py-24 px-4">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 text-center mb-12">
-              Full Feature Comparison
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 text-center mb-4">
+              Everything Included with Pro
             </h2>
+            <p className="text-center text-slate-500 mb-12 text-lg">
+              One subscription. No limits. No tiers.
+            </p>
 
             <div className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-              {/* Table header */}
-              <div className="grid grid-cols-3 px-6 py-4 border-b border-slate-100 bg-slate-50">
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-                  Feature
-                </div>
-                <div className="text-xs font-semibold uppercase tracking-wider text-slate-700 text-center">
-                  Free
-                </div>
-                <div
-                  className="text-xs font-semibold uppercase tracking-wider text-center"
-                  style={{ color: "#4AB7A6" }}
-                >
-                  Pro
+              <div className="px-6 py-4 border-b border-slate-100" style={{ background: "linear-gradient(135deg, #4AB7A6 0%, #3aa492 100%)" }}>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-bold text-white uppercase tracking-wider">Pro Plan — $9.99/month</span>
+                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-white/20 text-white">All features included</span>
                 </div>
               </div>
 
-              {/* Rows */}
-              {comparisonRows.map((row, idx) => (
-                <ScrollReveal key={row.feature} delay={idx * 30}>
-                <div
-                  className={`grid grid-cols-3 px-6 py-4 items-center border-b border-slate-50 last:border-0 transition-colors duration-150 hover:bg-teal-50/40 ${
-                    idx % 2 === 1 ? "bg-slate-50/60" : "bg-white"
-                  }`}
-                >
-                  <span className="text-sm font-medium text-slate-700">{row.feature}</span>
-                  <div className="flex justify-center">
-                    <FreeCell value={row.free} />
+              <div className="grid grid-cols-1 sm:grid-cols-2">
+                {proFeatures.map((feature, idx) => (
+                  <ScrollReveal key={feature} delay={idx * 25}>
+                  <div
+                    className={`flex items-center gap-3 px-6 py-4 border-b border-slate-50 transition-colors duration-150 hover:bg-teal-50/40 ${
+                      idx % 2 === 1 && idx !== proFeatures.length - 1 ? "sm:border-l border-slate-50" : ""
+                    }`}
+                  >
+                    <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} />
+                    <span className="text-sm font-medium text-slate-700">{feature}</span>
                   </div>
-                  <div className="flex justify-center">
-                    <ProCell value={row.pro} />
-                  </div>
-                </div>
-                </ScrollReveal>
-              ))}
+                  </ScrollReveal>
+                ))}
+              </div>
             </div>
           </div>
         </section>
@@ -219,21 +174,21 @@ export default function PricingPage() {
           <div className="max-w-3xl mx-auto text-center relative z-10">
             <ScrollReveal>
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-4 tracking-tight">
-              Start Building for Free Today
+              Land Your Next Job Faster
             </h2>
             <p className="text-xl text-white/80 mb-10">
-              No credit card required. Upgrade to Pro when you&apos;re ready.
+              Get full access to every feature — unlimited resumes, AI writing, ATS checking, and Auto-Apply — for $9.99/month.
             </p>
             <Link
-              href="/signup"
+              href="/upgrade?from=%2Fpricing"
               className="inline-flex items-center gap-2 px-10 py-4 rounded-full text-base font-bold bg-white transition-all duration-150 hover:bg-slate-50 hover:shadow-xl hover:-translate-y-1 active:scale-[0.97]"
               style={{ color: "#4AB7A6", boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}
             >
-              Create My Free Resume
+              Get Pro Access — $9.99/mo
               <ArrowRight className="w-5 h-5" />
             </Link>
             <p className="text-sm text-white/60 mt-5">
-              14-day money-back guarantee · Cancel anytime
+              Cancel anytime · Powered by Gumroad
             </p>
             </ScrollReveal>
           </div>

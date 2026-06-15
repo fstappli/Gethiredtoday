@@ -126,11 +126,11 @@ export default function Navbar() {
                   Log In
                 </Link>
                 <Link
-                  href="/builder/wizard"
+                  href="/signup"
                   className="px-5 py-2 text-sm font-semibold text-white rounded-full btn-teal"
                   style={{ backgroundColor: "#4AB7A6" }}
                 >
-                  Build Free Resume
+                  Get Started
                 </Link>
               </>
             )}
@@ -199,12 +199,12 @@ export default function Navbar() {
                     Log In
                   </Link>
                   <Link
-                    href="/builder/wizard"
+                    href="/signup"
                     onClick={() => setMobileOpen(false)}
                     className="block px-4 py-3 text-sm font-semibold text-center text-white rounded-full transition-opacity hover:opacity-90"
                     style={{ backgroundColor: "#4AB7A6" }}
                   >
-                    Build Free Resume
+                    Get Started
                   </Link>
                 </>
               )}

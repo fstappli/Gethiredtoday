@@ -34,26 +34,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ processed: 0, message: 'No users with auto-apply enabled.' });
   }
 
-  // Filter to only users with active Pro or within the 2-day trial window
+  // Filter to only Pro users
   const userIds = activeSettings.map((s) => s.user_id);
   const { data: profiles } = await admin
     .from('profiles')
-    .select('id, subscription_status, subscription_ends_at, created_at')
+    .select('id, subscription_status, subscription_ends_at')
     .in('id', userIds);
 
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
-  const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
   const eligibleSettings = activeSettings.filter((s) => {
     const p = profileMap.get(s.user_id);
     if (!p) return false;
-    if (isProActive(p)) return true;
-    return p.created_at
-      ? Date.now() - new Date(p.created_at).getTime() < TRIAL_MS
-      : false;
+    return isProActive(p);
   });
 
   if (eligibleSettings.length === 0) {
-    return NextResponse.json({ processed: 0, message: 'No eligible users with active Pro or trial.' });
+    return NextResponse.json({ processed: 0, message: 'No eligible Pro users with auto-apply enabled.' });
   }
 
   // Run for each user — cap concurrency at 3 to avoid rate-limiting job APIs.

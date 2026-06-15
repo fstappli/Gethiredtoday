@@ -56,14 +56,12 @@ function JobDetailContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [isPro, setIsPro] = useState(false);
-  const [accountCreatedAt, setAccountCreatedAt] = useState<string | null>(null);
 
   useEffect(() => {
     fetch('/api/user/subscription-status')
       .then((r) => r.json())
       .then((d) => {
         setIsPro(d.isPro ?? false);
-        setAccountCreatedAt(d.accountCreatedAt ?? null);
       })
       .catch(() => {});
   }, []);
@@ -257,7 +255,6 @@ function JobDetailContent() {
                 job={job}
                 size="default"
                 isPro={isPro}
-                accountCreatedAt={accountCreatedAt}
               />
             </div>
 
@@ -309,7 +306,6 @@ function JobDetailContent() {
             job={job}
             size="default"
             isPro={isPro}
-            accountCreatedAt={accountCreatedAt}
           />
           <button
             onClick={() => router.back()}

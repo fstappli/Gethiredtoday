@@ -12,27 +12,36 @@ import {
   Menu,
   X,
   LayoutDashboard,
+  FileText,
   Mail,
+  Target,
+  Briefcase,
+  Zap,
+  Lock,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 import { isProActive } from '@/lib/subscription';
 import Logo from '@/components/logo';
 
 const mobileNavItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/dashboard/cover-letters', label: 'Cover Letters', icon: Mail },
-  { href: '/dashboard/account', label: 'Account', icon: User },
-  { href: '/dashboard/billing', label: 'Billing', icon: CreditCard },
+  { href: '/dashboard',               label: 'Dashboard',      icon: LayoutDashboard, proOnly: false },
+  { href: '/dashboard/resumes',        label: 'My Resumes',     icon: FileText,        proOnly: false },
+  { href: '/dashboard/cover-letters',  label: 'Cover Letters',  icon: Mail,            proOnly: true  },
+  { href: '/dashboard/find-jobs',      label: 'Find Jobs',      icon: Briefcase,       proOnly: true  },
+  { href: '/dashboard/auto-apply',     label: 'Auto-Apply',     icon: Zap,             proOnly: true  },
+  { href: '/dashboard/ats-checker',    label: 'ATS Checker',    icon: Target,          proOnly: true  },
+  { href: '/dashboard/account',        label: 'Account',        icon: User,            proOnly: false },
+  { href: '/dashboard/billing',        label: 'Billing',        icon: CreditCard,      proOnly: false },
 ];
 
-export default function DashboardHeader() {
+export default function DashboardHeader({ isPro: initialIsPro = false }: { isPro?: boolean }) {
   const router = useRouter();
   const [userName, setUserName] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [profileOpen, setProfileOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [creating] = useState(false);
-  const [isPro, setIsPro] = useState(false);
+  const [isPro, setIsPro] = useState(initialIsPro);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -112,7 +121,7 @@ export default function DashboardHeader() {
 
         {/* Right side: New Resume + Profile */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* New Resume button */}
+          {/* New Resume button — visible to all users */}
           <button
             onClick={handleNewResume}
             disabled={creating}
@@ -225,17 +234,23 @@ export default function DashboardHeader() {
 
             {/* Mobile nav */}
             <nav className="flex-1 py-4 px-3 space-y-0.5 overflow-y-auto">
-              {mobileNavItems.map(({ href, label, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  onClick={() => setMobileOpen(false)}
-                  className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <Icon className="w-4 h-4 shrink-0 text-gray-400" />
-                  {label}
-                </Link>
-              ))}
+              {mobileNavItems.map(({ href, label, icon: Icon, proOnly }) => {
+                const locked = proOnly && !isPro;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    onClick={() => setMobileOpen(false)}
+                    className={`flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      locked ? 'text-gray-400 hover:bg-gray-50' : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 shrink-0 text-gray-400" />
+                    <span className="flex-1">{label}</span>
+                    {locked && <Lock className="w-3.5 h-3.5 shrink-0 text-gray-300" />}
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Mobile user section */}

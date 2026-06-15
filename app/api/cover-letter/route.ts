@@ -1,5 +1,8 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { isProActive } from '@/lib/subscription';
 import { NextResponse } from 'next/server';
+
+const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
 
 // GET /api/cover-letter — list all cover letters for the authenticated user
 export async function GET() {
@@ -29,7 +32,7 @@ export async function GET() {
   }
 }
 
-// POST /api/cover-letter — create a new cover letter
+// POST /api/cover-letter — create a new cover letter (Pro only)
 export async function POST(req: Request) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -37,6 +40,20 @@ export async function POST(req: Request) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (user.email !== ADMIN_EMAIL) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_status, subscription_ends_at')
+        .eq('id', user.id)
+        .single();
+      if (!isProActive(profile)) {
+        return NextResponse.json(
+          { error: 'Pro subscription required to create cover letters.' },
+          { status: 403 }
+        );
+      }
     }
 
     const body = await req.json();

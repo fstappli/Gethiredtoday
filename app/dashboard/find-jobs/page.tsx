@@ -1,11 +1,12 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle, Globe, Zap, FileText } from 'lucide-react';
+import { Search, SlidersHorizontal, X, Briefcase, MapPin, AlertCircle, Globe, Zap, FileText, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { JobCard, JobCardSkeleton } from '@/components/jobs/job-card';
 import { useJobSearch } from '@/hooks/use-job-search';
+import { ProFeatureGate } from '@/components/pro-feature-gate';
 import type { EmploymentType } from '@/types/jobs';
 
 const COUNTRIES = [
@@ -300,19 +301,15 @@ function FindJobsContent() {
   const [categories, setCategories] = useState<{ label: string; tag: string }[]>([]);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [activeResume, setActiveResume] = useState<{ id: string; title: string; jobTitle: string } | null>(null);
-  const [isPro, setIsPro] = useState(false);
-  const [accountCreatedAt, setAccountCreatedAt] = useState<string | null>(null);
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const resumeInitialized = useRef(false);
 
   // On mount: fetch subscription status
   useEffect(() => {
     fetch('/api/user/subscription-status')
       .then((r) => r.json())
-      .then((d) => {
-        setIsPro(d.isPro ?? false);
-        setAccountCreatedAt(d.accountCreatedAt ?? null);
-      })
-      .catch(() => {});
+      .then((d) => setIsPro(d.isPro ?? false))
+      .catch(() => setIsPro(false));
   }, []);
 
   // On mount: fetch the active (finalized) resume and pre-populate the search query
@@ -372,6 +369,30 @@ function FindJobsContent() {
       clear: () => setFilter('industries', (filters.industries ?? []).filter((i) => i !== ind)),
     });
   });
+
+  if (isPro === null) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!isPro) {
+    return (
+      <ProFeatureGate
+        title="Find Jobs"
+        description="Search thousands of live job listings and get matched to roles that fit your resume automatically."
+        features={[
+          'Live job listings from 1,000+ employers',
+          'AI resume-to-job matching score',
+          'Filter by location, remote, contract type',
+          'One-click apply directly from the dashboard',
+        ]}
+        from="/dashboard/find-jobs"
+      />
+    );
+  }
 
   return (
     <div className="min-h-full bg-white">
@@ -436,52 +457,6 @@ function FindJobsContent() {
         )}
 
         {unconfigured && <div className="mt-4"><UnconfiguredBanner /></div>}
-
-        {/* Trial / Pro access banner */}
-        {!isPro && accountCreatedAt && (() => {
-          const ageMs = Date.now() - new Date(accountCreatedAt).getTime();
-          const trialMs = 2 * 24 * 60 * 60 * 1000;
-          const inTrial = ageMs < trialMs;
-          const daysLeft = inTrial ? Math.max(1, Math.ceil((trialMs - ageMs) / (24 * 60 * 60 * 1000))) : 0;
-          if (inTrial) {
-            return (
-              <div className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-50 border border-amber-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-semibold text-amber-900">
-                    {daysLeft === 1 ? 'Last day' : `${daysLeft} days`} of free job applying
-                  </p>
-                  <p className="text-xs text-amber-700 mt-0.5">
-                    After your 2-day free trial, applying to jobs requires a Pro account.
-                  </p>
-                </div>
-                <a
-                  href="/upgrade?from=%2Fdashboard%2Ffind-jobs"
-                  className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full text-white"
-                  style={{ backgroundColor: '#4AB7A6' }}
-                >
-                  Get Pro →
-                </a>
-              </div>
-            );
-          }
-          return (
-            <div className="mt-4 flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 border border-slate-200">
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-slate-800">Applying to jobs requires Pro</p>
-                <p className="text-xs text-slate-500 mt-0.5">
-                  Your 2-day free trial has ended. Upgrade to Pro to apply to jobs directly.
-                </p>
-              </div>
-              <a
-                href="/upgrade?from=%2Fdashboard%2Ffind-jobs"
-                className="shrink-0 text-xs font-semibold px-3 py-1.5 rounded-full text-white"
-                style={{ backgroundColor: '#4AB7A6' }}
-              >
-                Upgrade →
-              </a>
-            </div>
-          );
-        })()}
 
         {/* Active resume context banner */}
         {activeResume && (
@@ -554,7 +529,7 @@ function FindJobsContent() {
           ) : (
             <div className="space-y-3">
               {jobs.map((job) => (
-                <JobCard key={job.id} job={job} isPro={isPro} accountCreatedAt={accountCreatedAt} />
+                <JobCard key={job.id} job={job} isPro={isPro} />
               ))}
               {jobs.length > 0 && jobs.length < total && (
                 <div className="text-center pt-4">

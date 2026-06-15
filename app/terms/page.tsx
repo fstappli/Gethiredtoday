@@ -26,7 +26,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">2. Description of Service</h2>
-              <p>GetHiredToday is an AI-powered resume and cover letter builder. We offer both a free tier and a paid Pro subscription ($9.99/month) with expanded features including unlimited resumes, PDF downloads, ATS analysis, and AI content generation.</p>
+              <p>GetHiredToday is an AI-powered resume and cover letter builder. We offer a Pro subscription ($9.99/month) that includes unlimited resumes, PDF and Word downloads, full ATS analysis, AI content generation, cover letter builder, and Auto-Apply.</p>
             </section>
 
             <section>
@@ -59,9 +59,8 @@ export default function TermsPage() {
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-3">6. Payments and Subscriptions</h2>
               <ul className="list-disc pl-5 mt-2 space-y-1 text-sm">
-                <li>Pro subscriptions are billed monthly at $9.99/month via Stripe.</li>
+                <li>Pro subscriptions are billed monthly at $9.99/month via Gumroad.</li>
                 <li>You may cancel at any time; access continues until the end of the billing period.</li>
-                <li>We offer a 7-day money-back guarantee for new Pro subscriptions.</li>
                 <li>Prices may change with 30 days&apos; notice to existing subscribers.</li>
               </ul>
             </section>

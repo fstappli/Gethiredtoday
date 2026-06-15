@@ -26,7 +26,7 @@ const stats = [
   { value: "94%", label: "ATS Pass Rate" },
   { value: "3 min", label: "Average Build Time" },
   { value: "4.8 / 5", label: "User Rating" },
-  { value: "$0", label: "To Get Started" },
+  { value: "50K+", label: "Resumes Created" },
 ];
 
 const industries = [
@@ -41,12 +41,12 @@ const industries = [
 ];
 
 const templates: { name: string; category: string; isPro: boolean; accent: string; layout: TemplateLayout }[] = [
-  { name: "Classic Professional", category: "General",   isPro: false, accent: "#4AB7A6", layout: "classic"   },
-  { name: "Modern Sidebar",       category: "Tech",      isPro: false, accent: "#334155", layout: "sidebar"   },
-  { name: "Executive Bold",       category: "Executive", isPro: true,  accent: "#1d4ed8", layout: "executive" },
-  { name: "Creative Side-Column", category: "Creative",  isPro: true,  accent: "#7c3aed", layout: "creative"  },
-  { name: "Academic Clean",       category: "Academic",  isPro: false, accent: "#be123c", layout: "minimal"   },
-  { name: "Contemporary Teal",    category: "Modern",    isPro: false, accent: "#d97706", layout: "centered"  },
+  { name: "Classic Professional", category: "General",   isPro: true, accent: "#4AB7A6", layout: "classic"   },
+  { name: "Modern Sidebar",       category: "Tech",      isPro: true, accent: "#334155", layout: "sidebar"   },
+  { name: "Executive Bold",       category: "Executive", isPro: true, accent: "#1d4ed8", layout: "executive" },
+  { name: "Creative Side-Column", category: "Creative",  isPro: true, accent: "#7c3aed", layout: "creative"  },
+  { name: "Academic Clean",       category: "Academic",  isPro: true, accent: "#be123c", layout: "minimal"   },
+  { name: "Contemporary Teal",    category: "Modern",    isPro: true, accent: "#d97706", layout: "centered"  },
 ];
 
 const testimonials = [
@@ -77,14 +77,6 @@ const testimonials = [
     quote:
       "As a recent graduate, I had no idea how to write a resume. GetHiredToday walked me through every section and the AI filled in what I was missing. For $9.99 a month, it's the best money I've ever spent on my career.",
   },
-];
-
-const freeFeatures = [
-  { label: "1 resume", included: true },
-  { label: "3 templates", included: true },
-  { label: "TXT download", included: true },
-  { label: "Basic ATS check", included: true },
-  { label: "AI bullet writer", included: false },
 ];
 
 const proFeatures = [
@@ -462,8 +454,8 @@ const faqs = [
     a: "After building your resume, go to the Auto-Apply section in your dashboard. Set your target job title, preferred location, and minimum match score. GetHiredToday will automatically find matching openings every day and submit applications on your behalf — up to 50 jobs per day. You get full visibility into every application and can pause or stop anytime.",
   },
   {
-    q: "Is it really free?",
-    a: "When you create an account you get 2 days of full access — no credit card required. After the free trial, a Pro subscription is $9.99/month and unlocks unlimited resumes, all templates, PDF/Word download, and full AI writing. You can cancel anytime.",
+    q: "How does pricing work?",
+    a: "GetHiredToday is $9.99/month — one plan with everything included. Unlimited resumes, all 60+ templates, PDF/Word download, full AI writing, ATS checking, and Auto-Apply. Cancel anytime.",
   },
   {
     q: "Is GetHiredToday ATS compatible?",
@@ -654,7 +646,7 @@ export default function HomePage() {
                 <div className="hero-badge inline-flex items-center gap-2 mb-7 px-3 py-1.5 rounded-full" style={{ backgroundColor: "rgba(74,183,166,0.08)", border: "1px solid rgba(74,183,166,0.2)" }}>
                   <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: "#4AB7A6" }} />
                   <span className="text-xs font-medium" style={{ color: "#2d9e8e" }}>
-                    Auto-apply to 50 jobs/day — free for 2 days
+                    Auto-apply to 50 jobs/day — included with Pro
                   </span>
                 </div>
 
@@ -671,11 +663,11 @@ export default function HomePage() {
                 {/* CTAs */}
                 <div className="hero-ctas flex flex-col sm:flex-row gap-3 mb-8">
                   <Link
-                    href="/builder/resume"
+                    href="/upgrade?from=%2F"
                     className="page-btn-primary inline-flex items-center justify-center gap-2 px-7 py-3.5 text-sm font-semibold text-white rounded-full"
                     style={{ backgroundColor: "#4AB7A6" }}
                   >
-                    Start Free
+                    Get Started — $9.99/mo
                     <ArrowRight className="w-4 h-4" />
                   </Link>
                   <Link
@@ -689,7 +681,7 @@ export default function HomePage() {
 
                 {/* Trust strip */}
                 <div className="hero-trust flex flex-wrap gap-x-5 gap-y-1.5 mb-8">
-                  {["No credit card · 2 days free", "ATS-optimized templates", "Auto-apply 50 jobs/day"].map((item) => (
+                  {["ATS-optimized templates", "Auto-apply 50 jobs/day", "Cancel anytime"].map((item) => (
                     <span key={item} className="flex items-center gap-1.5 text-xs" style={{ color: "#94a3b8" }}>
                       <Check className="w-3 h-3 flex-shrink-0" style={{ color: "#4AB7A6" }} strokeWidth={3} />
                       {item}
@@ -1154,7 +1146,7 @@ export default function HomePage() {
                       Browse All Templates
                       <ArrowRight className="w-4 h-4" />
                     </Link>
-                    <span className="text-xs text-slate-400">Free to use · No signup needed</span>
+                    <span className="text-xs text-slate-400">All 60+ templates included with Pro</span>
                   </div>
                 </div>
                 <div className="flex justify-center lg:justify-end">
@@ -1291,13 +1283,9 @@ export default function HomePage() {
                     </div>
                     <span
                       className="text-xs font-bold px-2.5 py-1 rounded-full"
-                      style={
-                        tpl.isPro
-                          ? { backgroundColor: "#fef3c7", color: "#d97706" }
-                          : { backgroundColor: "#f0fdf9", color: "#4AB7A6" }
-                      }
+                      style={{ backgroundColor: "#fef3c7", color: "#d97706" }}
                     >
-                      {tpl.isPro ? "PRO" : "FREE"}
+                      PRO
                     </span>
                   </div>
                 </div>
@@ -1398,60 +1386,16 @@ export default function HomePage() {
             <div className="text-center mb-12">
               <div className="text-[10px] font-bold uppercase tracking-[0.18em] mb-4" style={{ color: "#4AB7A6" }}>PRICING</div>
               <h2 className="text-4xl sm:text-5xl font-bold mb-4" style={{ color: "#0f172a" }}>
-                Surprisingly Affordable.<br />
-                <span className="section-heading" style={{ color: "#4AB7A6" }}>Impossibly Good.</span>
+                One Plan.<br />
+                <span className="section-heading" style={{ color: "#4AB7A6" }}>Everything Included.</span>
               </h2>
               <p className="text-lg" style={{ color: "#64748b" }}>
-                Full Pro access — unlimited resumes, cover letters, AI writing, and ATS scoring — for $9.99/month.
+                Unlimited resumes, cover letters, AI writing, ATS scoring, and Auto-Apply — $9.99/month.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-              {/* Free card */}
-              <div
-                className="bg-white rounded-2xl p-8 flex flex-col gap-6"
-                style={{ border: "1.5px solid #e2e8f0" }}
-              >
-                <div>
-                  <span
-                    className="inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-3"
-                    style={{ backgroundColor: "#f1f5f9", color: "#64748b" }}
-                  >
-                    Free
-                  </span>
-                  <div className="flex items-end gap-1">
-                    <span className="text-4xl font-bold" style={{ color: "#0f172a" }}>$0</span>
-                    <span className="text-sm mb-1.5" style={{ color: "#94a3b8" }}>/month</span>
-                  </div>
-                  <p className="text-sm mt-2" style={{ color: "#64748b" }}>Perfect for getting started</p>
-                </div>
-
-                <ul className="flex-1 space-y-3">
-                  {freeFeatures.map((f) => (
-                    <li key={f.label} className="flex items-center gap-2.5 text-sm">
-                      {f.included ? (
-                        <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} />
-                      ) : (
-                        <span className="w-4 h-4 flex-shrink-0 flex items-center justify-center">
-                          <span className="w-3 h-0.5 bg-slate-300 rounded-full" />
-                        </span>
-                      )}
-                      <span style={{ color: f.included ? "#0f172a" : "#94a3b8" }}>{f.label}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link
-                  href="/builder/resume"
-                  className="block text-center py-3 px-6 rounded-full text-sm font-semibold border-2 transition-colors hover:bg-slate-50"
-                  style={{ borderColor: "#4AB7A6", color: "#4AB7A6" }}
-                >
-                  Start Free
-                </Link>
-              </div>
-
-              {/* Pro card */}
+            <div className="max-w-md mx-auto">
+              {/* Single Pro card */}
               <div
                 className="bg-white rounded-2xl p-8 flex flex-col gap-6 relative overflow-hidden"
                 style={{
@@ -1459,12 +1403,12 @@ export default function HomePage() {
                   boxShadow: "0 12px 40px rgba(74,183,166,0.18)",
                 }}
               >
-                {/* Most Popular badge */}
+                {/* All Inclusive badge */}
                 <div
                   className="absolute top-0 right-0 px-4 py-1.5 text-xs font-bold text-white rounded-bl-2xl"
                   style={{ backgroundColor: "#4AB7A6" }}
                 >
-                  Most Popular
+                  ALL INCLUSIVE
                 </div>
 
                 <div>
@@ -1479,11 +1423,11 @@ export default function HomePage() {
                     <span className="text-sm mb-1.5" style={{ color: "#94a3b8" }}>/month</span>
                   </div>
                   <p className="text-sm mt-2 italic" style={{ color: "#64748b" }}>
-                    ☕ Less than your daily coffee
+                    Cancel anytime
                   </p>
                 </div>
 
-                <ul className="flex-1 space-y-3">
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2.5">
                   {proFeatures.map((f) => (
                     <li key={f.label} className="flex items-center gap-2.5 text-sm">
                       <Check className="w-4 h-4 flex-shrink-0" style={{ color: "#4AB7A6" }} />
@@ -1493,11 +1437,11 @@ export default function HomePage() {
                 </ul>
 
                 <Link
-                  href="/pricing"
-                  className="block text-center py-3 px-6 rounded-full text-sm font-semibold text-white transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: "#4AB7A6" }}
+                  href="/upgrade?from=%2F"
+                  className="block text-center py-3.5 px-6 rounded-full text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                  style={{ background: "linear-gradient(135deg, #4AB7A6 0%, #3aa492 100%)", boxShadow: "0 8px 24px -6px rgba(74,183,166,0.45)" }}
                 >
-                  Get Pro →
+                  Get Pro Access →
                 </Link>
               </div>
             </div>
@@ -1508,7 +1452,7 @@ export default function HomePage() {
                 className="inline-flex items-center gap-1.5 text-sm font-semibold hover:gap-2.5 transition-all"
                 style={{ color: "#4AB7A6" }}
               >
-                See Full Pricing
+                See Full Feature List
                 <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
@@ -1607,11 +1551,11 @@ export default function HomePage() {
               ))}
             </div>
             <Link
-              href="/builder/resume"
+              href="/upgrade?from=%2F"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full text-base font-semibold text-white transition-opacity hover:opacity-90"
               style={{ backgroundColor: "#4AB7A6" }}
             >
-              Fix My Resume Now — It&apos;s Free →
+              Fix My Resume Now — Get Pro →
             </Link>
           </div>
         </section>
@@ -1642,14 +1586,14 @@ export default function HomePage() {
               GetHiredToday submit applications to matching jobs for you — every single day.
             </p>
             <Link
-              href="/builder/wizard"
+              href="/upgrade?from=%2F"
               className="page-btn-outline inline-flex items-center gap-2 px-10 py-4 rounded-full text-sm font-bold"
               style={{ backgroundColor: "#ffffff", color: "#4AB7A6", borderColor: "transparent" }}
             >
-              Start Free — Enable Auto-Apply →
+              Get Pro — Enable Auto-Apply →
             </Link>
             <p className="text-xs mt-6 text-white" style={{ opacity: 0.65 }}>
-              No credit card · 2 days free on signup · Cancel anytime · 30-day money-back guarantee
+              $9.99/month · Cancel anytime · Powered by Gumroad
             </p>
           </div>
         </section>

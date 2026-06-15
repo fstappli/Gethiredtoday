@@ -4,12 +4,12 @@ import Footer from "@/components/footer";
 import AtsCheckerView from "@/components/ats-checker-view";
 
 export const metadata: Metadata = {
-  title: "Free ATS Resume Checker — Score Your Resume Instantly",
-  description: "Paste your resume and get an instant ATS compatibility score. Find missing keywords, formatting issues, and get actionable fixes in seconds. 100% free.",
+  title: "ATS Resume Checker — Score Your Resume Instantly",
+  description: "Paste your resume and get an instant ATS compatibility score. Find missing keywords, formatting issues, and get actionable fixes in seconds.",
   alternates: { canonical: "https://hiredtodayapp.com/ats-checker" },
   openGraph: {
-    title: "Free ATS Resume Checker — Score Your Resume Instantly",
-    description: "Get an instant ATS score, keyword gap analysis, and actionable fixes. Free — no signup required.",
+    title: "ATS Resume Checker — Score Your Resume Instantly",
+    description: "Get an instant ATS score, keyword gap analysis, and actionable fixes.",
     url: "https://hiredtodayapp.com/ats-checker",
   },
 };

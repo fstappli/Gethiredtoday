@@ -202,6 +202,29 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Enforce free-tier resume limit on import
+    const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
+    if (user.email !== ADMIN_EMAIL) {
+      const { isProActive } = await import('@/lib/subscription');
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('subscription_status, subscription_ends_at')
+        .eq('id', user.id)
+        .single();
+      if (!isProActive(profile)) {
+        const { count } = await supabase
+          .from('resumes')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id);
+        if ((count ?? 0) >= 1) {
+          return NextResponse.json(
+            { error: 'Free plan is limited to 1 resume. Upgrade to Pro for unlimited resumes.' },
+            { status: 403 }
+          );
+        }
+      }
+    }
+
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json(
         { error: 'Resume import is temporarily unavailable. Please try again later.' },

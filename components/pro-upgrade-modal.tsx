@@ -96,10 +96,10 @@ export default function ProUpgradeModal({
 
   const subheading =
     trigger === 'word'
-      ? 'Download editable Microsoft Word (.doc) files with Pro — or keep using PDF on the free plan.'
+      ? 'Download editable Microsoft Word (.doc) files — included with your Pro subscription at $9.99/month.'
       : templateLabel
-      ? `The ${templateLabel} template is part of our Pro collection. Unlock it, along with all 14 premium templates, AI writing, and the full ATS checker for just $9.99/month.`
-      : 'Unlock all 14 premium templates, AI writing, and the full ATS checker for $9.99/month — less than your morning coffee.';
+      ? `The ${templateLabel} template is part of our Pro collection. Unlock it, along with all 60+ templates, AI writing, ATS checking, and Auto-Apply for just $9.99/month.`
+      : 'Unlock all 60+ premium templates, AI writing, ATS checking, and Auto-Apply for $9.99/month — less than your morning coffee.';
 
   return (
     <div
@@ -164,7 +164,7 @@ export default function ProUpgradeModal({
             <span className="text-sm font-medium text-slate-500">per month · cancel anytime</span>
           </div>
           <p className="text-xs text-slate-500 mb-4">
-            Flat $9.99/month. Cancel any time. 14-day money-back guarantee.
+            Flat $9.99/month. Cancel any time.
           </p>
 
           {/* Feature list */}
@@ -197,7 +197,7 @@ export default function ProUpgradeModal({
               No hidden fees
             </span>
             <span>Cancel in one click</span>
-            <span>30-day guarantee</span>
+            <span>Secure checkout</span>
           </div>
 
           {/* Primary CTA — route directly to Gumroad checkout carrying the
@@ -222,18 +222,13 @@ export default function ProUpgradeModal({
           </Link>
 
           {/* Secondary action */}
-          {onSwitchToFree && (
-            <button
-              type="button"
-              onClick={() => {
-                onSwitchToFree();
-                onClose();
-              }}
-              className="mt-2 w-full text-center text-sm font-medium text-slate-600 hover:text-slate-900 py-2.5 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-200"
-            >
-              Use the free Classic template instead
-            </button>
-          )}
+          <button
+            type="button"
+            onClick={onClose}
+            className="mt-2 w-full text-center text-sm font-medium text-slate-400 hover:text-slate-600 py-2.5 rounded-full transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-slate-200"
+          >
+            Maybe later
+          </button>
         </div>
       </div>
     </div>

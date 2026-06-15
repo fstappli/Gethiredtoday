@@ -5,6 +5,7 @@ import { Zap, Pause, Play, AlertTriangle, CheckCircle2, Clock, Loader2, Info } f
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ApplyButton } from '@/components/jobs/apply-button';
+import { ProFeatureGate } from '@/components/pro-feature-gate';
 import type { AutoApplySettings, AutoApplyRun } from '@/types/jobs';
 
 interface QueuedJob {
@@ -29,6 +30,7 @@ function formatTime(dateStr: string): string {
 }
 
 export default function AutoApplyPage() {
+  const [isPro, setIsPro] = useState<boolean | null>(null);
   const [settings, setSettings] = useState<AutoApplySettings | null>(null);
   const [queuedJobs, setQueuedJobs] = useState<QueuedJob[]>([]);
   const [runs, setRuns] = useState<AutoApplyRun[]>([]);
@@ -41,6 +43,13 @@ export default function AutoApplyPage() {
   const [enabled, setEnabled] = useState(false);
   const [minScore, setMinScore] = useState(75);
   const [dailyCap, setDailyCap] = useState(10);
+
+  useEffect(() => {
+    fetch('/api/user/subscription-status')
+      .then((r) => r.json())
+      .then((d) => setIsPro(d.isPro ?? false))
+      .catch(() => setIsPro(false));
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -135,6 +144,30 @@ export default function AutoApplyPage() {
   }
 
   const isPaused = Boolean(settings?.paused_at);
+
+  if (isPro === null) {
+    return (
+      <div className="flex-1 flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+
+  if (!isPro) {
+    return (
+      <ProFeatureGate
+        title="Auto-Apply"
+        description="Let AI apply to matching jobs while you sleep. Set your preferences once and get applications sent automatically."
+        features={[
+          'Up to 50 auto-applications per day',
+          'Only applies to jobs above your match score threshold',
+          'AI-tailored applications for each role',
+          'Full tracking in Applied Jobs',
+        ]}
+        from="/dashboard/auto-apply"
+      />
+    );
+  }
 
   return (
     <div className="min-h-full bg-white">

@@ -1,7 +1,7 @@
 'use client';
 
-import { Suspense, useRef, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, Sparkles, Shield, Star, ArrowRight, Zap, FileText, Download, Target } from 'lucide-react';
 
 const PRO_FEATURES = [
@@ -31,11 +31,27 @@ const TESTIMONIALS = [
   },
 ];
 
+const SAFE_FROM_RE = /^\/[a-zA-Z0-9\-._~:@!$&'()*+,;=%/?#[\]]*$/;
+
+function sanitizeFrom(raw: string | null): string {
+  if (!raw) return '/dashboard';
+  if (SAFE_FROM_RE.test(raw) && !raw.startsWith('//')) return raw;
+  return '/dashboard';
+}
+
 function UpgradeContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const from = searchParams.get('from') ?? '/dashboard';
+  const from = sanitizeFrom(searchParams.get('from'));
   const [loading, setLoading] = useState(false);
   const ctaRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    fetch('/api/user/subscription-status')
+      .then((r) => r.json())
+      .then((d) => { if (d.isPro) router.replace('/dashboard'); })
+      .catch(() => {});
+  }, [router]);
 
   const handleCheckout = () => {
     setLoading(true);
@@ -62,7 +78,7 @@ function UpgradeContent() {
           className="text-sm font-semibold px-3 py-1 rounded-full text-white"
           style={{ backgroundColor: '#4AB7A6' }}
         >
-          30-Day Money-Back Guarantee
+          Cancel Anytime
         </span>
       </div>
 
@@ -93,10 +109,7 @@ function UpgradeContent() {
             <span className="text-4xl font-bold text-slate-900">$9.99</span>
             <span className="text-slate-500 text-base">/month</span>
           </div>
-          <p className="text-sm text-slate-400 mb-1">Cancel anytime. No commitment.</p>
-          <p className="text-xs font-semibold mb-4" style={{ color: '#4AB7A6' }}>
-            New accounts get 2 days of full access free — no credit card needed to start.
-          </p>
+          <p className="text-sm text-slate-400 mb-4">Cancel anytime. No commitment.</p>
           <button
             ref={ctaRef}
             onClick={handleCheckout}
@@ -161,17 +174,6 @@ function UpgradeContent() {
               </p>
             </div>
           ))}
-        </div>
-
-        {/* Guarantee */}
-        <div className="rounded-xl bg-emerald-50 border border-emerald-100 p-4 flex gap-3 items-start">
-          <Shield className="w-5 h-5 shrink-0 text-emerald-600 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-emerald-800">30-day money-back guarantee</p>
-            <p className="text-xs text-emerald-600 mt-0.5">
-              Not happy? Email us within 30 days and we&apos;ll refund you — no questions asked.
-            </p>
-          </div>
         </div>
 
         <p className="text-center text-xs text-slate-400 pb-6">

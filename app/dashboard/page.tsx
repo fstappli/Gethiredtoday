@@ -270,7 +270,6 @@ export default function DashboardPage() {
   const [subEndsAt, setSubEndsAt] = useState<string | null>(null);
   const [isCancelled, setIsCancelled] = useState(false);
   const [firstName, setFirstName] = useState<string>('');
-  const [accountCreatedAt, setAccountCreatedAt] = useState<string | null>(null);
   // Load profile + handle post-Gumroad-checkout return
   useEffect(() => {
     const supabase = createClient();
@@ -278,13 +277,13 @@ export default function DashboardPage() {
     const readProfile = async (userId: string) => {
       const { data: profile } = await supabase
         .from('profiles')
-        .select('subscription_status, subscription_ends_at, full_name, email, created_at')
+        .select('subscription_status, subscription_ends_at, full_name, email')
         .eq('id', userId)
         .single();
       setIsPro(isProActive(profile));
       setIsCancelled(isCancelledWithGrace(profile));
       setSubEndsAt((profile?.subscription_ends_at as string | null) ?? null);
-      setAccountCreatedAt((profile?.created_at as string | null) ?? null);
+
       const name =
         profile?.full_name?.trim().split(/\s+/)[0] ||
         profile?.email?.split('@')[0] ||
@@ -385,11 +384,19 @@ export default function DashboardPage() {
   const showToast = (msg: string) => setToastMessage(msg);
 
   const handleNewResume = async () => {
+    if (!isPro && resumes.length >= 1) {
+      router.push('/upgrade?from=%2Fdashboard');
+      return;
+    }
     setCreatingResume(true);
     router.push('/builder/wizard');
   };
 
   const handleNewCoverLetter = async () => {
+    if (!isPro) {
+      router.push('/upgrade?from=%2Fdashboard%2Fcover-letters');
+      return;
+    }
     setCreatingCoverLetter(true);
     try {
       const res = await fetch('/api/cover-letter', {
@@ -531,6 +538,10 @@ export default function DashboardPage() {
   };
 
   const handleDuplicateResume = async (resume: ResumeRow) => {
+    if (!isPro) {
+      router.push('/upgrade?from=%2Fdashboard');
+      return;
+    }
     try {
       const res = await fetch(`/api/resume/${resume.id}`);
       if (!res.ok) return;
@@ -771,46 +782,6 @@ export default function DashboardPage() {
         {/* Main scrollable content */}
         <div className="flex-1 min-w-0 space-y-10">
 
-          {/* Trial status banner — shown to all non-Pro users */}
-          {!isPro && accountCreatedAt && (() => {
-            const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
-            const elapsed = Date.now() - new Date(accountCreatedAt).getTime();
-            const inTrial = elapsed < TRIAL_MS;
-            const hoursLeft = Math.max(1, Math.ceil((TRIAL_MS - elapsed) / (60 * 60 * 1000)));
-            return inTrial ? (
-              <div className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-lg shrink-0">⏱</span>
-                  <p className="text-sm text-slate-700">
-                    <span className="font-semibold text-teal-700">{hoursLeft} hour{hoursLeft !== 1 ? 's' : ''} left</span> in your free trial — all features are unlocked right now
-                  </p>
-                </div>
-                <Link
-                  href="/upgrade?from=%2Fdashboard"
-                  className="shrink-0 text-xs font-bold text-white rounded-full px-3 py-1.5 transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: '#4AB7A6' }}
-                >
-                  Upgrade
-                </Link>
-              </div>
-            ) : (
-              <div className="flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200">
-                <div className="flex items-center gap-2 min-w-0">
-                  <span className="text-lg shrink-0">🔒</span>
-                  <p className="text-sm text-slate-700">
-                    <span className="font-semibold text-amber-700">Your 2-day free trial has ended.</span> Upgrade to Pro to unlock AI tools, Word downloads &amp; more.
-                  </p>
-                </div>
-                <Link
-                  href="/upgrade?from=%2Fdashboard"
-                  className="shrink-0 text-xs font-bold text-white rounded-full px-3 py-1.5 transition-opacity hover:opacity-90"
-                  style={{ backgroundColor: '#f59e0b' }}
-                >
-                  Upgrade
-                </Link>
-              </div>
-            );
-          })()}
 
           {/* Mobile upgrade banner — visible below xl where sidebar is hidden */}
           {!isPro && (
@@ -981,9 +952,7 @@ export default function DashboardPage() {
                             Applied
                           </span>
                         ) : (() => {
-                          const trialMs = 2 * 24 * 60 * 60 * 1000;
-                          const canApply = isPro || (accountCreatedAt ? Date.now() - new Date(accountCreatedAt).getTime() < trialMs : false);
-                          return canApply ? (
+                          return isPro ? (
                             <button
                               onClick={async () => {
                                 const res = await fetch('/api/jobs/apply', {
@@ -1240,31 +1209,25 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              {/* Upgrade nudge — only for free users */}
-              {!isPro && (() => {
-                const TRIAL_MS = 2 * 24 * 60 * 60 * 1000;
-                const inTrial = accountCreatedAt ? Date.now() - new Date(accountCreatedAt).getTime() < TRIAL_MS : false;
-                return (
-                  <div className={`mx-3 mb-3 mt-1 border rounded-xl p-3 ${inTrial ? 'bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-200' : 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200'}`}>
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <Sparkles className="w-3.5 h-3.5" style={{ color: inTrial ? '#4AB7A6' : '#f59e0b' }} />
-                      <span className="text-xs font-bold text-slate-900">{inTrial ? 'Free Trial Active' : 'Trial Ended'}</span>
-                    </div>
-                    <p className="text-[11px] text-slate-500 leading-snug mb-2">
-                      {inTrial
-                        ? 'You have full access for 2 days. Upgrade to keep it.'
-                        : 'Your 2-day trial is up. Upgrade to Pro to continue.'}
-                    </p>
-                    <Link
-                      href="/upgrade?from=%2Fdashboard"
-                      className="block text-center text-[11px] font-bold text-white rounded-lg py-1.5 transition-opacity hover:opacity-90"
-                      style={{ backgroundColor: inTrial ? '#4AB7A6' : '#f59e0b' }}
-                    >
-                      Upgrade Now
-                    </Link>
+              {/* Upgrade nudge — only for non-Pro users */}
+              {!isPro && (
+                <div className="mx-3 mb-3 mt-1 border rounded-xl p-3 bg-gradient-to-br from-teal-50 to-emerald-50 border-teal-200">
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <Sparkles className="w-3.5 h-3.5" style={{ color: '#4AB7A6' }} />
+                    <span className="text-xs font-bold text-slate-900">Upgrade to Pro</span>
                   </div>
-                );
-              })()}
+                  <p className="text-[11px] text-slate-500 leading-snug mb-2">
+                    Unlock AI tools, Word downloads, ATS checker &amp; more.
+                  </p>
+                  <Link
+                    href="/upgrade?from=%2Fdashboard"
+                    className="block text-center text-[11px] font-bold text-white rounded-lg py-1.5 transition-opacity hover:opacity-90"
+                    style={{ backgroundColor: '#4AB7A6' }}
+                  >
+                    Upgrade Now
+                  </Link>
+                </div>
+              )}
             </div>
           </div>
         </aside>

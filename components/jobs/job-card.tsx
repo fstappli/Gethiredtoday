@@ -16,7 +16,6 @@ interface JobCardProps {
   onStatusChange?: (status: ApplicationStatus) => void;
   onSave?: (jobId: string) => void;
   isPro?: boolean;
-  accountCreatedAt?: string | null;
 }
 
 const SOURCE_BADGES: Record<string, { label: string; className: string }> = {
@@ -108,7 +107,6 @@ export function JobCard({
   onStatusChange,
   onSave,
   isPro = false,
-  accountCreatedAt,
 }: JobCardProps) {
   const salary = formatSalary(job.salary_min, job.salary_max, job.currency);
   const wt = workTypeLabel(job.work_type);
@@ -220,7 +218,6 @@ export function JobCard({
             onStatusChange={onStatusChange}
             size="sm"
             isPro={isPro}
-            accountCreatedAt={accountCreatedAt}
           />
         </div>
       </CardContent>
