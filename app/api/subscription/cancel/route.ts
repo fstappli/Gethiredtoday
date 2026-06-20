@@ -95,10 +95,13 @@ async function gumroadFindSubscriberIdByEmail(
 }
 
 // Soft-success response shape the client always sees.
-function softOk(mode: string, message?: string) {
+// gumroadCancelled=true  → Gumroad subscription is actually stopped.
+// gumroadCancelled=false → Only the local DB was flipped; Gumroad may still charge.
+function softOk(mode: string, message?: string, gumroadCancelled = false) {
   return NextResponse.json({
     ok: true,
     mode,
+    gumroadCancelled,
     message:
       message ||
       'Your subscription has been cancelled. Pro access remains active until the end of your current billing period.',
@@ -181,7 +184,7 @@ export async function POST() {
     //    already flipped.
     const accessToken = process.env.GUMROAD_ACCESS_TOKEN;
     if (!accessToken) {
-      return softOk(localOk ? 'local-only' : 'local-only-db-failed');
+      return softOk(localOk ? 'local-only' : 'local-only-db-failed', undefined, false);
     }
 
     let subId = subscriptionId;
@@ -189,22 +192,23 @@ export async function POST() {
       subId = await gumroadFindSubscriberIdByEmail(email, accessToken);
     }
     if (!subId) {
-      return softOk(localOk ? 'no-gumroad-sub' : 'no-gumroad-sub-db-failed');
+      return softOk(
+        localOk ? 'no-gumroad-sub' : 'no-gumroad-sub-db-failed',
+        undefined,
+        false
+      );
     }
 
     const result = await gumroadCancel(subId, accessToken);
     if (!result.ok) {
       console.error('[subscription/cancel] Gumroad error:', result.message);
-      // Still soft-success — DB is flipped, user is done here.
-      return softOk(
-        'gumroad-error-recovered',
-        'Your subscription has been cancelled. If you continue to be charged, reply to any Gumroad receipt and we\'ll finalise it for you.'
-      );
+      return softOk('gumroad-error-recovered', undefined, false);
     }
 
     return softOk(
       'gumroad-cancelled',
-      'Subscription cancelled. Your Pro access remains active until the end of your current billing period. You can resubscribe any time.'
+      'Subscription cancelled. Your Pro access remains active until the end of your current billing period. You can resubscribe any time.',
+      true
     );
   } catch (err) {
     // Global fail-safe — no matter what blew up above, return JSON (never

@@ -66,6 +66,22 @@ export async function POST(req: Request) {
 
   try {
     if (resourceName === 'sale' && !refunded && !disputed) {
+      // Check if this user previously cancelled inside the app. If so, the
+      // Gumroad-side cancel must have failed — they were charged again.
+      // Log it so it can be investigated and refunded if needed.
+      const { data: existing } = await getSupabaseAdmin()
+        .from('profiles')
+        .select('subscription_status')
+        .eq('email', email)
+        .single();
+      if (existing?.subscription_status === 'cancelled') {
+        console.error(
+          `[webhook] Re-charge detected for cancelled user: ${email}. ` +
+          `Gumroad subscription was not cancelled successfully. ` +
+          `subscription_id in payload: ${subscriberId ?? 'none'}`
+        );
+      }
+
       await getSupabaseAdmin()
         .from('profiles')
         .update({

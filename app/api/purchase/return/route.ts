@@ -41,7 +41,7 @@ function safeReturnPath(raw: string | null): string {
 async function findActiveGumroadSale(
   email: string,
   accessToken: string
-): Promise<{ saleId: string } | null> {
+): Promise<{ saleId: string; subscriptionId?: string | null } | null> {
   try {
     const res = await fetch(
       `https://api.gumroad.com/v2/sales?email=${encodeURIComponent(email)}`,
@@ -50,14 +50,21 @@ async function findActiveGumroadSale(
     if (!res.ok) return null;
     const json = (await res.json()) as {
       success?: boolean;
-      sales?: Array<{ id: string; paid?: boolean; refunded?: boolean; chargedback?: boolean; product_permalink?: string }>;
+      sales?: Array<{
+        id: string;
+        paid?: boolean;
+        refunded?: boolean;
+        chargedback?: boolean;
+        product_permalink?: string;
+        subscription_id?: string | null;
+      }>;
     };
     if (!json.success) return null;
     const PRODUCT_PERMALINK = process.env.GUMROAD_PRODUCT_PERMALINK ?? 'kxtcbs';
     const valid = (json.sales ?? []).find(
       (s) => s.paid && !s.refunded && !s.chargedback && s.product_permalink === PRODUCT_PERMALINK
     );
-    return valid ? { saleId: valid.id } : null;
+    return valid ? { saleId: valid.id, subscriptionId: valid.subscription_id ?? null } : null;
   } catch {
     return null;
   }
@@ -87,7 +94,9 @@ export async function GET(req: NextRequest) {
         .from('profiles')
         .update({
           subscription_status: 'active',
-          subscription_id: sale.saleId,
+          // Prefer the subscription_id (needed to cancel via Gumroad API later).
+          // Fall back to the sale id only if there is no subscription_id (one-time purchases).
+          subscription_id: sale.subscriptionId ?? sale.saleId,
           subscription_ends_at: monthFromNow(),
         })
         .eq('id', user.id);

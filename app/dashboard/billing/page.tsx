@@ -39,6 +39,7 @@ export default function BillingPage() {
   const [cancelled, setCancelled] = useState(false);
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const [cancelError, setCancelError] = useState<string | null>(null);
+  const [gumroadCancelled, setGumroadCancelled] = useState<boolean | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -97,9 +98,11 @@ export default function BillingPage() {
       // sees their Pro benefits until the billing period ends.
       setCancelled(true);
       setShowCancelConfirm(false);
+      setGumroadCancelled(json.gumroadCancelled === true);
       setCancelMessage(
-        json.message ||
-        'Subscription cancelled. Your Pro access remains active until the end of your current billing period.'
+        json.gumroadCancelled === true
+          ? (json.message || 'Subscription cancelled. Your Pro access remains active until the end of your current billing period.')
+          : null
       );
     } catch {
       setCancelError('Network error. Please try again in a moment.');
@@ -189,11 +192,32 @@ export default function BillingPage() {
                 )}
               </div>
 
-              {/* Post-cancellation success banner */}
-              {cancelled && cancelMessage && (
+              {/* Post-cancellation banners */}
+              {cancelled && gumroadCancelled === true && cancelMessage && (
                 <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 flex items-start gap-2.5">
                   <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
                   <p className="text-sm text-emerald-800">{cancelMessage}</p>
+                </div>
+              )}
+              {cancelled && gumroadCancelled === false && (
+                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 flex items-start gap-2.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                  <div className="space-y-1.5">
+                    <p className="text-sm font-semibold text-amber-800">
+                      One more step to stop future charges
+                    </p>
+                    <p className="text-sm text-amber-700">
+                      We updated your account, but we couldn&apos;t automatically cancel your Gumroad subscription. To make sure you&apos;re not charged again, please cancel directly on Gumroad.
+                    </p>
+                    <a
+                      href="https://app.gumroad.com/library"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block text-sm font-semibold text-amber-900 underline hover:text-amber-700 transition-colors"
+                    >
+                      Cancel on Gumroad →
+                    </a>
+                  </div>
                 </div>
               )}
 

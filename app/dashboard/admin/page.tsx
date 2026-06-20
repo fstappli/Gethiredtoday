@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import {
   Users, TrendingUp, UserCheck, AlertCircle,
   ShoppingCart, Clock, Search, Plus, X, ChevronDown,
-  RefreshCw, Shield, ArrowUpRight, KeyRound, Check,
+  RefreshCw, Shield, ArrowUpRight, KeyRound, Check, BellOff,
 } from 'lucide-react';
 
 interface Profile {
@@ -292,6 +292,87 @@ function ResetPasswordButton({ userId }: { userId: string }) {
   );
 }
 
+// ── Cancel Gumroad subscription + notify button ───────────────────────────────
+
+function CancelGumroadButton({ userId, currentStatus, onCancelled }: {
+  userId: string;
+  currentStatus: string | null;
+  onCancelled: (id: string) => void;
+}) {
+  const [state, setState] = useState<'idle' | 'confirm' | 'loading' | 'done' | 'error'>('idle');
+  const [gumroadOk, setGumroadOk] = useState<boolean | null>(null);
+
+  if (state === 'done') {
+    return (
+      <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg"
+        style={{ backgroundColor: '#dcfce7', color: '#166534' }}>
+        <Check size={11} />
+        {gumroadOk ? 'Cancelled' : 'DB cancelled'}
+      </span>
+    );
+  }
+
+  if (state === 'confirm') {
+    return (
+      <span className="flex items-center gap-1">
+        <button
+          onClick={async () => {
+            setState('loading');
+            try {
+              const res = await fetch(`/api/admin/users/${userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'cancel_gumroad' }),
+              });
+              const json = await res.json().catch(() => ({}));
+              setGumroadOk(json.gumroadCancelled === true);
+              setState(res.ok ? 'done' : 'error');
+              if (res.ok) onCancelled(userId);
+            } catch {
+              setState('error');
+            }
+          }}
+          className="text-xs font-semibold px-2 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+        >
+          Confirm
+        </button>
+        <button
+          onClick={() => setState('idle')}
+          className="text-xs px-2 py-1 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors"
+        >
+          ✕
+        </button>
+      </span>
+    );
+  }
+
+  if (state === 'error') {
+    return (
+      <span className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg"
+        style={{ backgroundColor: '#fee2e2', color: '#991b1b' }}>
+        <AlertCircle size={11} />
+        Failed
+      </span>
+    );
+  }
+
+  // Already cancelled in DB — still show button in case Gumroad wasn't cancelled
+  const label = currentStatus === 'cancelled' ? 'Re-cancel Gumroad' : 'Cancel & notify';
+
+  return (
+    <button
+      onClick={() => setState('confirm')}
+      disabled={state === 'loading'}
+      title="Cancel Gumroad subscription and send user an email notification"
+      className="flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-lg transition-all disabled:opacity-60"
+      style={{ backgroundColor: '#fff7ed', color: '#c2410c' }}
+    >
+      {state === 'loading' ? <RefreshCw size={11} className="animate-spin" /> : <BellOff size={11} />}
+      {label}
+    </button>
+  );
+}
+
 // ── Stat card ─────────────────────────────────────────────────────────────────
 
 function StatCard({ label, value, sub, icon: Icon, color }: {
@@ -326,6 +407,11 @@ export default function AdminPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [activeTab, setActiveTab] = useState<'users' | 'funnel'>('users');
   const [lastRefreshed, setLastRefreshed] = useState(new Date());
+  const [cancelAllState, setCancelAllState] = useState<'idle' | 'confirm' | 'loading' | 'done' | 'error'>('idle');
+  const [cancelAllResult, setCancelAllResult] = useState<{
+    summary: { total: number; gumroadCancelled: number; dbUpdated: number; emailsSent: number };
+    results: Array<{ email: string; gumroadCancelled: boolean; dbUpdated: boolean; emailSent: boolean; note?: string }>;
+  } | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 300);
@@ -358,11 +444,33 @@ export default function AdminPage() {
     setLastRefreshed(new Date());
   };
 
+  const handleCancelAllSubscriptions = async () => {
+    setCancelAllState('loading');
+    try {
+      const res = await fetch('/api/admin/cancel-subscriptions', { method: 'POST' });
+      const json = await res.json();
+      if (!res.ok) {
+        setCancelAllState('error');
+        return;
+      }
+      setCancelAllResult(json);
+      setCancelAllState('done');
+      // Refresh user list so statuses reflect the change
+      fetchUsers(debouncedSearch);
+    } catch {
+      setCancelAllState('error');
+    }
+  };
+
   useEffect(() => { fetchUsers(debouncedSearch); }, [debouncedSearch, fetchUsers]);
   useEffect(() => { fetchAttempts(); }, [fetchAttempts]);
 
   const handleStatusChange = (id: string, newStatus: string) => {
     setUsers(prev => prev.map(u => u.id === id ? { ...u, subscription_status: newStatus } : u));
+  };
+
+  const handleGumroadCancelled = (id: string) => {
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, subscription_status: 'cancelled' } : u));
   };
 
   // Stats
@@ -413,6 +521,93 @@ export default function AdminPage() {
           <StatCard label="Active Pro"        value={activePro.length}  sub={`${users.length - activePro.length} on free plan`} icon={UserCheck}    color="#16a34a" />
           <StatCard label="Checkout Clicks"   value={attempts.length}   sub={`${attemptsToday} today`}              icon={ShoppingCart} color="#2563eb" />
           <StatCard label="Conversion Rate"   value={`${conversionRate}%`} sub={`${convertedEmails.size} converted total`} icon={TrendingUp}   color="#7c3aed" />
+        </div>
+
+        {/* Cancel all subscriptions */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                <BellOff size={15} className="text-amber-500" />
+                Cancel all active subscriptions &amp; notify users
+              </p>
+              <p className="text-xs text-slate-500 mt-1">
+                Cancels every Gumroad subscription so no user is auto-charged again.
+                Each affected user receives an email telling them their Pro access ends
+                at their current billing date and inviting them to resubscribe.
+              </p>
+            </div>
+            {cancelAllState === 'idle' && (
+              <button
+                onClick={() => setCancelAllState('confirm')}
+                className="shrink-0 text-xs font-semibold px-4 py-2 rounded-xl border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-colors"
+              >
+                Run
+              </button>
+            )}
+            {cancelAllState === 'confirm' && (
+              <div className="shrink-0 flex gap-2">
+                <button
+                  onClick={() => setCancelAllState('idle')}
+                  className="text-xs font-medium px-3 py-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+                >
+                  No, go back
+                </button>
+                <button
+                  onClick={handleCancelAllSubscriptions}
+                  className="text-xs font-semibold px-3 py-2 rounded-xl bg-red-500 hover:bg-red-600 text-white transition-colors"
+                >
+                  Yes, cancel &amp; notify all
+                </button>
+              </div>
+            )}
+            {cancelAllState === 'loading' && (
+              <span className="shrink-0 text-xs text-slate-400 animate-pulse">Running…</span>
+            )}
+            {cancelAllState === 'error' && (
+              <span className="shrink-0 text-xs text-red-500 font-medium">Failed — check logs</span>
+            )}
+          </div>
+
+          {cancelAllState === 'done' && cancelAllResult && (
+            <div className="mt-4 space-y-3">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {[
+                  { label: 'Users processed', value: cancelAllResult.summary.total },
+                  { label: 'Gumroad cancelled', value: cancelAllResult.summary.gumroadCancelled },
+                  { label: 'DB updated', value: cancelAllResult.summary.dbUpdated },
+                  { label: 'Emails sent', value: cancelAllResult.summary.emailsSent },
+                ].map(({ label, value }) => (
+                  <div key={label} className="bg-slate-50 rounded-xl p-3 text-center">
+                    <p className="text-xl font-bold text-slate-900">{value}</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{label}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="max-h-48 overflow-y-auto rounded-xl border border-slate-100">
+                <table className="w-full text-xs">
+                  <thead className="bg-slate-50 sticky top-0">
+                    <tr>
+                      <th className="text-left px-3 py-2 font-semibold text-slate-500">Email</th>
+                      <th className="text-center px-3 py-2 font-semibold text-slate-500">Gumroad</th>
+                      <th className="text-center px-3 py-2 font-semibold text-slate-500">DB</th>
+                      <th className="text-center px-3 py-2 font-semibold text-slate-500">Email</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50">
+                    {cancelAllResult.results.map((r) => (
+                      <tr key={r.email} className="hover:bg-slate-50">
+                        <td className="px-3 py-2 text-slate-700 max-w-[200px] truncate" title={r.note}>{r.email}{r.note ? ' ⚠' : ''}</td>
+                        <td className="px-3 py-2 text-center">{r.gumroadCancelled ? <Check size={12} className="inline text-green-500" /> : <X size={12} className="inline text-red-400" />}</td>
+                        <td className="px-3 py-2 text-center">{r.dbUpdated ? <Check size={12} className="inline text-green-500" /> : <X size={12} className="inline text-red-400" />}</td>
+                        <td className="px-3 py-2 text-center">{r.emailSent ? <Check size={12} className="inline text-green-500" /> : <X size={12} className="inline text-red-400" />}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Tabs */}
@@ -524,8 +719,13 @@ export default function AdminPage() {
                       </div>
 
                       {/* Actions */}
-                      <div className="col-span-2">
+                      <div className="col-span-2 flex flex-wrap gap-1.5">
                         <ResetPasswordButton userId={u.id} />
+                        <CancelGumroadButton
+                          userId={u.id}
+                          currentStatus={u.subscription_status}
+                          onCancelled={handleGumroadCancelled}
+                        />
                       </div>
                     </div>
                   ))}

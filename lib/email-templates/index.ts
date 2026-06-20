@@ -163,6 +163,35 @@ export function day10LastChanceEmail(firstName: string): { subject: string; html
   };
 }
 
+// ─── Subscription ending notice (sent when we cancel auto-renew for all users)
+export function subscriptionEndingEmail(
+  firstName: string,
+  endsAt: string
+): { subject: string; html: string } {
+  return {
+    subject: 'Important: your HiredTodayApp Pro subscription',
+    html: base(`
+      ${h1(`Hi ${firstName || 'there'}, a quick update on your Pro plan.`)}
+      ${p("We're making a change to how subscriptions work on HiredTodayApp. <strong>We are removing automatic billing</strong> — your subscription will <strong>not</strong> auto-renew going forward.")}
+      ${p(`Your Pro access is active until <strong>${endsAt}</strong>. After that date, your account will move to the free plan and Pro features will no longer be available.`)}
+      <div style="background:#f0fdf9;border:1px solid #99f6e4;border-radius:12px;padding:20px;margin:0 0 16px;">
+        <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#0f172a;">What stays the same until ${endsAt}:</p>
+        <ul style="margin:0;padding-left:20px;color:#475569;font-size:14px;line-height:2;">
+          <li>Unlimited resumes &amp; cover letters</li>
+          <li>AI writing &amp; bullet point generation</li>
+          <li>Full ATS analysis</li>
+          <li>All premium templates &amp; PDF downloads</li>
+        </ul>
+      </div>
+      ${p("To keep uninterrupted Pro access after that date, simply resubscribe — it takes under a minute.")}
+      ${btn("Resubscribe to Pro — $9.99/mo →", `${brand.url}/upgrade`)}
+      ${divider()}
+      ${p("Questions? Just reply to this email — we read and respond to every one.")}
+      <p style="margin:0;font-size:15px;color:#475569;">— Haroon, Founder of ${brand.name}</p>
+    `),
+  };
+}
+
 // ─── Email 6: Day 14 — Win-back ───────────────────────────────────────────
 export function day14WinbackEmail(firstName: string): { subject: string; html: string } {
   return {
