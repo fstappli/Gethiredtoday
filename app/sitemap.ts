@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { RESUME_EXAMPLES } from '@/lib/resume-examples-data';
 import { BLOG_POSTS } from '@/lib/blog-posts';
+import { SITE_URL } from '@/lib/site-config';
 
-const BASE = 'https://hiredtodayapp.com';
+const BASE = SITE_URL;
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticPages: MetadataRoute.Sitemap = [

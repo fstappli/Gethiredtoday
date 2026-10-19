@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { track } from '@/lib/analytics';
 import * as Dialog from '@radix-ui/react-dialog';
 import { UPGRADE_COPY, upgradeHref, type UpgradeTrigger } from '@/lib/upgrade-triggers';
 
@@ -21,6 +23,9 @@ export default function UpgradePrompt({
   onClose: () => void;
 }) {
   const copy = UPGRADE_COPY[trigger];
+  useEffect(() => {
+    if (open) track('upgrade_prompt_view', { trigger });
+  }, [open, trigger]);
   return (
     <Dialog.Root open={open} onOpenChange={(o) => { if (!o) onClose(); }}>
       <Dialog.Portal>
@@ -59,6 +64,7 @@ export default function UpgradePrompt({
           </ul>
           <Link
             href={upgradeHref(trigger)}
+            onClick={() => track('upgrade_prompt_click', { trigger })}
             className="flex min-h-[48px] items-center justify-center rounded-xl bg-brand px-4 py-3.5 text-base font-extrabold text-white no-underline hover:bg-brand-dark"
           >
             Go Pro

@@ -4,6 +4,8 @@ import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { clearLazyDraft, readLazyDraft } from '@/lib/lazy-draft';
 import { safeNext } from '@/lib/auth-flow';
+import { createClient } from '@/lib/supabase';
+import { track } from '@/lib/analytics';
 
 /**
  * Post-auth landing. Moves logged-out work (lib/lazy-draft.ts) into the new
@@ -18,6 +20,11 @@ function Claim() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      try {
+        const { data: { user } } = await createClient().auth.getUser();
+        const fresh = user?.created_at && Date.now() - new Date(user.created_at).getTime() < 10 * 60 * 1000;
+        if (fresh) track('sign_up', { method: user?.app_metadata?.provider ?? 'email' });
+      } catch { /* analytics only */ }
       const draft = readLazyDraft();
       if (!draft) {
         router.replace(next);
@@ -43,6 +50,7 @@ function Claim() {
           const body = (await res.json()) as { resume?: { id?: string }; id?: string };
           const id = body.resume?.id ?? body.id;
           clearLazyDraft();
+          track('resume_created', { source: 'lazy_draft' });
           if (!cancelled) router.replace(id ? `/builder/resume/${id}` : '/dashboard/resumes');
           return;
         }

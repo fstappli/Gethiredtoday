@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { track } from '@/lib/analytics';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import UpgradePrompt from '@/components/upgrade-prompt';
@@ -52,6 +53,7 @@ export default function PortalAtsView() {
         if (!res.ok) { setError(typeof data.error === 'string' ? data.error : 'The check failed. Please try again.'); return; }
         if (typeof data.overall_score !== 'number' || !data.sections) { setError('Unexpected response. Please try again.'); return; }
         setResult(data);
+        track('ats_check_complete', { score: data.overall_score, logged_in: true });
         setLastTitle(title);
         if (id) {
           fetch(`/api/resume/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ats_score: data.overall_score }) }).catch(() => undefined);

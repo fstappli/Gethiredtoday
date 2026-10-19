@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import FaqItem from "@/components/faq-item";
 import { saveLazyDraft } from "@/lib/lazy-draft";
+import { track } from "@/lib/analytics";
 
 interface AtsResult {
   overall_score: number;
@@ -83,6 +84,7 @@ export default function PublicAtsChecker() {
       if (typeof data.overall_score !== "number") { setError("The analyzer returned an unexpected response. Please try again."); return; }
       setResult({ overall_score: data.overall_score, top_issues: data.top_issues ?? [], top_suggestions: data.top_suggestions ?? [] });
       setResumeText(trimmed);
+      track("ats_check_complete", { score: data.overall_score, logged_in: false });
     } catch {
       setError("We could not reach the checker. Check your connection and try again.");
     } finally {

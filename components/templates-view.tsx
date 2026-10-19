@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { track } from "@/lib/analytics";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ResumeThumb from "@/components/resume-thumb";
@@ -103,6 +104,7 @@ export default function TemplatesView() {
       }
       if (res.ok) {
         const { resume } = await res.json();
+        track("resume_created", { source: "templates", template: t.templateId });
         router.push(`/builder/resume/${resume.id}?template=${t.templateId}`);
         return;
       }

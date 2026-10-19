@@ -3,6 +3,9 @@ import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
+import JsonLd from "@/components/seo/json-ld";
+import { organizationSchema, websiteSchema, softwareApplicationSchema } from "@/lib/seo/jsonld";
+import { SITE, SITE_URL } from "@/lib/site-config";
 import "./globals.css";
 
 const figtree = Figtree({
@@ -19,38 +22,43 @@ const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
 });
 
+const DEFAULT_TITLE = "Free AI Resume Builder, ATS Checker and Job Search";
+const DEFAULT_DESCRIPTION =
+  "Build an ATS-friendly resume in about 3 minutes, check your ATS score, search jobs and apply with a tailored resume. Free to start, PDF download always free.";
+
 export const metadata: Metadata = {
-  metadataBase: new URL("https://hiredtodayapp.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: "AI Resume Builder, Get Hired Today | GetHiredToday",
-    template: "%s | GetHiredToday",
+    default: `${SITE.name}: ${DEFAULT_TITLE}`,
+    template: `%s | ${SITE.name}`,
   },
-  description:
-    "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checker, and Auto-Apply, everything you need to get hired, for $9.99/month.",
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE.name,
   keywords: [
-    "AI resume builder", "ATS-friendly resume", "resume maker",
-    "AI resume writer", "ATS checker", "resume templates 2026", "cover letter builder",
-    "professional resume", "online resume builder", "CV builder",
+    "AI resume builder", "ATS-friendly resume", "resume maker", "free resume builder",
+    "AI resume writer", "ATS checker", "ATS resume checker", "resume templates", "cover letter builder",
+    "online resume builder", "CV builder", "job search",
   ],
-  authors: [{ name: "GetHiredToday", url: "https://hiredtodayapp.com" }],
-  creator: "GetHiredToday",
-  publisher: "GetHiredToday",
-  alternates: { canonical: "https://hiredtodayapp.com" },
+  authors: [{ name: SITE.name, url: SITE_URL }],
+  creator: SITE.name,
+  publisher: SITE.name,
+  // './' resolves to each page's own URL, so every page is self-canonical.
+  alternates: { canonical: "./" },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://hiredtodayapp.com",
-    siteName: "GetHiredToday",
-    title: "AI Resume Builder, Get Hired Today",
-    description: "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checking, and Auto-Apply, $9.99/month.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "GetHiredToday, AI Resume Builder" }],
+    url: "./",
+    siteName: SITE.name,
+    title: `${SITE.name}: ${DEFAULT_TITLE}`,
+    description: DEFAULT_DESCRIPTION,
+    images: [{ url: "/og?title=Get%20hired%20faster%20with%20a%20resume%20that%20passes%20the%20ATS&sub=Free%20resume%20builder%2C%20ATS%20checker%20and%20job%20search", width: 1200, height: 630, alt: `${SITE.name}, resume builder and job search` }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Resume Builder, Get Hired Today",
-    description: "Build an ATS-friendly resume in 3 minutes with AI. $9.99/month, cancel anytime.",
-    images: ["/og-image.png"],
-    creator: "@hiredtodayapp",
+    title: `${SITE.name}: ${DEFAULT_TITLE}`,
+    description: DEFAULT_DESCRIPTION,
+    images: ["/og?title=Get%20hired%20faster%20with%20a%20resume%20that%20passes%20the%20ATS&sub=Free%20resume%20builder%2C%20ATS%20checker%20and%20job%20search"],
+    creator: SITE.twitterHandle,
   },
   robots: {
     index: true,
@@ -58,7 +66,7 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-video-preview": -1, "max-image-preview": "large", "max-snippet": -1 },
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? "",
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() || undefined,
   },
 };
 
@@ -74,33 +82,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "GetHiredToday",
-            "url": "https://hiredtodayapp.com",
-            "logo": "https://hiredtodayapp.com/og-image.png",
-            "description": "AI-powered resume builder that helps job seekers create ATS-friendly resumes and land more interviews.",
-            "contactPoint": { "@type": "ContactPoint", "contactType": "customer support", "url": "https://hiredtodayapp.com/contact" },
-            "sameAs": []
-          })}}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "GetHiredToday AI Resume Builder",
-            "applicationCategory": "BusinessApplication",
-            "operatingSystem": "Web",
-            "url": "https://hiredtodayapp.com",
-            "description": "AI resume builder with ATS compatibility checking, professional templates, Auto-Apply, and one-click PDF download.",
-            "offers": { "@type": "Offer", "price": "9.99", "priceCurrency": "USD" },
-            "aggregateRating": { "@type": "AggregateRating", "ratingValue": "4.8", "reviewCount": "247" }
-          })}}
-        />
+        <JsonLd data={[organizationSchema(), websiteSchema(), softwareApplicationSchema()]} />
       </head>
       <body className="min-h-full flex flex-col">
         {children}

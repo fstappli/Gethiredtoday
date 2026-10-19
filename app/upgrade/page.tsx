@@ -1,5 +1,7 @@
 'use client';
 
+import { track } from '@/lib/analytics';
+import { PRICING } from '@/lib/site-config';
 import { Suspense, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -49,10 +51,7 @@ function UpgradeContent() {
 
   const checkout = () => {
     setLoading(true);
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window as any).gtag?.('event', 'begin_checkout', { currency: 'USD', value: 9.99, items: [{ item_id: 'pro_monthly', item_name: 'Pro Plan', price: 9.99 }], trigger: trigger ?? 'direct' });
-    } catch { /* analytics must never block checkout */ }
+    track('begin_checkout', { currency: 'USD', value: PRICING.proMonthly, plan, trigger: trigger ?? 'direct' });
     const q = new URLSearchParams({ from: returnPath, plan });
     if (trigger) q.set('trigger', trigger);
     window.location.href = `/api/lemonsqueezy/checkout-redirect?${q.toString()}`;

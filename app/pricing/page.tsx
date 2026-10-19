@@ -3,6 +3,7 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import PricingToggle from "@/components/pricing-toggle";
 import PricingFAQ from "@/components/pricing-faq";
+import TrackOnMount from "@/components/seo/track-on-mount";
 
 export const metadata: Metadata = {
   title: "Pricing: Free to Build, Pro at $9.99/month",
@@ -43,6 +44,7 @@ export default function PricingPage() {
   return (
     <div className="bg-ground-site text-ink">
       <Navbar />
+      <TrackOnMount event="view_pricing" />
       <main>
         <PricingToggle />
 

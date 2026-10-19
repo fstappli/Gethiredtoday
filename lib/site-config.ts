@@ -17,7 +17,7 @@ export const SITE = {
   sameAs: [] as string[],
   twitterHandle: '@hiredtodayapp',
   logo: `${SITE_URL}/icon-512.png`,
-  ogImage: `${SITE_URL}/og-image.png`,
+  ogImage: `${SITE_URL}/og?title=Get%20hired%20faster%20with%20a%20resume%20that%20passes%20the%20ATS`,
   language: 'en',
   // foundingDate is intentionally omitted until the owner confirms it.
 } as const;

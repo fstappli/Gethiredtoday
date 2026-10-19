@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { track } from '@/lib/analytics';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Navbar from '@/components/navbar';
@@ -76,6 +77,7 @@ export default function ResumeTemplatePage() {
       if (res.status === 403) { setPrompt('second_resume'); return; }
       if (res.ok) {
         const { resume } = await res.json();
+        track('resume_created', { source: 'builder_picker', template: id });
         router.push(`/builder/resume/${resume.id}?wizard=1&template=${id}`);
         return;
       }

@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import Link from 'next/link';
+import { track } from '@/lib/analytics';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { AuthLogo, OAuthButtons, OrDivider } from '@/components/auth-bits';
 import ResumeThumb from '@/components/resume-thumb';
@@ -34,6 +35,7 @@ function SignupForm() {
       return;
     }
     setBusy(true);
+    track('sign_up_start', { method: 'email_link', source: sp.get('from') ?? 'direct' });
     const supabase = createClient();
     const { error: err } = await supabase.auth.signInWithOtp({
       email,

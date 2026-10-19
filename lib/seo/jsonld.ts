@@ -99,3 +99,10 @@ export function howToSchema(h: { name: string; description: string; steps: { nam
     step: h.steps.map((s, i) => ({ '@type': 'HowToStep', position: i + 1, name: s.name, text: s.text })),
   };
 }
+
+/** Share-card URL for a page. Use in generateMetadata: openGraph.images / twitter.images. */
+export function ogImageUrl(title: string, sub?: string): string {
+  const p = new URLSearchParams({ title });
+  if (sub) p.set('sub', sub);
+  return `/og?${p.toString()}`;
+}

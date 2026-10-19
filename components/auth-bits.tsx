@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { track } from '@/lib/analytics';
 import { createClient } from '@/lib/supabase';
 import { APPLE_ENABLED, LINKEDIN_ENABLED, callbackUrl } from '@/lib/auth-flow';
 
@@ -18,6 +19,7 @@ type Provider = 'google' | 'linkedin_oidc' | 'apple';
 /** Google always; LinkedIn and Apple only when their env flag is on, so we never ship dead buttons. */
 export function OAuthButtons({ next, onError, large = false }: { next: string; onError: (m: string) => void; large?: boolean }) {
   const go = async (provider: Provider) => {
+    track('sign_up_start', { method: provider });
     const supabase = createClient();
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
