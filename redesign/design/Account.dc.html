@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Account settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1300px">
+<dc-import name="PortalNav" active="none" hint-size="100%,64px"></dc-import>
+<main style="max-width:1100px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<nav aria-label="Settings" style="flex:1 1 220px;max-width:260px;display:flex;flex-direction:column;gap:4px">
+<h1 class="d" style="margin:0 0 12px;font-size:30px">Settings</h1>
+<a href="#profile" aria-current="page" style="text-decoration:none;font-weight:700;padding:11px 14px;border-radius:10px;background:#E3F4EE;color:#08574B">Profile</a>
+<a href="#prefs" style="text-decoration:none;font-weight:700;padding:11px 14px;border-radius:10px;color:#3F4D49">Job preferences</a>
+<a href="#notif" style="text-decoration:none;font-weight:700;padding:11px 14px;border-radius:10px;color:#3F4D49">Notifications</a>
+<a href="#signin" style="text-decoration:none;font-weight:700;padding:11px 14px;border-radius:10px;color:#3F4D49">Sign-in</a>
+<a href="#data" style="text-decoration:none;font-weight:700;padding:11px 14px;border-radius:10px;color:#3F4D49">Privacy &amp; data</a>
+<a href="Billing.dc.html" style="text-decoration:none;font-weight:700;padding:11px 14px;border-radius:10px;color:#3F4D49">Plan &amp; billing</a>
+<a href="Main.dc.html" style="text-decoration:none;font-weight:700;padding:11px 14px;border-radius:10px;color:#3F4D49;margin-top:12px">Log out</a>
+</nav>
+<div style="flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<section id="profile" style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<h2 class="d" style="margin:0;font-size:22px">Profile</h2>
+<div style="display:flex;gap:14px;align-items:center"><span style="width:64px;height:64px;border-radius:50%;background:#0D1B19;color:#fff;display:grid;place-items:center;font-weight:800;font-size:24px">F</span><button type="button" style="font:inherit;font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:10px;padding:0 14px;min-height:42px">Change photo</button></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px">
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">First name<input value="Fahad" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Last name<input value="Basil" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Email<input value="fahad@example.com" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Phone (optional)<input placeholder="+971" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px"></label>
+</div>
+<button type="button" style="align-self:flex-start;font:inherit;font-weight:800;background:#0D1B19;color:#fff;border:0;border-radius:12px;padding:0 18px;min-height:46px">Save changes</button>
+</section>
+<section id="prefs" style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px">
+<h2 class="d" style="margin:0;font-size:22px">Job preferences</h2>
+<p style="margin:0;color:#3F4D49;font-size:15px">Used for job matches, AI suggestions and Auto-Apply.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px">
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Target role<input value="Senior UX Designer" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Locations<input value="Dubai, Remote" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px"></label>
+</div>
+</section>
+<section id="notif" style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:4px">
+<h2 class="d" style="margin:0 0 8px;font-size:22px">Notifications</h2>
+<label style="display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;border-bottom:1px solid #EEEBE3;cursor:pointer"><span><b>Daily job matches</b><br><span style="font-size:14px;color:#3F4D49">One email each morning</span></span><input type="checkbox" checked style="width:22px;height:22px;accent-color:#0B6E5F"></label>
+<label style="display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;border-bottom:1px solid #EEEBE3;cursor:pointer"><span><b>Application follow-up reminders</b></span><input type="checkbox" checked style="width:22px;height:22px;accent-color:#0B6E5F"></label>
+<label style="display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:52px;cursor:pointer"><span><b>Weekly tips</b></span><input type="checkbox" style="width:22px;height:22px;accent-color:#0B6E5F"></label>
+</section>
+<section id="signin" style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:10px">
+<h2 class="d" style="margin:0;font-size:22px">Sign-in methods</h2>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span><b>Google</b> · fahad@example.com</span><span style="font-size:13px;font-weight:800;background:#E3F4EE;color:#08574B;padding:4px 10px;border-radius:999px">Connected</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span><b>LinkedIn</b></span><button type="button" style="font:inherit;font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:10px;padding:0 14px;min-height:40px">Connect</button></div>
+</section>
+<section id="data" style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:10px">
+<h2 class="d" style="margin:0;font-size:22px">Privacy &amp; data</h2>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" style="font:inherit;font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:10px;padding:0 14px;min-height:44px">Download my data</button><button type="button" style="font:inherit;font-weight:700;background:#fff;border:1.5px solid #E8A48A;color:#8A2A0B;border-radius:10px;padding:0 14px;min-height:44px">Delete account</button></div>
+<span style="font-size:13px;color:#3F4D49">Deleting removes your resumes, letters and history. We'll ask you to confirm.</span>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>ATS check</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1300px">
+<dc-import name="PortalNav" active="ats" hint-size="100%,64px"></dc-import>
+<main style="max-width:1240px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:18px">
+<div><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-.8px">ATS check</h1><p style="margin:4px 0 0;color:#3F4D49">Score a saved resume, optionally against a specific job ad.</p></div>
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+<form style="flex:1 1 360px;min-width:0;background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Resume<select style="font:inherit;font-weight:500;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px;background:#fff"><option>Sr. UX Designer · last score 72</option><option>Product Designer · last score 87</option><option>UX Lead, Fintech · last score 64</option></select></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Job ad (optional)<textarea rows="8" placeholder="Paste a job description to match keywords line by line" style="font:inherit;font-weight:400;font-size:15px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px"></textarea></label>
+<button type="button" style="font:inherit;font-weight:800;font-size:16px;background:#0B6E5F;color:#fff;border:0;border-radius:14px;min-height:54px">Run check</button>
+</form>
+<section style="flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:14px">
+<div style="background:#0D1B19;color:#fff;border-radius:22px;padding:22px;display:flex;gap:20px;align-items:center;flex-wrap:wrap">
+<div style="flex:none;width:100px;height:100px;border-radius:50%;background:conic-gradient(#FFD166 0 72%,#2A3A37 72%);display:grid;place-items:center" role="img" aria-label="Score 72"><div style="width:82px;height:82px;border-radius:50%;background:#0D1B19;display:grid;place-items:center"><span class="d" style="font-size:32px;font-weight:800">72</span></div></div>
+<div style="flex:1 1 220px"><b class="d" style="font-size:22px">Sr. UX Designer</b><p style="margin:4px 0 0;color:#A9BDB7">Up 8 points since last week. 3 quick fixes left.</p></div>
+<a href="Builder.dc.html" style="background:#5FD3B3;color:#0D1B19;text-decoration:none;font-weight:800;padding:13px 18px;border-radius:12px">Fix in builder</a>
+</div>
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
+<h2 class="d" style="margin:0;font-size:20px">Breakdown</h2>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+<div><div style="display:flex;justify-content:space-between;font-size:15px"><span style="font-weight:600">{{r.label}}</span><span>{{r.v}}</span></div><div style="height:10px;background:#EEEBE3;border-radius:5px;margin-top:6px"><div style="height:10px;border-radius:5px;width:{{r.w}};background:{{r.c}}"></div></div></div>
+</sc-for>
+</div>
+<div style="background:#FFF1CC;border-radius:18px;padding:16px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="flex:1 1 280px;line-height:1.5"><b>See all 30 checks</b> and line-by-line job ad matching with Pro.</span><a href="Checkout.dc.html" style="font-weight:800;background:#0D1B19;color:#fff;border-radius:10px;padding:11px 14px;text-decoration:none">Go Pro</a></div>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+renderVals() {
+const g = '#0B6E5F', y = '#E0A800', r = '#C2410C';
+return { rows: [
+{ label: 'Formatting & parsing', v: '10/10', w: '100%', c: g },
+{ label: 'Contact details', v: '5/5', w: '100%', c: g },
+{ label: 'Keywords', v: '14/20', w: '70%', c: y },
+{ label: 'Measurable impact', v: '4/10', w: '40%', c: r },
+{ label: 'Length & structure', v: '7/10', w: '70%', c: y }
+] };
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Onboarding</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6;min-height:900px;display:flex;flex-direction:column;align-items:center;padding:24px 20px 48px;box-sizing:border-box">
+<div style="width:min(760px,100%);display:flex;align-items:center;gap:16px">
+<span class="d" style="width:36px;height:36px;border-radius:10px;background:#0B6E5F;color:#fff;display:grid;place-items:center;font-weight:800;flex:none">G</span>
+<div style="flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px" role="progressbar" aria-valuemin="1" aria-valuemax="3" aria-valuenow="{{step}}" aria-label="Setup progress">
+<span style="height:8px;border-radius:4px;background:{{bar1}}"></span><span style="height:8px;border-radius:4px;background:{{bar2}}"></span><span style="height:8px;border-radius:4px;background:{{bar3}}"></span>
+</div>
+<span style="font-size:14px;font-weight:700;color:#3F4D49">Step {{step}} of 3</span>
+</div>
+
+<main style="width:min(760px,100%);margin-top:40px;display:flex;flex-direction:column;gap:22px">
+<sc-if value="{{s1}}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:6px"><span style="font-weight:800;color:#0B6E5F">Hi Fahad, nice to meet you.</span><h1 class="d" style="margin:0;font-size:40px;letter-spacing:-1.2px;line-height:1.05">What job are you going for?</h1><p style="margin:0;color:#3F4D49;font-size:17px">We'll tailor suggestions, keywords and job matches to it. You can change it later.</p></div>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Target job title<input value="Senior UX Designer" style="font:inherit;font-weight:500;font-size:18px;border:1.5px solid #0B6E5F;border-radius:14px;padding:16px;background:#fff"></label>
+<fieldset style="border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px"><legend style="font-weight:700;margin-bottom:10px">Experience level</legend>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<label style="cursor:pointer;display:flex;gap:8px;align-items:center;background:#fff;border:1.5px solid #D6D2C6;border-radius:999px;padding:0 16px;min-height:46px;font-weight:600"><input type="radio" name="lvl" style="accent-color:#0B6E5F">Student or graduate</label>
+<label style="cursor:pointer;display:flex;gap:8px;align-items:center;background:#fff;border:1.5px solid #D6D2C6;border-radius:999px;padding:0 16px;min-height:46px;font-weight:600"><input type="radio" name="lvl" style="accent-color:#0B6E5F">1 to 4 years</label>
+<label style="cursor:pointer;display:flex;gap:8px;align-items:center;background:#E3F4EE;border:1.5px solid #0B6E5F;border-radius:999px;padding:0 16px;min-height:46px;font-weight:700"><input type="radio" name="lvl" checked style="accent-color:#0B6E5F">5 to 10 years</label>
+<label style="cursor:pointer;display:flex;gap:8px;align-items:center;background:#fff;border:1.5px solid #D6D2C6;border-radius:999px;padding:0 16px;min-height:46px;font-weight:600"><input type="radio" name="lvl" style="accent-color:#0B6E5F">10+ years</label>
+</div></fieldset>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Where do you want to work?<input value="Dubai, UAE · Open to remote" style="font:inherit;font-weight:500;font-size:16px;border:1.5px solid #D6D2C6;border-radius:14px;padding:14px;background:#fff"></label>
+</sc-if>
+
+<sc-if value="{{s2}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:6px"><h1 class="d" style="margin:0;font-size:40px;letter-spacing:-1.2px;line-height:1.05">How would you like to start?</h1><p style="margin:0;color:#3F4D49;font-size:17px">Pick whatever is easiest. Every path ends with a polished resume.</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:12px">
+<label style="cursor:pointer;background:#fff;border:2px solid #0B6E5F;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:8px"><span style="display:flex;justify-content:space-between;align-items:center"><input type="radio" name="start" checked style="width:22px;height:22px;accent-color:#0B6E5F;margin:0"><span style="font-size:11px;font-weight:800;background:#FFD166;padding:3px 8px;border-radius:999px">FASTEST</span></span><b class="d" style="font-size:20px">Upload my resume</b><span style="color:#3F4D49;font-size:15px;line-height:1.45">PDF or Word. We fill every section in seconds.</span></label>
+<label style="cursor:pointer;background:#fff;border:1.5px solid #E6E3DA;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:8px"><input type="radio" name="start" style="width:22px;height:22px;accent-color:#0B6E5F;margin:0"><b class="d" style="font-size:20px">Import LinkedIn</b><span style="color:#3F4D49;font-size:15px;line-height:1.45">Paste your profile link. We never post anything.</span></label>
+<label style="cursor:pointer;background:#fff;border:1.5px solid #E6E3DA;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:8px"><input type="radio" name="start" style="width:22px;height:22px;accent-color:#0B6E5F;margin:0"><b class="d" style="font-size:20px">Start fresh</b><span style="color:#3F4D49;font-size:15px;line-height:1.45">Answer a few questions and AI drafts it for you.</span></label>
+</div>
+<label style="display:flex;align-items:center;gap:14px;border:2px dashed #C9C4B6;border-radius:18px;padding:22px;background:#fff;cursor:pointer"><span style="width:48px;height:48px;border-radius:14px;background:#E3F4EE;display:grid;place-items:center;flex:none"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16"/></svg></span><span><b>Drop your resume here or choose a file</b><br><span style="font-size:14px;color:#3F4D49">PDF or Word, up to 5 MB</span></span><input type="file" style="position:absolute;width:1px;height:1px;opacity:0"></label>
+</sc-if>
+
+<sc-if value="{{s3}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:6px"><h1 class="d" style="margin:0;font-size:40px;letter-spacing:-1.2px;line-height:1.05">Pick a look. You can switch any time.</h1><p style="margin:0;color:#3F4D49;font-size:17px">We filled it with your details. Recommended for UX roles:</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));gap:14px">
+<sc-for list="{{looks}}" as="l" hint-placeholder-count="3">
+<button type="button" onClick="{{l.pick}}" aria-pressed="{{l.pressed}}" style="font:inherit;color:#0D1B19;cursor:pointer;background:#fff;border:2px solid {{l.border}};border-radius:18px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:10px">
+<span style="display:block;width:168px;height:217px;overflow:hidden;border-radius:4px;box-shadow:0 8px 20px rgba(13,27,25,.12)"><span style="display:block;width:600px;height:776px;transform:scale(.28);transform-origin:0 0"><dc-import name="ResumeThumb" variant="{{l.variant}}" hint-size="600px,776px"></dc-import></span></span>
+<b>{{l.title}}</b></button>
+</sc-for>
+</div>
+</sc-if>
+
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px">
+<sc-if value="{{notFirst}}" hint-placeholder-val="{{ false }}"><button type="button" onClick="{{back}}" style="font:inherit;font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:14px;padding:0 22px;min-height:54px;cursor:pointer">Back</button></sc-if>
+<sc-if value="{{isFirst}}" hint-placeholder-val="{{ true }}"><a href="Dashboard.dc.html" style="font-weight:700;color:#3F4D49;padding:14px 0">Skip for now</a></sc-if>
+<sc-if value="{{notLast}}" hint-placeholder-val="{{ true }}"><button type="button" onClick="{{next}}" style="font:inherit;font-weight:800;font-size:17px;background:#0B6E5F;color:#fff;border:0;border-radius:14px;padding:0 28px;min-height:54px;cursor:pointer">Continue</button></sc-if>
+<sc-if value="{{s3}}" hint-placeholder-val="{{ false }}"><a href="Builder.dc.html" style="font-weight:800;font-size:17px;background:#0B6E5F;color:#fff;text-decoration:none;border-radius:14px;padding:16px 28px">Open my resume</a></sc-if>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { step: 1, look: 'classic' }; }
+renderVals() {
+const s = this.state.step, on = '#0B6E5F', off = '#E0DCD1';
+const look = this.state.look;
+const mk = (variant, title) => ({ variant, title, pressed: look === variant ? 'true' : 'false', border: look === variant ? '#0B6E5F' : '#E6E3DA', pick: () => this.setState({ look: variant }) });
+return {
+step: s, s1: s === 1, s2: s === 2, s3: s === 3, isFirst: s === 1, notFirst: s > 1, notLast: s < 3,
+bar1: on, bar2: s >= 2 ? on : off, bar3: s >= 3 ? on : off,
+next: () => this.setState({ step: Math.min(3, s + 1) }), back: () => this.setState({ step: Math.max(1, s - 1) }),
+looks: [mk('classic', 'Classic'), mk('sidebar', 'Modern Sidebar'), mk('teal', 'Contemporary')]
+};
+}
+}
+</script>
+</body>
+</html>

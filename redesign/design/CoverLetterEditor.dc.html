@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cover letter editor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1100px">
+<dc-import name="PortalNav" active="letters" hint-size="100%,64px"></dc-import>
+<main style="max-width:1240px;margin:0 auto;padding:24px 20px 56px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+<div style="display:flex;gap:10px;align-items:center"><a href="CoverLetters.dc.html" aria-label="Back to cover letters" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#0D1B19;background:#fff;border:1px solid #E6E3DA"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a><span><b class="d" style="font-size:22px">Northwind · Senior Product Designer</b><br><span style="font-size:13px;color:#3F4D49">Saved just now</span></span></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" style="font:inherit;font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:12px;padding:0 16px;min-height:44px">Copy text</button><a href="Checkout.dc.html" style="font-weight:800;background:#0B6E5F;color:#fff;border-radius:12px;padding:12px 16px;text-decoration:none">Download · Pro</a></div>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+<aside style="flex:1 1 320px;min-width:0;background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px">Use this resume<select style="font:inherit;font-weight:500;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px;background:#fff"><option>Sr. UX Designer (ATS 72)</option><option>Product Designer (ATS 87)</option></select></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px">Job ad<textarea rows="7" style="font:inherit;font-weight:400;font-size:15px;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px;line-height:1.5">We're hiring a Senior Product Designer to own our checkout and payments experience. You'll partner with PMs and engineers, run research, and ship in a fast-paced team…</textarea></label>
+<fieldset style="border:0;margin:0;padding:0"><legend style="font-weight:700;font-size:14px;margin-bottom:8px">Tone</legend>
+<div role="group" style="display:flex;gap:6px;flex-wrap:wrap">
+<sc-for list="{{tones}}" as="t" hint-placeholder-count="3"><button type="button" aria-pressed="{{t.pressed}}" onClick="{{t.pick}}" style="font:inherit;font-weight:700;font-size:14px;border-radius:999px;padding:0 14px;min-height:40px;cursor:pointer;border:1.5px solid {{t.border}};background:{{t.bg}};color:{{t.fg}}">{{t.label}}</button></sc-for>
+</div></fieldset>
+<button type="button" style="font:inherit;font-weight:800;background:#0D1B19;color:#fff;border:0;border-radius:12px;min-height:50px">Rewrite letter</button>
+</aside>
+<section aria-label="Letter" style="flex:999 1 560px;min-width:0;background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:40px;display:flex;flex-direction:column;gap:14px;font-size:16px;line-height:1.7;box-sizing:border-box">
+<div><b class="d" style="font-size:24px">Fahad Basil</b><div style="color:#0B6E5F;font-weight:600;font-size:14px">Senior UX Designer · Dubai, UAE</div></div>
+<div style="height:2px;width:44px;background:#0B6E5F"></div>
+<p style="margin:0">Dear Hiring Team at Northwind,</p>
+<p style="margin:0">Your Senior Product Designer role caught my eye because it puts checkout at the center. At Majid Al Futtaim I lead design for the Cart and Checkout squad, owning the payment and promotion experiences customers use every day.</p>
+<p style="margin:0;background:#FFF6DC;border-radius:8px;padding:6px 8px;position:relative">I pair research with fast iteration: [add one result with a number, for example a conversion lift].<span style="display:flex;gap:6px;margin-top:8px"><button type="button" style="font:inherit;font-size:13px;font-weight:700;background:#0B6E5F;color:#fff;border:0;border-radius:8px;padding:0 10px;min-height:34px">Suggest a result</button><button type="button" style="font:inherit;font-size:13px;font-weight:700;background:#fff;border:1px solid #D6D2C6;border-radius:8px;padding:0 10px;min-height:34px">Shorter</button></span></p>
+<p style="margin:0">I'd love to bring the same customer-first approach to your payments team. Thank you for considering my application.</p>
+<p style="margin:0">Warm regards,<br>Fahad Basil</p>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { tone: 'Warm' }; }
+renderVals() {
+const t = this.state.tone;
+return { tones: ['Warm', 'Confident', 'Formal'].map((l) => ({ label: l, pressed: l === t ? 'true' : 'false', bg: l === t ? '#0D1B19' : '#fff', fg: l === t ? '#fff' : '#0D1B19', border: l === t ? '#0D1B19' : '#D6D2C6', pick: () => this.setState({ tone: l }) })) };
+}
+}
+</script>
+</body>
+</html>

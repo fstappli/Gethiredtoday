@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Privacy policy and terms</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+<div style="max-width:1100px;margin:0 auto;padding:48px 20px 72px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+<nav aria-label="Legal" style="flex:1 1 200px;max-width:240px;display:flex;flex-direction:column;gap:4px">
+<sc-for list="{{docs}}" as="d" hint-placeholder-count="3">
+<button type="button" aria-current="{{d.cur}}" onClick="{{d.pick}}" style="text-align:left;font:inherit;font-weight:700;border:0;border-radius:10px;padding:0 14px;min-height:44px;cursor:pointer;background:{{d.bg}};color:{{d.fg}}">{{d.label}}</button>
+</sc-for>
+</nav>
+<article style="flex:999 1 520px;min-width:0;background:#fff;border:1px solid #E6E3DA;border-radius:24px;padding:36px;font-size:17px;line-height:1.7;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+<h1 class="d" style="margin:0;font-size:42px;letter-spacing:-1.2px;line-height:1.05">{{title}}</h1>
+<span style="color:#3F4D49;font-size:15px">Last updated [date]</span>
+<div style="background:#E3F4EE;border-radius:14px;padding:16px 18px"><b>The short version</b><p style="margin:4px 0 0">{{summary}}</p></div>
+<h2 class="d" style="margin:10px 0 0;font-size:24px">1. [Section heading]</h2>
+<p style="margin:0;color:#3F4D49">[Paste your legal copy here. Keep headings short and plain so people can scan.]</p>
+<h2 class="d" style="margin:10px 0 0;font-size:24px">2. [Section heading]</h2>
+<p style="margin:0;color:#3F4D49">[Legal copy]</p>
+<h2 class="d" style="margin:10px 0 0;font-size:24px">3. Contact</h2>
+<p style="margin:0;color:#3F4D49">Questions? <a href="Contact.dc.html">Contact us</a>.</p>
+</article>
+</div>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1800}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { doc: 'privacy' }; }
+renderVals() {
+const d = this.state.doc;
+const info = {
+privacy: { title: 'Privacy policy', summary: '[Plain-language summary of what you collect, why, and how people can export or delete it.]' },
+terms: { title: 'Terms of service', summary: '[Plain-language summary of the main rules, billing and cancellation.]' },
+cookies: { title: 'Cookie policy', summary: '[Plain-language summary of which cookies you use and how to opt out.]' }
+};
+const item = (id, label) => ({ label, cur: d === id ? 'page' : 'false', bg: d === id ? '#E3F4EE' : 'transparent', fg: d === id ? '#08574B' : '#3F4D49', pick: () => this.setState({ doc: id }) });
+return { docs: [item('privacy', 'Privacy policy'), item('terms', 'Terms of service'), item('cookies', 'Cookie policy')], title: info[d].title, summary: info[d].summary };
+}
+}
+</script>
+</body>
+</html>

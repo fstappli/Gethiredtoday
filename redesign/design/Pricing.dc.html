@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Pricing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+
+<section style="max-width:1140px;margin:0 auto;padding:72px 24px 40px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center">
+<h1 class="d" style="margin:0;font-size:56px;letter-spacing:-1.8px;line-height:1.02;max-width:760px">Free while you build. Pro when you apply.</h1>
+<p style="margin:0;color:#3F4D49;font-size:19px;max-width:620px;line-height:1.5">No trial traps. Your free resume and PDF stay free forever. Cancel Pro in two clicks.</p>
+<div role="group" aria-label="Billing period" style="display:flex;background:#fff;border:1px solid #E6E3DA;border-radius:14px;padding:4px;gap:4px">
+<sc-if value="{{isMonthly}}" hint-placeholder-val="{{ true }}">
+<button type="button" aria-pressed="true" style="font:inherit;font-weight:700;font-size:15px;border:0;border-radius:10px;padding:12px 18px;min-height:44px;background:#0D1B19;color:#fff">Monthly</button>
+<button type="button" onClick="{{setQuarterly}}" aria-pressed="false" style="font:inherit;font-weight:600;font-size:15px;border:0;border-radius:10px;padding:12px 18px;min-height:44px;background:transparent;color:#0D1B19;cursor:pointer">Every 3 months <span style="background:#FFD166;color:#0D1B19;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:800;margin-left:4px">Save [X]%</span></button>
+</sc-if>
+<sc-if value="{{isQuarterly}}" hint-placeholder-val="{{ false }}">
+<button type="button" onClick="{{setMonthly}}" aria-pressed="false" style="font:inherit;font-weight:600;font-size:15px;border:0;border-radius:10px;padding:12px 18px;min-height:44px;background:transparent;color:#0D1B19;cursor:pointer">Monthly</button>
+<button type="button" aria-pressed="true" style="font:inherit;font-weight:700;font-size:15px;border:0;border-radius:10px;padding:12px 18px;min-height:44px;background:#0D1B19;color:#fff">Every 3 months <span style="background:#FFD166;color:#0D1B19;border-radius:999px;padding:2px 8px;font-size:12px;font-weight:800;margin-left:4px">Save [X]%</span></button>
+</sc-if>
+</div>
+</section>
+
+<section style="max-width:1140px;margin:0 auto;padding:0 24px 64px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:20px;align-items:stretch">
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:20px">
+<div><div class="d" style="font-size:24px;font-weight:700">Free</div><div style="color:#3F4D49;margin-top:4px">Build and send one great resume</div></div>
+<div><span class="d" style="font-size:52px;font-weight:800">$0</span><span style="color:#3F4D49"> forever</span></div>
+<a href="Signup.dc.html" style="text-align:center;border:1.5px solid #0D1B19;color:#0D1B19;text-decoration:none;font-weight:700;padding:16px;border-radius:14px">Start free</a>
+<ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{free}}" as="f" hint-placeholder-count="5"><li style="display:flex;gap:10px;line-height:1.4"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="flex:none"><path d="M5 12l5 5 9-10"/></svg>{{f}}</li></sc-for>
+</ul>
+</div>
+<div style="background:#0D1B19;color:#fff;border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:20px;position:relative;box-shadow:0 30px 60px rgba(13,27,25,.25)">
+<span style="position:absolute;top:-14px;left:32px;background:#FFD166;color:#0D1B19;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px">MOST CHOSEN</span>
+<div><div class="d" style="font-size:24px;font-weight:700">Pro</div><div style="color:#A9BDB7;margin-top:4px">Everything to land interviews faster</div></div>
+<div><span class="d" style="font-size:52px;font-weight:800">{{price}}</span><span style="color:#A9BDB7"> {{per}}</span><div style="color:#A9BDB7;font-size:14px;margin-top:4px">{{billedNote}}</div></div>
+<a href="Checkout.dc.html" style="text-align:center;background:#5FD3B3;color:#0D1B19;text-decoration:none;font-weight:800;padding:16px;border-radius:14px">Get Pro</a>
+<ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{pro}}" as="f" hint-placeholder-count="7"><li style="display:flex;gap:10px;line-height:1.4"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5FD3B3" stroke-width="2.4" stroke-linecap="round" aria-hidden="true" style="flex:none"><path d="M5 12l5 5 9-10"/></svg>{{f}}</li></sc-for>
+</ul>
+</div>
+</section>
+
+<section style="max-width:1140px;margin:0 auto;padding:0 24px 72px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:16px">
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:16px;padding:20px;display:flex;gap:12px;align-items:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 018 0v3"/></svg><span><b>Secure checkout</b><br><span style="color:#3F4D49;font-size:14px">Card, Apple Pay, PayPal [confirm]</span></span></div>
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:16px;padding:20px;display:flex;gap:12px;align-items:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><span><b>Cancel in two clicks</b><br><span style="color:#3F4D49;font-size:14px">From Plan &amp; billing, any time</span></span></div>
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:16px;padding:20px;display:flex;gap:12px;align-items:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 20h16"/></svg><span><b>Keep your work</b><br><span style="color:#3F4D49;font-size:14px">Resumes stay yours after you cancel</span></span></div>
+</section>
+
+<section style="background:#fff;border-top:1px solid #E6E3DA">
+<div style="max-width:1000px;margin:0 auto;padding:72px 24px;display:flex;flex-direction:column;gap:24px">
+<h2 class="d" style="margin:0;font-size:36px;letter-spacing:-1px">Compare plans</h2>
+<div style="overflow-x:auto;border:1px solid #E6E3DA;border-radius:16px">
+<table style="width:100%;border-collapse:collapse;min-width:560px;font-size:15px">
+<thead><tr style="background:#FBFAF6;text-align:left"><th scope="col" style="padding:16px">Feature</th><th scope="col" style="padding:16px;width:140px">Free</th><th scope="col" style="padding:16px;width:140px;color:#0B6E5F">Pro</th></tr></thead>
+<tbody>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="9"><tr style="border-top:1px solid #E6E3DA"><th scope="row" style="padding:14px 16px;text-align:left;font-weight:500">{{r.f}}</th><td style="padding:14px 16px;color:#3F4D49">{{r.a}}</td><td style="padding:14px 16px;font-weight:600">{{r.b}}</td></tr></sc-for>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+
+<section style="max-width:820px;margin:0 auto;padding:72px 24px;display:flex;flex-direction:column">
+<h2 class="d" style="margin:0 0 12px;font-size:36px;letter-spacing:-1px">Billing questions</h2>
+<details open style="border-bottom:1px solid #E6E3DA;padding:16px 0"><summary style="font-weight:700;font-size:17px;min-height:44px;display:flex;align-items:center">What happens to my resumes if I cancel?</summary><p style="color:#3F4D49;line-height:1.6;margin:6px 0 0">They stay in your account. You keep the Free plan: edit one resume and download it as a PDF.</p></details>
+<details style="border-bottom:1px solid #E6E3DA;padding:16px 0"><summary style="font-weight:700;font-size:17px;min-height:44px;display:flex;align-items:center">Will I be charged automatically?</summary></details>
+<details style="border-bottom:1px solid #E6E3DA;padding:16px 0"><summary style="font-weight:700;font-size:17px;min-height:44px;display:flex;align-items:center">Which payment methods do you accept?</summary></details>
+<details style="border-bottom:1px solid #E6E3DA;padding:16px 0"><summary style="font-weight:700;font-size:17px;min-height:44px;display:flex;align-items:center">Can I switch between monthly and 3-month billing?</summary></details>
+</section>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2700}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { period: 'monthly' }; }
+renderVals() {
+const m = this.state.period === 'monthly';
+return {
+isMonthly: m, isQuarterly: !m,
+setMonthly: () => this.setState({ period: 'monthly' }),
+setQuarterly: () => this.setState({ period: 'quarterly' }),
+price: m ? '$9.99' : '[$/mo]',
+per: '/month',
+billedNote: m ? 'Billed monthly. Cancel any time.' : 'Billed [$ total] every 3 months.',
+free: ['1 resume, free templates', 'AI writer with daily rewrites', 'ATS score and top 3 fixes', 'PDF download', 'Free ATS checker, unlimited'],
+pro: ['Unlimited resumes and cover letters', 'All 60+ templates', 'Word (.docx) export', 'Full 30-point ATS report + job-description match', 'Job matches from 1,000+ employers', 'Auto-Apply: up to 50 jobs a day, with review mode', 'Priority support'],
+rows: [
+{ f: 'Resumes', a: '1', b: 'Unlimited' },
+{ f: 'Templates', a: 'Free set', b: 'All 60+' },
+{ f: 'PDF download', a: 'Yes', b: 'Yes' },
+{ f: 'Word (.docx) export', a: 'Not included', b: 'Yes' },
+{ f: 'AI bullet writer', a: 'Daily limit', b: 'Unlimited' },
+{ f: 'ATS report', a: 'Score + top 3 fixes', b: 'Full 30-point report' },
+{ f: 'Cover letter builder', a: 'Write and preview', b: 'Unlimited downloads' },
+{ f: 'Job search', a: 'Search, save and apply', b: 'Search, save and apply' },
+{ f: 'Job matches with match %', a: 'Top 3 a day', b: 'All matches' },
+{ f: 'Auto-Apply', a: 'Not included', b: 'Up to 50/day' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

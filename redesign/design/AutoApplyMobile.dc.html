@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Auto-Apply · mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="width:390px;height:1500px;position:relative;overflow:hidden;background:#F6F7F3;font-family:'Figtree',system-ui,sans-serif;color:#0D1B19">
+<header style="padding:14px 16px 10px;display:flex;align-items:center;gap:8px"><h1 class="d" style="margin:0;font-size:28px;letter-spacing:-.6px;flex:1">Auto-Apply</h1><span style="font-size:12px;font-weight:800;background:#FFD166;padding:4px 10px;border-radius:999px">PRO</span></header>
+
+<section style="margin:0 16px;background:#0D1B19;color:#fff;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="display:flex;align-items:center;gap:10px"><span style="width:10px;height:10px;border-radius:50%;background:#5FD3B3"></span><b style="flex:1">Running · review mode</b><button type="button" style="font:inherit;font-weight:700;background:#fff;color:#0D1B19;border:0;border-radius:10px;padding:0 14px;min-height:40px">Pause</button></div>
+<div style="display:flex;align-items:baseline;gap:8px"><span class="d" style="font-size:44px;font-weight:800">12</span><span style="color:#A9BDB7">of 50 sent today</span></div>
+<div style="height:8px;background:#2A3A37;border-radius:4px"><div style="height:8px;width:24%;background:#5FD3B3;border-radius:4px"></div></div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;font-size:13px">
+<span style="background:#1C2D2A;padding:6px 10px;border-radius:999px">Sr. UX Designer</span><span style="background:#1C2D2A;padding:6px 10px;border-radius:999px">Dubai + Remote</span><span style="background:#1C2D2A;padding:6px 10px;border-radius:999px">Min 80% match</span>
+</div>
+<a href="AutoApplyMobile.dc.html" style="color:#5FD3B3;font-weight:700;padding:6px 0">Edit preferences</a>
+</section>
+
+<section style="padding:22px 16px 0;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="d" style="margin:0;font-size:20px">Needs your OK · 3</h2><button type="button" style="font:inherit;font-weight:700;color:#0B6E5F;background:transparent;border:0;min-height:44px">Approve all</button></div>
+<sc-for list="{{queue}}" as="q" hint-placeholder-count="3">
+<article style="background:#fff;border:1px solid #E3E7E2;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:12px;align-items:center"><span style="flex:none;width:42px;height:42px;border-radius:10px;display:grid;place-items:center;font-weight:800;background:{{q.bg}};color:{{q.fg}}">{{q.i}}</span><span style="flex:1"><b style="font-size:15px">{{q.t}}</b><br><span style="font-size:13px;color:#3F4D49">{{q.c}}</span></span><b style="color:#0B6E5F">{{q.m}}</b></div>
+<div style="font-size:13px;color:#3F4D49;background:#F6F7F3;border-radius:10px;padding:10px">Tailored: added "{{q.kw}}" to summary and 2 bullets. <a href="BuilderMobile.dc.html" style="font-weight:700">Preview</a></div>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px"><button type="button" style="font:inherit;font-weight:600;background:#fff;border:1px solid #CBD3CD;border-radius:10px;min-height:44px">Skip</button><button type="button" style="font:inherit;font-weight:700;background:#0B6E5F;color:#fff;border:0;border-radius:10px;min-height:44px">Approve &amp; send</button></div>
+</article>
+</sc-for>
+</section>
+
+<section style="padding:22px 16px 120px;display:flex;flex-direction:column;gap:8px">
+<h2 class="d" style="margin:0 0 4px;font-size:20px">Sent today</h2>
+<sc-for list="{{sent}}" as="s" hint-placeholder-count="4">
+<div style="background:#fff;border:1px solid #E3E7E2;border-radius:14px;padding:12px 14px;display:flex;gap:12px;align-items:center"><span style="flex:1"><b style="font-size:15px">{{s.t}}</b><br><span style="font-size:13px;color:#3F4D49">{{s.c}}</span></span><span style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:{{s.bg}};color:{{s.fg}}">{{s.st}}</span></div>
+</sc-for>
+<a href="AutoApplyMobile.dc.html" style="font-weight:700;padding:12px 0">All applications (48)</a>
+</section>
+
+<nav aria-label="Portal" style="position:absolute;left:0;right:0;bottom:0;background:#fff;border-top:1px solid #E3E7E2;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));padding:6px 4px 18px">
+<a href="DashboardMobile.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;text-decoration:none;color:#3F4D49;font-size:12px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-6H9v6H4a1 1 0 01-1-1z"/></svg>Home</a>
+<a href="BuilderMobile.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;text-decoration:none;color:#3F4D49;font-size:12px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5"/></svg>Resumes</a>
+<a href="JobsMobile.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;text-decoration:none;color:#3F4D49;font-size:12px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>Jobs</a>
+<a href="AutoApplyMobile.dc.html" aria-current="page" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;text-decoration:none;color:#0B6E5F;font-size:12px;font-weight:700"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Auto-Apply</a>
+<a href="AccountMobile.dc.html" style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 0;text-decoration:none;color:#3F4D49;font-size:12px;font-weight:600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0116 0"/></svg>Account</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1500}}'>
+class Component extends DCLogic {
+renderVals() {
+return {
+queue: [
+{ i: 'N', t: 'Senior Product Designer', c: 'Northwind · Dubai', m: '91%', kw: 'design systems', bg: '#E8E3FF', fg: '#4B3BA8' },
+{ i: 'B', t: 'Lead UX Designer', c: 'Bluefin · Remote', m: '88%', kw: 'checkout UX', bg: '#FFE9D6', fg: '#8A3B12' },
+{ i: 'K', t: 'UX Designer, Payments', c: 'Kestrel · Dubai', m: '84%', kw: 'payments', bg: '#DDF3EC', fg: '#08574B' }
+],
+sent: [
+{ t: 'Product Designer', c: 'Halcyon · Remote', st: 'Sent', bg: '#DDF3EC', fg: '#08574B' },
+{ t: 'UX Lead', c: 'Meridian · Dubai', st: 'Sent', bg: '#DDF3EC', fg: '#08574B' },
+{ t: 'Senior UX Designer', c: 'Orchid · Abu Dhabi', st: 'Needs login', bg: '#FFF0C2', fg: '#6B4A00' },
+{ t: 'Design Manager', c: 'Atlas · Remote', st: 'Sent', bg: '#DDF3EC', fg: '#08574B' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

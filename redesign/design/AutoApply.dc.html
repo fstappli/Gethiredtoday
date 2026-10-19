@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Auto-Apply</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1400px">
+<dc-import name="PortalNav" active="auto" hint-size="100%,64px"></dc-import>
+<main style="max-width:1100px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+<div><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-.8px">Auto-Apply <span style="font-size:13px;font-weight:800;background:#FFD166;padding:4px 10px;border-radius:999px;vertical-align:middle;font-family:'Figtree',sans-serif">PRO</span></h1><p style="margin:4px 0 0;color:#3F4D49">Set it once. Approve applications each morning, or let it run.</p></div>
+<div role="tablist" aria-label="Auto-Apply" style="display:flex;background:#fff;border:1px solid #E6E3DA;border-radius:14px;padding:4px;gap:4px">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="2"><button type="button" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="font:inherit;font-weight:700;border:0;border-radius:10px;padding:0 18px;min-height:44px;cursor:pointer;background:{{t.bg}};color:{{t.fg}}">{{t.label}}</button></sc-for>
+</div>
+</div>
+
+<sc-if value="{{isSetup}}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+<form style="flex:999 1 520px;min-width:0;background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:18px">
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Job titles<input value="Senior UX Designer, Product Designer, UX Lead" style="font:inherit;font-weight:500;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Locations<input value="Dubai, Abu Dhabi, Remote" style="font:inherit;font-weight:500;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Resume to send<select style="font:inherit;font-weight:500;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px;background:#fff"><option>Product Designer (ATS 87)</option><option>Sr. UX Designer (ATS 72)</option></select><span style="font-weight:500;font-size:13px;color:#3F4D49">We tailor a copy for each job. Your original stays unchanged.</span></label>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:16px">
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Minimum match: 80%<input type="range" min="50" max="100" value="80" style="accent-color:#0B6E5F"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700">Up to 25 a day<input type="range" min="5" max="50" value="25" style="accent-color:#0B6E5F"></label>
+</div>
+<fieldset style="border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:10px"><legend style="font-weight:700;margin-bottom:8px">How should we send them?</legend>
+<label style="cursor:pointer;border:2px solid #0B6E5F;background:#F2FBF8;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start"><input type="radio" name="mode" checked style="width:20px;height:20px;accent-color:#0B6E5F;margin:2px 0 0"><span><b>Review first (recommended)</b><br><span style="font-size:14px;color:#3F4D49">We queue matches. Nothing is sent until you approve.</span></span></label>
+<label style="cursor:pointer;border:1.5px solid #E6E3DA;border-radius:14px;padding:14px;display:flex;gap:12px;align-items:flex-start"><input type="radio" name="mode" style="width:20px;height:20px;accent-color:#0B6E5F;margin:2px 0 0"><span><b>Fully automatic</b><br><span style="font-size:14px;color:#3F4D49">Send everything above your match score. You get a daily summary.</span></span></label>
+</fieldset>
+<a href="Checkout.dc.html" style="text-align:center;font-weight:800;font-size:17px;background:#0B6E5F;color:#fff;border-radius:14px;padding:16px;text-decoration:none">Start Auto-Apply · Pro</a>
+</form>
+<aside style="flex:1 1 280px;min-width:0;background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:10px">
+<b class="d" style="font-size:20px">With these settings</b>
+<div style="display:flex;justify-content:space-between"><span style="color:#3F4D49">Matching jobs now</span><b>31</b></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#3F4D49">Above 80% match</span><b>14</b></div>
+<div style="display:flex;justify-content:space-between"><span style="color:#3F4D49">New per day (estimate)</span><b>[N]</b></div>
+<span style="font-size:13px;color:#3F4D49;line-height:1.5;border-top:1px solid #EEEBE3;padding-top:10px">Pause or stop any time. Every application appears in your tracker.</span>
+</aside>
+</div>
+</sc-if>
+
+<sc-if value="{{isQueue}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:#0D1B19;color:#fff;border-radius:20px;padding:18px 20px;display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="width:10px;height:10px;border-radius:50%;background:#5FD3B3"></span><b style="flex:1 1 200px">Running · review mode · 12 of 25 sent today</b><button type="button" style="font:inherit;font-weight:700;background:#fff;color:#0D1B19;border:0;border-radius:10px;padding:0 16px;min-height:42px">Pause</button></div>
+<div style="display:flex;justify-content:space-between;align-items:center"><h2 class="d" style="margin:0;font-size:22px">Needs your OK · 3</h2><button type="button" style="font:inherit;font-weight:800;color:#0B6E5F;background:transparent;border:0;min-height:44px">Approve all</button></div>
+<sc-for list="{{queue}}" as="q" hint-placeholder-count="3">
+<article style="background:#fff;border:1px solid #E6E3DA;border-radius:18px;padding:16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+<span style="flex:none;width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-weight:800;background:{{q.bg}};color:{{q.fg}}">{{q.i}}</span>
+<span style="flex:1 1 240px"><b>{{q.t}}</b> <b style="color:#0B6E5F">{{q.m}}</b><br><span style="font-size:14px;color:#3F4D49">{{q.c}} · Tailored with "{{q.kw}}"</span></span>
+<span style="display:flex;gap:8px"><a href="Builder.dc.html" style="font-weight:700;padding:11px 12px">Preview</a><button type="button" style="font:inherit;font-weight:700;background:#fff;border:1px solid #D6D2C6;border-radius:10px;padding:0 14px;min-height:44px">Skip</button><button type="button" style="font:inherit;font-weight:800;background:#0B6E5F;color:#fff;border:0;border-radius:10px;padding:0 14px;min-height:44px">Approve &amp; send</button></span>
+</article>
+</sc-for>
+</div>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { tab: 'setup' }; }
+renderVals() {
+const tab = this.state.tab;
+const t = (id, label) => ({ label, sel: tab === id ? 'true' : 'false', bg: tab === id ? '#0D1B19' : 'transparent', fg: tab === id ? '#fff' : '#0D1B19', pick: () => this.setState({ tab: id }) });
+return {
+tabs: [t('setup', 'Settings'), t('queue', 'Queue')], isSetup: tab === 'setup', isQueue: tab === 'queue',
+queue: [
+{ i: 'N', t: 'Senior Product Designer', c: 'Northwind · Dubai', m: '91%', kw: 'design systems', bg: '#EDE9FF', fg: '#4B3BA8' },
+{ i: 'B', t: 'Lead UX Designer', c: 'Bluefin · Remote', m: '88%', kw: 'checkout UX', bg: '#FFE9D6', fg: '#8A3B12' },
+{ i: 'K', t: 'UX Designer, Payments', c: 'Kestrel · Dubai', m: '84%', kw: 'payments', bg: '#E3F4EE', fg: '#08574B' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

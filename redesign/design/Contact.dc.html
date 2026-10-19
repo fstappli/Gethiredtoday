@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Contact and help</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}@media (max-width:760px){.h1{font-size:40px !important}}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+<section style="max-width:1240px;margin:0 auto;padding:56px 20px 72px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-start">
+<div style="flex:1 1 360px;min-width:0;display:flex;flex-direction:column;gap:18px">
+<h1 class="d h1" style="margin:0;font-size:54px;letter-spacing:-1.7px;line-height:1.02">Hi there. How can we help?</h1>
+<p style="margin:0;color:#3F4D49;font-size:18px;line-height:1.55">A real person reads every message. We usually reply within [response time].</p>
+<div style="display:flex;flex-direction:column;gap:10px">
+<a href="Billing.dc.html" style="background:#fff;border:1px solid #E6E3DA;border-radius:16px;padding:16px 18px;text-decoration:none;color:#0D1B19;display:flex;justify-content:space-between;align-items:center"><span><b>Billing or cancelling</b><br><span style="font-size:14px;color:#3F4D49">Manage your plan yourself in two clicks</span></span><span aria-hidden="true">→</span></a>
+<a href="Pricing.dc.html" style="background:#fff;border:1px solid #E6E3DA;border-radius:16px;padding:16px 18px;text-decoration:none;color:#0D1B19;display:flex;justify-content:space-between;align-items:center"><span><b>What's free and what's Pro</b><br><span style="font-size:14px;color:#3F4D49">Compare plans</span></span><span aria-hidden="true">→</span></a>
+<a href="AutoApplyLanding.dc.html" style="background:#fff;border:1px solid #E6E3DA;border-radius:16px;padding:16px 18px;text-decoration:none;color:#0D1B19;display:flex;justify-content:space-between;align-items:center"><span><b>How Auto-Apply works</b><br><span style="font-size:14px;color:#3F4D49">Review mode, limits and safety</span></span><span aria-hidden="true">→</span></a>
+</div>
+</div>
+<form style="flex:1 1 420px;min-width:0;background:#fff;border:1px solid #E6E3DA;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+<h2 class="d" style="margin:0;font-size:26px">Send us a message</h2>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Your name<input autocomplete="name" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Email<input type="email" autocomplete="email" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Topic<select style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px;background:#fff"><option>Account or login</option><option>Billing</option><option>Resume builder</option><option>Auto-Apply</option><option>Something else</option></select></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Message<textarea rows="5" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:13px"></textarea></label>
+<button type="submit" style="font:inherit;font-weight:800;font-size:16px;background:#0B6E5F;color:#fff;border:0;border-radius:14px;min-height:54px">Send message</button>
+<span style="font-size:13px;color:#3F4D49">Or email us at [support email]</span>
+</form>
+</section>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1300}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

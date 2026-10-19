@@ -29,9 +29,9 @@ interface LogoProps {
   className?: string;
 }
 
-const TEAL = "#4AB7A6";
-const TEAL_DARK = "#0f766e";
-const SLATE_900 = "#0f172a";
+const TEAL = "#0B6E5F";
+const TEAL_DARK = "#0B6E5F";
+const SLATE_900 = "#0D1B19";
 
 const SIZE_MAP = {
   sm: { mark: 24, text: 16, gap: 7 },
@@ -55,7 +55,7 @@ function Mark({ size }: { size: number }) {
     >
       <defs>
         <linearGradient id="ght-grad" x1="0" y1="0" x2="48" y2="48">
-          <stop offset="0%" stopColor="#5fd4c1" />
+          <stop offset="0%" stopColor="#0B6E5F" />
           <stop offset="100%" stopColor={TEAL_DARK} />
         </linearGradient>
       </defs>
@@ -76,19 +76,20 @@ function Mark({ size }: { size: number }) {
 
 function Wordmark({ size, tone }: { size: number; tone: Tone }) {
   const getHireColor = tone === "light" ? "#ffffff" : SLATE_900;
+  const todayColor = tone === "light" ? "#5FD3B3" : TEAL;
   return (
     <span
       style={{
         fontSize: size,
-        fontWeight: 800,
-        letterSpacing: "-0.02em",
-        fontFamily: 'var(--font-inter), Inter, -apple-system, "Segoe UI", sans-serif',
+        fontWeight: 700,
+        letterSpacing: "-0.3px",
+        fontFamily: 'var(--font-bricolage), Georgia, serif',
         color: getHireColor,
         lineHeight: 1,
         whiteSpace: "nowrap",
       }}
     >
-      GetHired<span style={{ color: TEAL }}>Today</span>
+      GetHired<span style={{ color: todayColor }}>Today</span>
     </span>
   );
 }
@@ -118,7 +119,7 @@ export default function Logo({
     <Link
       href={href}
       className="inline-flex items-center"
-      aria-label="HiredTodayApp — home"
+      aria-label="GetHiredToday home"
       style={{ lineHeight: 1 }}
     >
       {inner}

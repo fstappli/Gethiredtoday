@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resume examples</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}@media (max-width:760px){.h1{font-size:40px !important}}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+<section style="max-width:1240px;margin:0 auto;padding:56px 20px 28px;display:flex;flex-direction:column;gap:16px;align-items:center;text-align:center">
+<h1 class="d h1" style="margin:0;font-size:56px;letter-spacing:-1.8px;line-height:1.02;max-width:760px">500+ resume examples for every kind of job.</h1>
+<p style="margin:0;color:#3F4D49;font-size:18px;max-width:620px;line-height:1.5">Find your job title, borrow the phrasing, then make it yours in the builder.</p>
+<label style="width:min(560px,100%);display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #D6D2C6;border-radius:14px;padding:0 16px;min-height:56px;box-sizing:border-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F4D49" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span style="position:absolute;width:1px;height:1px;overflow:hidden">Search job titles</span><input placeholder="Search a job title, e.g. Data Analyst" style="flex:1;border:0;font:inherit;font-size:16px;outline:none;background:transparent"></label>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+<span style="font-size:14px;color:#3F4D49;padding:8px 0">Popular:</span>
+<a href="ExampleDetail.dc.html" style="font-weight:700;font-size:14px;background:#fff;border:1px solid #E6E3DA;border-radius:999px;padding:8px 14px;text-decoration:none">Software Engineer</a>
+<a href="ExampleDetail.dc.html" style="font-weight:700;font-size:14px;background:#fff;border:1px solid #E6E3DA;border-radius:999px;padding:8px 14px;text-decoration:none">Registered Nurse</a>
+<a href="ExampleDetail.dc.html" style="font-weight:700;font-size:14px;background:#fff;border:1px solid #E6E3DA;border-radius:999px;padding:8px 14px;text-decoration:none">Teacher</a>
+<a href="ExampleDetail.dc.html" style="font-weight:700;font-size:14px;background:#fff;border:1px solid #E6E3DA;border-radius:999px;padding:8px 14px;text-decoration:none">Student</a>
+</div>
+</section>
+<section style="max-width:1240px;margin:0 auto;padding:16px 20px 80px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(270px,100%),1fr));gap:18px">
+<sc-for list="{{roles}}" as="r" hint-placeholder-count="8">
+<a href="ExampleDetail.dc.html" style="text-decoration:none;color:#0D1B19;background:#fff;border:1px solid #E6E3DA;border-radius:20px;overflow:hidden;display:flex;flex-direction:column">
+<div style="height:200px;background:#F2EFE7;display:flex;justify-content:center;padding-top:20px;overflow:hidden"><div style="width:210px;height:272px;overflow:hidden;border-radius:4px;box-shadow:0 10px 24px rgba(13,27,25,.12);background:#fff"><div style="width:600px;height:776px;transform:scale(.35);transform-origin:0 0"><dc-import name="ResumeThumb" variant="{{r.variant}}" hint-size="600px,776px"></dc-import></div></div></div>
+<div style="padding:16px 18px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b style="font-size:17px">{{r.t}}</b><br><span style="font-size:14px;color:#3F4D49">{{r.n}} examples</span></span><span aria-hidden="true" style="font-weight:800;color:#0B6E5F">→</span></div>
+</a>
+</sc-for>
+</section>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+renderVals() {
+return { roles: [
+{ t: 'Software Engineer', n: 64, variant: 'sidebar' }, { t: 'Marketing Manager', n: 41, variant: 'teal' },
+{ t: 'Registered Nurse', n: 38, variant: 'classic' }, { t: 'Data Analyst', n: 35, variant: 'sidebar' },
+{ t: 'Teacher', n: 29, variant: 'academic' }, { t: 'Project Manager', n: 47, variant: 'executive' },
+{ t: 'Graphic Designer', n: 26, variant: 'creative' }, { t: 'Sales Executive', n: 33, variant: 'executive' }
+] };
+}
+}
+</script>
+</body>
+</html>

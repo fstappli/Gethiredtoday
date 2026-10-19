@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>My resumes</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1200px">
+<dc-import name="PortalNav" active="resumes" hint-size="100%,64px"></dc-import>
+<main style="max-width:1240px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+<div><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-.8px">My resumes</h1><p style="margin:4px 0 0;color:#3F4D49">Keep one per role you're targeting. Each one is scored separately.</p></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><a href="Onboarding.dc.html" style="font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:12px;padding:12px 16px;text-decoration:none;color:#0D1B19">Upload</a><a href="Onboarding.dc.html" style="font-weight:800;background:#0B6E5F;color:#fff;border-radius:12px;padding:12px 16px;text-decoration:none">+ New resume</a></div>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:18px">
+<sc-for list="{{resumes}}" as="r" hint-placeholder-count="3">
+<article style="background:#fff;border:1px solid #E6E3DA;border-radius:20px;overflow:hidden;display:flex;flex-direction:column">
+<a href="Builder.dc.html" aria-label="Edit {{r.name}}" style="display:flex;justify-content:center;background:#F2EFE7;padding:20px 0 0;height:230px;overflow:hidden"><span style="display:block;width:210px;height:272px;overflow:hidden;border-radius:4px 4px 0 0;box-shadow:0 10px 24px rgba(13,27,25,.12)"><span style="display:block;width:600px;height:776px;transform:scale(.35);transform-origin:0 0"><dc-import name="ResumeThumb" variant="{{r.variant}}" who="fahad" hint-size="600px,776px"></dc-import></span></span></a>
+<div style="padding:16px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:10px;align-items:flex-start"><span style="flex:1"><b style="font-size:17px">{{r.name}}</b><br><span style="font-size:13px;color:#3F4D49">{{r.meta}}</span></span><span style="font-weight:800;font-size:13px;padding:4px 10px;border-radius:999px;background:{{r.bg}};color:{{r.fg}}">{{r.score}}</span></div>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px">
+<a href="Builder.dc.html" style="text-align:center;font-weight:700;font-size:14px;background:#0D1B19;color:#fff;border-radius:10px;padding:11px 0;text-decoration:none">Edit</a>
+<button type="button" style="font:inherit;font-weight:700;font-size:14px;background:#fff;border:1px solid #D6D2C6;border-radius:10px;min-height:44px">PDF</button>
+<a href="Checkout.dc.html" style="text-align:center;font-weight:700;font-size:14px;background:#fff;border:1px solid #D6D2C6;border-radius:10px;padding:11px 0;text-decoration:none;color:#0D1B19">Word · Pro</a>
+</div>
+<details><summary style="font-size:14px;font-weight:700;color:#3F4D49;cursor:pointer;min-height:36px;display:flex;align-items:center">More actions</summary>
+<div style="display:flex;flex-direction:column;margin-top:4px;font-size:14px"><button type="button" style="font:inherit;text-align:left;background:transparent;border:0;min-height:40px">Duplicate for another role</button><button type="button" style="font:inherit;text-align:left;background:transparent;border:0;min-height:40px">Copy share link</button><button type="button" style="font:inherit;text-align:left;background:transparent;border:0;min-height:40px">Rename</button><button type="button" style="font:inherit;text-align:left;background:transparent;border:0;min-height:40px;color:#8A2A0B">Delete</button></div></details>
+</div>
+</article>
+</sc-for>
+<a href="Onboarding.dc.html" style="text-decoration:none;color:#0D1B19;border:2px dashed #C9C4B6;border-radius:20px;min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;text-align:center"><span style="width:56px;height:56px;border-radius:16px;background:#E3F4EE;display:grid;place-items:center;font-size:28px;color:#0B6E5F;font-weight:800">+</span><b>Create another resume</b><span style="font-size:14px;color:#3F4D49">Tailor a version for each type of role</span></a>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+renderVals() {
+return { resumes: [
+{ name: 'Sr. UX Designer', meta: 'Classic · edited today', score: 'ATS 72', bg: '#FFF0C2', fg: '#6B4A00', variant: 'classic' },
+{ name: 'Product Designer', meta: 'Modern Sidebar · 3 days ago', score: 'ATS 87', bg: '#E3F4EE', fg: '#08574B', variant: 'sidebar' },
+{ name: 'UX Lead, Fintech', meta: 'Contemporary · last week', score: 'ATS 64', bg: '#FFE1D6', fg: '#8A2A0B', variant: 'teal' }
+] };
+}
+}
+</script>
+</body>
+</html>
