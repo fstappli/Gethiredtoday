@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { extractText, getDocumentProxy } from 'unpdf';
 
 export const runtime = 'nodejs';
 
 const MAX_BYTES = 5 * 1024 * 1024;
 
-/** Public helper: turns an uploaded .docx / .txt resume into plain text for the ATS checker. Nothing is stored. */
+/** Public helper: turns an uploaded .pdf / .docx / .txt resume into plain text for the ATS checker. Nothing is stored. */
 export async function POST(req: NextRequest) {
   let form: FormData;
   try {
@@ -19,6 +20,17 @@ export async function POST(req: NextRequest) {
   const name = file.name.toLowerCase();
   const buf = Buffer.from(await file.arrayBuffer());
   try {
+    if (name.endsWith('.pdf') || file.type === 'application/pdf') {
+      const pdf = await getDocumentProxy(new Uint8Array(buf));
+      const { text } = await extractText(pdf, { mergePages: true });
+      if (text.trim().length < 20) {
+        return NextResponse.json(
+          { error: 'That PDF has no selectable text (it may be a scan). Paste the text instead.' },
+          { status: 422 },
+        );
+      }
+      return NextResponse.json({ text });
+    }
     if (name.endsWith('.docx')) {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const mammoth = require('mammoth') as typeof import('mammoth');
@@ -32,7 +44,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'We could not read that file. Paste the text instead.' }, { status: 422 });
   }
   return NextResponse.json(
-    { error: 'We can read Word (.docx) and text files here. For a PDF, copy the text and paste it below.' },
+    { error: 'We can read PDF, Word (.docx) and text files here.' },
     { status: 415 },
   );
 }

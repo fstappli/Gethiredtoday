@@ -131,7 +131,7 @@ export default function PublicAtsChecker() {
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" strokeWidth="2" strokeLinecap="round" aria-hidden="true"><path d="M12 16V4M6 10l6-6 6 6M4 20h16" /></svg>
                 </span>
                 <b className="text-lg">{fileName ? fileName : "Drop your resume here, or choose a file"}</b>
-                <span className="text-sm text-text-muted">Word (.docx) or text, up to 5 MB. For a PDF, paste the text below.</span>
+                <span className="text-sm text-text-muted">PDF, Word (.docx) or text, up to 5 MB.</span>
                 <input
                   ref={fileRef}
                   type="file"
@@ -141,8 +141,8 @@ export default function PublicAtsChecker() {
                 />
               </label>
             </div>
-            <details open={!!resumeText && !fileName}>
-              <summary className="flex min-h-[44px] cursor-pointer items-center font-bold">Paste text instead</summary>
+            <details open={(!!resumeText && !fileName) || !!error}>
+              <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-2 font-bold before:text-brand before:content-['+'] [details[open]>&]:before:content-['–']">Paste text instead</summary>
               <textarea
                 rows={6}
                 aria-label="Resume text"
