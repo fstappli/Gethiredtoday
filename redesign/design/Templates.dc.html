@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resume templates</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}@media (max-width:760px){.h1{font-size:40px !important}}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+<section style="max-width:1240px;margin:0 auto;padding:56px 20px 24px;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center">
+<span style="background:#E3F4EE;color:#08574B;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px">Every template passes ATS checks</span>
+<h1 class="d h1" style="margin:0;font-size:56px;letter-spacing:-1.8px;line-height:1.02;max-width:760px">Pick a template you love. Switch any time.</h1>
+<p style="margin:0;color:#3F4D49;font-size:18px;max-width:600px;line-height:1.5">Your words stay put when you change designs, so there's no wrong choice.</p>
+<div role="group" aria-label="Filter templates" style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px">
+<sc-for list="{{filters}}" as="f" hint-placeholder-count="6">
+<button type="button" aria-pressed="{{f.pressed}}" onClick="{{f.pick}}" style="font:inherit;font-weight:700;font-size:15px;border-radius:999px;padding:0 18px;min-height:44px;cursor:pointer;border:1.5px solid {{f.border}};background:{{f.bg}};color:{{f.fg}}">{{f.label}}</button>
+</sc-for>
+</div>
+</section>
+<section style="max-width:1240px;margin:0 auto;padding:24px 20px 72px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr));gap:22px">
+<sc-for list="{{shown}}" as="t" hint-placeholder-count="6">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="background:#F2EFE7;border-radius:18px;padding:22px 0;display:flex;justify-content:center;position:relative">
+<div style="width:252px;height:326px;overflow:hidden;border-radius:6px;box-shadow:0 12px 28px rgba(13,27,25,.14);background:#fff"><div style="width:600px;height:776px;transform:scale(.42);transform-origin:0 0"><dc-import name="ResumeThumb" variant="{{t.variant}}" hint-size="600px,776px"></dc-import></div></div>
+<span style="position:absolute;top:14px;right:14px;font-size:12px;font-weight:800;padding:5px 11px;border-radius:999px;background:{{t.tagBg}};color:{{t.tagFg}}">{{t.tag}}</span>
+</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b style="font-size:17px">{{t.title}}</b><br><span style="color:#3F4D49;font-size:14px">{{t.kind}}</span></span><a href="Signup.dc.html" style="background:#0D1B19;color:#fff;text-decoration:none;font-weight:700;padding:11px 16px;border-radius:10px;font-size:14px">Use this</a></div>
+</div>
+</sc-for>
+</section>
+<section style="padding:0 20px 72px"><div style="max-width:1200px;margin:0 auto;background:#fff;border:1px solid #E6E3DA;border-radius:24px;padding:32px;display:flex;gap:20px;align-items:center;flex-wrap:wrap;box-sizing:border-box">
+<div style="flex:1 1 320px"><h2 class="d" style="margin:0;font-size:28px">Can't decide? Start with Classic Professional.</h2><p style="margin:6px 0 0;color:#3F4D49">It reads cleanly for every industry and every applicant tracking system.</p></div>
+<a href="Signup.dc.html" style="background:#0B6E5F;color:#fff;text-decoration:none;font-weight:800;padding:16px 22px;border-radius:14px">Start with Classic, free</a>
+</div></section>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { cat: 'All' }; }
+renderVals() {
+const cat = this.state.cat;
+const F = { tag: 'Free', tagBg: '#E3F4EE', tagFg: '#08574B' }, P = { tag: 'Pro', tagBg: '#FFD166', tagFg: '#0D1B19' };
+const all = [
+{ ...F, variant: 'classic', title: 'Classic Professional', kind: 'Single column', cat: 'Professional' },
+{ ...F, variant: 'sidebar', title: 'Modern Sidebar', kind: 'Two column', cat: 'Modern' },
+{ ...P, variant: 'executive', title: 'Executive Bold', kind: 'Dark header', cat: 'Executive' },
+{ ...F, variant: 'teal', title: 'Contemporary', kind: 'Centered', cat: 'Modern' },
+{ ...P, variant: 'creative', title: 'Creative Rose', kind: 'Side column', cat: 'Creative' },
+{ ...F, variant: 'academic', title: 'Academic Classic', kind: 'Traditional serif', cat: 'Academic' },
+{ ...P, variant: 'sidebar', title: 'Tech Engineer', kind: 'Skills first', cat: 'Modern' },
+{ ...F, variant: 'classic', title: 'Graduate Fresh', kind: 'Education first', cat: 'Professional' },
+{ ...P, variant: 'executive', title: 'Corporate Elite', kind: 'Leadership', cat: 'Executive' }
+];
+const labels = ['All', 'Professional', 'Modern', 'Creative', 'Executive', 'Academic'];
+return {
+filters: labels.map((l) => ({ label: l, pressed: l === cat ? 'true' : 'false', bg: l === cat ? '#0D1B19' : '#fff', fg: l === cat ? '#fff' : '#0D1B19', border: l === cat ? '#0D1B19' : '#D6D2C6', pick: () => this.setState({ cat: l }) })),
+shown: cat === 'All' ? all : all.filter((t) => t.cat === cat)
+};
+}
+}
+</script>
+</body>
+</html>

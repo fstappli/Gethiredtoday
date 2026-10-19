@@ -41,7 +41,7 @@ export async function runAutoApplyForUser(userId: string): Promise<AutoApplyRunR
   if (!settings?.enabled) return { queued: 0, skipped: 0, message: 'Auto-apply not enabled.' };
   if (settings.paused_at) return { queued: 0, skipped: 0, message: 'Auto-apply is paused.' };
 
-  // Check daily cap — use UTC so the boundary is consistent regardless of server timezone
+  // Check daily cap, use UTC so the boundary is consistent regardless of server timezone
   const todayStart = new Date();
   todayStart.setUTCHours(0, 0, 0, 0);
   const { count: todayCount } = await admin
@@ -51,7 +51,7 @@ export async function runAutoApplyForUser(userId: string): Promise<AutoApplyRunR
     .eq('source', 'auto_apply')
     .gte('created_at', todayStart.toISOString());
 
-  const remaining = settings.daily_cap - (todayCount ?? 0);
+  const remaining = Math.min(settings.daily_cap, 50) - (todayCount ?? 0);
   if (remaining <= 0) {
     return { queued: 0, skipped: 0, message: `Daily cap of ${settings.daily_cap} reached.` };
   }
@@ -155,6 +155,6 @@ export async function runAutoApplyForUser(userId: string): Promise<AutoApplyRunR
   return {
     queued: toQueue.length,
     skipped: allFetched.length - toQueue.length,
-    message: `Queued ${toQueue.length} job${toQueue.length !== 1 ? 's' : ''} for your review — tap Apply to visit each employer site.`,
+    message: `Queued ${toQueue.length} job${toQueue.length !== 1 ? 's' : ''} for your review, tap Apply to visit each employer site.`,
   };
 }

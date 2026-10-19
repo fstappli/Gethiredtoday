@@ -1,482 +1,249 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import {
-  User,
-  Camera,
-  Loader2,
-  CheckCircle,
-  Crown,
-  ExternalLink,
-  Lock,
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
+import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import { isProActive, isCancelledWithGrace, formatEndsAt } from '@/lib/subscription';
 
-const profileSchema = z.object({
-  fullName: z.string().min(2, 'Full name must be at least 2 characters'),
-  email: z.string().email('Please enter a valid email address'),
-});
+const card = 'flex flex-col gap-3.5 rounded-[22px] border border-line bg-white p-[22px]';
+const input = 'min-h-[48px] rounded-xl border-[1.5px] border-line-strong bg-white p-3 text-base font-normal';
+const lbl = 'flex flex-col gap-1.5 text-sm font-semibold';
+const secondaryBtn = 'min-h-[44px] rounded-[10px] border-[1.5px] border-line-strong bg-white px-3.5 font-bold';
+const checkbox = 'h-[22px] w-[22px] accent-[#0B6E5F]';
 
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(6, 'Required'),
-    newPassword: z
-      .string()
-      .min(8, 'Password must be at least 8 characters')
-      .refine((p) => !/\s/.test(p), {
-        message: 'Password cannot contain spaces',
-      }),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: 'Passwords do not match',
-    path: ['confirmPassword'],
-  });
+interface Meta {
+  job_prefs?: { role?: string; locations?: string };
+  notifications?: { daily_matches?: boolean; follow_ups?: boolean };
+}
 
-type ProfileValues = z.infer<typeof profileSchema>;
-type PasswordValues = z.infer<typeof passwordSchema>;
+const NAV = [
+  ['profile', 'Profile'],
+  ['prefs', 'Job preferences'],
+  ['notif', 'Notifications'],
+  ['signin', 'Sign-in'],
+  ['data', 'Privacy & data'],
+] as const;
 
 export default function AccountPage() {
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [avatarUploading, setAvatarUploading] = useState(false);
-  const [profileSuccess, setProfileSuccess] = useState(false);
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [email, setEmail] = useState('');
+  const [first, setFirst] = useState('');
+  const [last, setLast] = useState('');
+  const [phone, setPhone] = useState('');
+  const [avatar, setAvatar] = useState<string | null>(null);
+  const [role, setRole] = useState('');
+  const [locations, setLocations] = useState('');
+  const [dailyMatches, setDailyMatches] = useState(true);
+  const [followUps, setFollowUps] = useState(true);
+  const [productEmails, setProductEmails] = useState(true);
+  const [providers, setProviders] = useState<string[]>([]);
+  const [pw, setPw] = useState('');
+  const [pw2, setPw2] = useState('');
+  const [status, setStatus] = useState<{ id: string; ok: boolean; text: string } | null>(null);
 
-  // Real subscription status from the profiles table (was hardcoded to false).
-  const [isPro, setIsPro] = useState(false);
-  const [isCancelled, setIsCancelled] = useState(false);
-  const [subEndsAt, setSubEndsAt] = useState<string | null>(null);
+  const flash = (id: string, ok: boolean, text: string) => {
+    setStatus({ id, ok, text });
+    setTimeout(() => setStatus((s) => (s?.id === id ? null : s)), 4000);
+  };
 
-  const profileForm = useForm<ProfileValues>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: { fullName: '', email: '' },
-  });
-
-  // Load real user + subscription status on mount
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('subscription_status, subscription_ends_at, full_name, avatar_url')
-        .eq('id', user.id)
-        .single();
-      profileForm.reset({
-        fullName:
-          profile?.full_name ??
-          user.user_metadata?.full_name ??
-          user.user_metadata?.name ??
-          '',
-        email: user.email ?? '',
-      });
-      if (profile?.avatar_url || user.user_metadata?.avatar_url) {
-        setAvatarUrl(profile?.avatar_url ?? user.user_metadata?.avatar_url);
-      }
-      setIsPro(isProActive(profile));
-      setIsCancelled(isCancelledWithGrace(profile));
-      setSubEndsAt((profile?.subscription_ends_at as string | null) ?? null);
+      const { data: profile } = await supabase.from('profiles').select('full_name, avatar_url, unsubscribed_at').eq('id', user.id).single();
+      const full = (profile?.full_name ?? user.user_metadata?.full_name ?? user.user_metadata?.name ?? '') as string;
+      const [f, ...rest] = full.trim().split(/\s+/);
+      setFirst(f ?? '');
+      setLast(rest.join(' '));
+      setEmail(user.email ?? '');
+      setPhone((user.user_metadata?.phone as string) ?? '');
+      setAvatar((profile?.avatar_url ?? user.user_metadata?.avatar_url ?? null) as string | null);
+      const meta = user.user_metadata as Meta;
+      setRole(meta.job_prefs?.role ?? '');
+      setLocations(meta.job_prefs?.locations ?? '');
+      setDailyMatches(meta.notifications?.daily_matches ?? true);
+      setFollowUps(meta.notifications?.follow_ups ?? true);
+      setProductEmails(!profile?.unsubscribed_at);
+      setProviders((user.identities ?? []).map((i) => i.provider));
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const passwordForm = useForm<PasswordValues>({
-    resolver: zodResolver(passwordSchema),
-    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
-  });
-
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Client-side guards before hitting Supabase
-    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowed.includes(file.type)) {
-      setProfileError('Unsupported image format. Please upload a JPG, PNG, or WebP file.');
-      e.target.value = '';
-      return;
-    }
-    if (file.size > 5 * 1024 * 1024) {
-      setProfileError('Photo is larger than 5MB. Please upload a smaller image.');
-      e.target.value = '';
-      return;
-    }
-
-    setAvatarUploading(true);
-    setProfileError(null);
-
-    try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('You need to be signed in to upload a photo.');
-
-      // Normalise extension from MIME type so upload paths are predictable
-      // regardless of whether the original filename had an extension.
-      const extFromMime =
-        file.type === 'image/jpeg' ? 'jpg' :
-        file.type === 'image/png'  ? 'png' :
-        file.type === 'image/webp' ? 'webp' :
-        (file.name.split('.').pop() ?? 'jpg');
-      const path = `${user.id}/avatar.${extFromMime}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(path, file, { upsert: true, contentType: file.type, cacheControl: '3600' });
-
-      if (uploadError) {
-        // Supabase-specific: surface the message (bucket missing, RLS denied, etc.)
-        throw new Error(
-          uploadError.message ||
-          'Upload failed. If this keeps happening, the avatars storage bucket may not be set up yet.'
-        );
-      }
-
-      const { data: publicUrlData } = supabase.storage.from('avatars').getPublicUrl(path);
-      // Add a cache-buster so the <img> re-fetches when the same path is
-      // overwritten (upsert: true keeps the same URL).
-      const publicUrl = `${publicUrlData.publicUrl}?v=${Date.now()}`;
-
-      // Persist to profiles table so the avatar survives a refresh.
-      const { error: profileUpdateError } = await supabase
-        .from('profiles')
-        .update({ avatar_url: publicUrl })
-        .eq('id', user.id);
-      if (profileUpdateError) {
-        console.warn('profiles.avatar_url update failed', profileUpdateError);
-      }
-
-      // Also mirror into auth metadata as a fallback source.
-      await supabase.auth.updateUser({ data: { avatar_url: publicUrl } });
-
-      setAvatarUrl(publicUrl);
-      setProfileSuccess(true);
-      setTimeout(() => setProfileSuccess(false), 3000);
-    } catch (err: unknown) {
-      console.error('Avatar upload failed', err);
-      setProfileError(
-        err instanceof Error && err.message
-          ? err.message
-          : 'Photo upload failed. Please try again.'
-      );
-    } finally {
-      setAvatarUploading(false);
-      // Reset the input so re-picking the same file triggers onChange again.
-      e.target.value = '';
-    }
-  };
-
-  const onProfileSubmit = async (values: ProfileValues) => {
-    setProfileError(null);
-    setProfileSuccess(false);
+  const saveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
     const supabase = createClient();
-    const { error } = await supabase.auth.updateUser({
-      email: values.email,
-      data: { full_name: values.fullName },
-    });
-
-    if (error) {
-      setProfileError(error.message);
-      return;
-    }
-    setProfileSuccess(true);
-    setTimeout(() => setProfileSuccess(false), 3000);
-  };
-
-  const onPasswordSubmit = async (values: PasswordValues) => {
-    setPasswordError(null);
-    setPasswordSuccess(false);
-    const supabase = createClient();
-
-    // Re-authenticate first
+    const fullName = `${first} ${last}`.trim();
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user?.email) {
-      setPasswordError('Unable to verify current user');
-      return;
-    }
-
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: values.currentPassword,
-    });
-
-    if (signInError) {
-      setPasswordError('Current password is incorrect');
-      return;
-    }
-
-    const { error } = await supabase.auth.updateUser({ password: values.newPassword });
-    if (error) {
-      setPasswordError(error.message);
-      return;
-    }
-
-    setPasswordSuccess(true);
-    passwordForm.reset();
-    setTimeout(() => setPasswordSuccess(false), 3000);
+    const emailChanged = user?.email && user.email !== email;
+    const { error } = await supabase.auth.updateUser({ ...(emailChanged ? { email } : {}), data: { full_name: fullName, phone } });
+    if (user) await supabase.from('profiles').update({ full_name: fullName }).eq('id', user.id);
+    if (error) flash('profile', false, error.message);
+    else flash('profile', true, emailChanged ? 'Saved. Check your new email to confirm the change.' : 'Saved.');
   };
+
+  const onPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return flash('profile', false, 'Use a JPG, PNG or WebP photo.');
+    if (file.size > 5 * 1024 * 1024) return flash('profile', false, 'Photo must be under 5 MB.');
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const ext = file.type === 'image/jpeg' ? 'jpg' : file.type === 'image/png' ? 'png' : 'webp';
+    const path = `${user.id}/avatar.${ext}`;
+    const { error } = await supabase.storage.from('avatars').upload(path, file, { upsert: true, contentType: file.type, cacheControl: '3600' });
+    if (error) return flash('profile', false, error.message || 'Upload failed.');
+    const url = `${supabase.storage.from('avatars').getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
+    await supabase.from('profiles').update({ avatar_url: url }).eq('id', user.id);
+    await supabase.auth.updateUser({ data: { avatar_url: url } });
+    setAvatar(url);
+    flash('profile', true, 'Photo updated.');
+  };
+
+  const savePrefs = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await createClient().auth.updateUser({ data: { job_prefs: { role: role.trim(), locations: locations.trim() } } });
+    flash('prefs', !error, error ? error.message : 'Saved.');
+  };
+
+  const saveNotif = async (next: { daily?: boolean; follow?: boolean; product?: boolean }) => {
+    const d = next.daily ?? dailyMatches;
+    const f = next.follow ?? followUps;
+    const p = next.product ?? productEmails;
+    setDailyMatches(d); setFollowUps(f); setProductEmails(p);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase.auth.updateUser({ data: { notifications: { daily_matches: d, follow_ups: f } } });
+    if (user) await supabase.from('profiles').update({ unsubscribed_at: p ? null : new Date().toISOString() }).eq('id', user.id);
+    flash('notif', !error, error ? error.message : 'Saved.');
+  };
+
+  const changePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (pw.length < 8) return flash('signin', false, 'Use at least 8 characters.');
+    if (pw !== pw2) return flash('signin', false, 'Passwords do not match.');
+    const { error } = await createClient().auth.updateUser({ password: pw });
+    if (!error) { setPw(''); setPw2(''); }
+    flash('signin', !error, error ? error.message : 'Password updated.');
+  };
+
+  const downloadData = async () => {
+    const res = await fetch('/api/resume', { cache: 'no-store' });
+    const body = res.ok ? await res.json() : { resumes: [] };
+    const blob = new Blob([JSON.stringify({ email, name: `${first} ${last}`.trim(), resumes: body.resumes }, null, 2)], { type: 'application/json' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'gethiredtoday-data.json';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  const logout = async () => {
+    await createClient().auth.signOut();
+    router.push('/');
+    router.refresh();
+  };
+
+  const msg = (id: string) => (status?.id === id ? <span role="status" className={`text-sm font-semibold ${status.ok ? 'text-brand-dark' : 'text-danger-ink'}`}>{status.text}</span> : null);
+  const initial = (first || email || 'U').charAt(0).toUpperCase();
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 max-w-2xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Account Settings</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Manage your profile and preferences</p>
-      </div>
+    <main className="mx-auto flex w-full max-w-[1100px] flex-wrap items-start gap-6 px-5 pb-14 pt-7">
+      <nav aria-label="Settings" className="flex max-w-[260px] min-w-0 flex-[1_1_220px] flex-col gap-1">
+        <h1 className="font-display m-0 mb-3 text-[30px]">Settings</h1>
+        {NAV.map(([id, label]) => (
+          <a key={id} href={`#${id}`} className="flex min-h-[44px] items-center rounded-[10px] px-3.5 font-bold text-text-muted no-underline hover:bg-mint-soft hover:text-brand-dark">{label}</a>
+        ))}
+        <Link href="/dashboard/billing" className="flex min-h-[44px] items-center rounded-[10px] px-3.5 font-bold text-text-muted no-underline hover:bg-mint-soft hover:text-brand-dark">Plan &amp; billing</Link>
+        <button type="button" onClick={logout} className="mt-3 flex min-h-[44px] items-center rounded-[10px] px-3.5 text-left font-bold text-text-muted hover:bg-mint-soft">Log out</button>
+      </nav>
 
-      {/* Profile Section */}
-      <Card className="border-0 shadow-sm mb-6">
-        <CardHeader className="pb-3">
-          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <User className="w-4 h-4 text-gray-400" />
-            Profile
-          </h2>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          {/* Avatar */}
-          <div className="flex items-center gap-5">
-            <div className="relative">
-              <div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-                ) : (
-                  <User className="w-9 h-9 text-gray-400" />
-                )}
-              </div>
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={avatarUploading}
-                className="absolute bottom-0 right-0 w-7 h-7 rounded-full flex items-center justify-center text-white shadow-md transition-opacity"
-                style={{ backgroundColor: '#4AB7A6' }}
-                aria-label="Upload avatar"
-              >
-                {avatarUploading ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Camera className="w-3.5 h-3.5" />
-                )}
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarChange}
-              />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-gray-700">Profile photo</p>
-              <p className="text-xs text-gray-400 mt-0.5">JPG, PNG or WebP · max 5MB</p>
-            </div>
-          </div>
-
-          <Separator />
-
-          <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="space-y-4" noValidate>
-            {profileError && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-sm text-red-600">
-                {profileError}
-              </div>
-            )}
-            {profileSuccess && (
-              <div className="p-3 rounded-lg bg-green-50 border border-green-100 text-sm text-green-700 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                Profile updated successfully
-              </div>
-            )}
-
-            <div className="space-y-1.5">
-              <Label htmlFor="fullName" className="text-sm font-medium text-gray-700">Full name</Label>
-              <Input
-                id="fullName"
-                className={`h-10 ${profileForm.formState.errors.fullName ? 'border-red-400' : ''}`}
-                {...profileForm.register('fullName')}
-              />
-              {profileForm.formState.errors.fullName && (
-                <p className="text-xs text-red-500">{profileForm.formState.errors.fullName.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-sm font-medium text-gray-700">Email address</Label>
-              <Input
-                id="email"
-                type="email"
-                className={`h-10 ${profileForm.formState.errors.email ? 'border-red-400' : ''}`}
-                {...profileForm.register('email')}
-              />
-              {profileForm.formState.errors.email && (
-                <p className="text-xs text-red-500">{profileForm.formState.errors.email.message}</p>
-              )}
-            </div>
-
-            <Button
-              type="submit"
-              className="rounded-full font-medium text-white"
-              style={{ backgroundColor: '#4AB7A6' }}
-              disabled={profileForm.formState.isSubmitting || !profileForm.formState.isDirty}
-            >
-              {profileForm.formState.isSubmitting ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Saving…</>
-              ) : (
-                'Save Changes'
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      {/* Password Section */}
-      <Card className="border-0 shadow-sm mb-6">
-        <CardHeader className="pb-3">
-          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <Lock className="w-4 h-4 text-gray-400" />
-            Change Password
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4" noValidate>
-            {passwordError && (
-              <div className="p-3 rounded-lg bg-red-50 border border-red-100 text-sm text-red-600">
-                {passwordError}
-              </div>
-            )}
-            {passwordSuccess && (
-              <div className="p-3 rounded-lg bg-green-50 border border-green-100 text-sm text-green-700 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                Password changed successfully
-              </div>
-            )}
-
-            <div className="space-y-1.5">
-              <Label htmlFor="currentPassword" className="text-sm font-medium text-gray-700">Current password</Label>
-              <Input
-                id="currentPassword"
-                type="password"
-                className="h-10"
-                {...passwordForm.register('currentPassword')}
-              />
-              {passwordForm.formState.errors.currentPassword && (
-                <p className="text-xs text-red-500">{passwordForm.formState.errors.currentPassword.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="newPassword" className="text-sm font-medium text-gray-700">New password</Label>
-              <Input
-                id="newPassword"
-                type="password"
-                placeholder="Min. 8 characters, no spaces"
-                className="h-10"
-                onKeyDown={(e) => {
-                  // Spaces are not allowed in passwords — block keystroke.
-                  if (e.key === ' ') e.preventDefault();
-                }}
-                {...passwordForm.register('newPassword')}
-              />
-              {passwordForm.formState.errors.newPassword && (
-                <p className="text-xs text-red-500">{passwordForm.formState.errors.newPassword.message}</p>
-              )}
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium text-gray-700">Confirm new password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                className="h-10"
-                onKeyDown={(e) => {
-                  if (e.key === ' ') e.preventDefault();
-                }}
-                {...passwordForm.register('confirmPassword')}
-              />
-              {passwordForm.formState.errors.confirmPassword && (
-                <p className="text-xs text-red-500">{passwordForm.formState.errors.confirmPassword.message}</p>
-              )}
-            </div>
-
-            <Button
-              type="submit"
-              className="rounded-full font-medium text-white"
-              style={{ backgroundColor: '#4AB7A6' }}
-              disabled={passwordForm.formState.isSubmitting || !passwordForm.formState.isDirty}
-            >
-              {passwordForm.formState.isSubmitting ? (
-                <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Updating…</>
-              ) : (
-                'Update Password'
-              )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-
-      {/* Subscription Section */}
-      <Card className="border-0 shadow-sm">
-        <CardHeader className="pb-3">
-          <h2 className="text-base font-semibold text-gray-900 flex items-center gap-2">
-            <Crown className="w-4 h-4 text-amber-400" />
-            Subscription
-          </h2>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="font-semibold text-gray-900 flex items-center gap-2">
-                {isPro ? 'Pro Plan' : 'Free Plan'}
-                {isCancelled && (
-                  <span
-                    className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
-                    style={{ backgroundColor: '#fef2f2', color: '#b91c1c' }}
-                  >
-                    Cancelling
-                  </span>
-                )}
-              </p>
-              <p className="text-sm text-gray-500 mt-0.5">
-                {isPro && isCancelled && subEndsAt
-                  ? `Pro access continues until ${formatEndsAt(subEndsAt)}. You won't be charged again.`
-                  : isPro
-                  ? 'You have full access to all features'
-                  : 'Upgrade to unlock AI features and unlimited resumes'}
-              </p>
-            </div>
-
-            {isPro ? (
-              <Button
-                variant="outline"
-                className="rounded-full font-medium border-gray-200"
-                onClick={() => window.location.href = '/dashboard/billing'}
-              >
-                <ExternalLink className="w-3.5 h-3.5 mr-1.5" />
-                Manage
-              </Button>
+      <div className="flex min-w-0 flex-[999_1_520px] flex-col gap-4">
+        <form id="profile" onSubmit={saveProfile} className={card}>
+          <h2 className="font-display m-0 text-[22px]">Profile</h2>
+          <div className="flex items-center gap-3.5">
+            {avatar ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatar} alt="Your profile photo" className="h-16 w-16 rounded-full object-cover" />
             ) : (
-              <Button
-                className="rounded-full font-medium text-white"
-                style={{ backgroundColor: '#4AB7A6' }}
-                onClick={() => {
-                  window.location.href = '/upgrade?from=%2Fdashboard%2Faccount';
-                }}
-              >
-                <Crown className="w-3.5 h-3.5 mr-1.5" />
-                Upgrade to Pro
-              </Button>
+              <span aria-hidden="true" className="grid h-16 w-16 place-items-center rounded-full bg-ink text-2xl font-extrabold text-white">{initial}</span>
             )}
+            <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={onPhoto} className="sr-only" aria-label="Upload profile photo" tabIndex={-1} />
+            <button type="button" onClick={() => fileRef.current?.click()} className={secondaryBtn}>Change photo</button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+          <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
+            <label className={lbl}>First name<input value={first} onChange={(e) => setFirst(e.target.value)} autoComplete="given-name" className={input} /></label>
+            <label className={lbl}>Last name<input value={last} onChange={(e) => setLast(e.target.value)} autoComplete="family-name" className={input} /></label>
+            <label className={lbl}>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className={input} /></label>
+            <label className={lbl}>Phone (optional)<input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="+971" className={input} /></label>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="submit" className="min-h-[46px] rounded-xl bg-ink px-[18px] font-extrabold text-white">Save changes</button>
+            {msg('profile')}
+          </div>
+        </form>
+
+        <form id="prefs" onSubmit={savePrefs} className={card}>
+          <h2 className="font-display m-0 text-[22px]">Job preferences</h2>
+          <p className="m-0 text-[15px] text-text-muted">Used for job matches, AI suggestions and Auto-Apply.</p>
+          <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
+            <label className={lbl}>Target role<input value={role} onChange={(e) => setRole(e.target.value)} className={input} /></label>
+            <label className={lbl}>Locations<input value={locations} onChange={(e) => setLocations(e.target.value)} placeholder="City or Remote" className={input} /></label>
+          </div>
+          <div className="flex flex-wrap items-center gap-3">
+            <button type="submit" className="min-h-[46px] rounded-xl bg-ink px-[18px] font-extrabold text-white">Save preferences</button>
+            {msg('prefs')}
+          </div>
+        </form>
+
+        <section id="notif" className={`${card} !gap-1`}>
+          <h2 className="font-display m-0 mb-2 text-[22px]">Notifications</h2>
+          <label className="flex min-h-[52px] cursor-pointer items-center justify-between gap-3 border-b border-[#EEEBE3]">
+            <span><b>Daily job matches</b><br /><span className="text-sm text-text-muted">One email each morning</span></span>
+            <input type="checkbox" className={checkbox} checked={dailyMatches} onChange={(e) => saveNotif({ daily: e.target.checked })} />
+          </label>
+          <label className="flex min-h-[52px] cursor-pointer items-center justify-between gap-3 border-b border-[#EEEBE3]">
+            <b>Application follow-up reminders</b>
+            <input type="checkbox" className={checkbox} checked={followUps} onChange={(e) => saveNotif({ follow: e.target.checked })} />
+          </label>
+          <label className="flex min-h-[52px] cursor-pointer items-center justify-between gap-3">
+            <span><b>Tips and product emails</b><br /><span className="text-sm text-text-muted">Turn off to stop all non-essential email</span></span>
+            <input type="checkbox" className={checkbox} checked={productEmails} onChange={(e) => saveNotif({ product: e.target.checked })} />
+          </label>
+          {msg('notif')}
+        </section>
+
+        <section id="signin" className={card}>
+          <h2 className="font-display m-0 text-[22px]">Sign-in methods</h2>
+          {providers.map((p) => (
+            <div key={p} className="flex flex-wrap items-center justify-between gap-3">
+              <span><b className="capitalize">{p === 'email' ? 'Email' : p}</b>{p === 'email' ? ` · ${email}` : ''}</span>
+              <span className="rounded-full bg-mint-soft px-2.5 py-1 text-[13px] font-extrabold text-brand-dark">Connected</span>
+            </div>
+          ))}
+          <form onSubmit={changePassword} className="flex flex-col gap-3 border-t border-[#EEEBE3] pt-3.5">
+            <b>Set or change a password</b>
+            <div className="grid gap-3 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
+              <label className={lbl}>New password<input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoComplete="new-password" className={input} /></label>
+              <label className={lbl}>Confirm password<input type="password" value={pw2} onChange={(e) => setPw2(e.target.value)} autoComplete="new-password" className={input} /></label>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <button type="submit" className={secondaryBtn}>Update password</button>
+              {msg('signin')}
+            </div>
+          </form>
+        </section>
+
+        <section id="data" className={card}>
+          <h2 className="font-display m-0 text-[22px]">Privacy &amp; data</h2>
+          <div className="flex flex-wrap gap-2.5">
+            <button type="button" onClick={downloadData} className={secondaryBtn}>Download my data</button>
+            <Link href="/contact" className="inline-flex min-h-[44px] items-center rounded-[10px] border-[1.5px] border-[#E8A48A] bg-white px-3.5 font-bold text-danger-ink no-underline">Request account deletion</Link>
+          </div>
+          <span className="text-[13px] text-text-muted">Deleting removes your resumes, letters and history. Contact us and we will confirm before we delete anything.</span>
+        </section>
+      </div>
+    </main>
   );
 }

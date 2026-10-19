@@ -1,0 +1,42 @@
+{
+  "font": {
+    "display": "'Bricolage Grotesque', Georgia, serif",
+    "body": "'Figtree', system-ui, sans-serif",
+    "googleFontsUrl": "https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700;800&display=swap"
+  },
+  "color": {
+    "ink": "#0D1B19",
+    "inkSoft": "#1C2D2A",
+    "inkLine": "#2A3A37",
+    "textMuted": "#3F4D49",
+    "textSubtle": "#5A6662",
+    "onDarkMuted": "#A9BDB7",
+    "brand": "#0B6E5F",
+    "brandDark": "#08574B",
+    "mint": "#5FD3B3",
+    "mintSoft": "#E3F4EE",
+    "sun": "#FFD166",
+    "sunSoft": "#FFF1CC",
+    "groundSite": "#FBFAF6",
+    "groundPortal": "#F6F5F0",
+    "card": "#FFFFFF",
+    "line": "#E6E3DA",
+    "lineStrong": "#D6D2C6",
+    "danger": "#8A2A0B",
+    "dangerSoft": "#FFE1D6",
+    "warningText": "#6B4A00",
+    "warningSoft": "#FFF0C2"
+  },
+  "radius": { "control": 12, "card": 20, "cardLarge": 24, "pill": 999 },
+  "space": [4, 8, 12, 16, 20, 24, 32, 40, 56, 72, 88],
+  "type": {
+    "heroDesktop": "72px / 0.98, -2.4px, 800, display",
+    "heroMobile": "46px",
+    "h1Page": "52-56px desktop, 36-42px mobile",
+    "h2Section": "40-46px desktop, 32-34px mobile",
+    "body": "17-18px / 1.55",
+    "small": "13-14px"
+  },
+  "touchTargetMin": 44,
+  "breakpoints": { "mobile": 760, "portalNavCollapse": 900, "container": 1240 }
+}

@@ -49,7 +49,7 @@ export function ScoreBadge({ score, reasons, size = 'md' }: ScoreBadgeProps) {
           className="absolute bottom-full left-0 mb-2 z-50 w-64 bg-slate-900 text-white text-xs rounded-xl p-3 shadow-xl pointer-events-none"
           role="tooltip"
         >
-          <p className="font-semibold mb-1.5" style={{ color: '#a3e8df' }}>{label} — {score}%</p>
+          <p className="font-semibold mb-1.5" style={{ color: '#a3e8df' }}>{label}, {score}%</p>
           {reasons && reasons.length > 0 ? (
             <ul className="space-y-1">
               {reasons.map((r, i) => (

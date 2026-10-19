@@ -5,7 +5,7 @@
  * fall back to the global 404 / blank state while Next.js streamed the
  * RSC payload. This skeleton is the prefetched fallback the App Router
  * shows the moment the navigation starts, so the user always sees a
- * branded loading state — never "Page not found".
+ * branded loading state, never "Page not found".
  *
  * It is rendered inside `app/dashboard/layout.tsx`, so the sidebar and
  * header are already in place by the time this paints.

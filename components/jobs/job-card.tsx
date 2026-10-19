@@ -122,7 +122,7 @@ export function JobCard({
       <CardContent className="p-5">
         <div className="flex items-start gap-4">
           <div className="flex-1 min-w-0">
-            {/* Title — links to detail page */}
+            {/* Title, links to detail page */}
             <div className="flex items-start justify-between gap-2 flex-wrap">
               <Link
                 href={`/dashboard/find-jobs/${job.id}`}

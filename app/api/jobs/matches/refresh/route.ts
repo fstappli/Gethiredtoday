@@ -23,7 +23,7 @@ function inferCountry(location: string | null): string {
   return 'us';
 }
 
-// POST /api/jobs/matches/refresh — run matching for user's finalized resume
+// POST /api/jobs/matches/refresh, run matching for user's finalized resume
 export async function POST() {
   try {
     const supabase = await createServerSupabaseClient();
@@ -149,11 +149,11 @@ export async function POST() {
       raw: {},
     }));
 
-    // Must use admin client — jobs table requires service_role to write (RLS)
+    // Must use admin client, jobs table requires service_role to write (RLS)
     const admin = createAdminSupabaseClient();
     await admin.from('jobs').upsert(jobRows, { onConflict: 'id' });
 
-    // Score and filter — lower threshold to 20 to show more matches
+    // Score and filter, lower threshold to 20 to show more matches
     const scored = batchScoreJobs(profile, jobs).filter((r) => r.score >= 20);
 
     if (scored.length === 0) {

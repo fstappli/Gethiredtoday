@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cover letters</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1000px">
+<dc-import name="PortalNav" active="letters" hint-size="100%,64px"></dc-import>
+<main style="max-width:1240px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+<div><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-.8px">Cover letters</h1><p style="margin:4px 0 0;color:#3F4D49">Paste a job ad and get a letter that matches your resume.</p></div>
+<a href="CoverLetterEditor.dc.html" style="font-weight:800;background:#0B6E5F;color:#fff;border-radius:12px;padding:12px 16px;text-decoration:none">+ New cover letter</a>
+</div>
+<div style="background:#FFF1CC;border-radius:18px;padding:16px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="flex:1 1 280px;line-height:1.5"><b>Write and preview as many as you like.</b> Downloading cover letters is part of Pro.</span><a href="Checkout.dc.html" style="font-weight:800;background:#0D1B19;color:#fff;border-radius:10px;padding:11px 14px;text-decoration:none">Go Pro</a></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:16px">
+<a href="CoverLetterEditor.dc.html" style="text-decoration:none;color:#0D1B19;background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px">
+<div style="background:#FBFAF6;border-radius:12px;padding:16px;font-size:13px;line-height:1.55;color:#3F4D49;height:120px;overflow:hidden">Dear Hiring Team at Northwind, your Senior Product Designer role caught my eye because it puts checkout at the center. At Majid Al Futtaim I lead design for the Cart and Checkout squad…</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b>Northwind · Senior Product Designer</b><br><span style="font-size:13px;color:#3F4D49">From "Sr. UX Designer" · edited today</span></span><span style="font-size:12px;font-weight:800;background:#E3F4EE;color:#08574B;padding:4px 10px;border-radius:999px">Ready</span></div>
+</a>
+<a href="CoverLetterEditor.dc.html" style="text-decoration:none;color:#0D1B19;background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:20px;display:flex;flex-direction:column;gap:12px">
+<div style="background:#FBFAF6;border-radius:12px;padding:16px;font-size:13px;line-height:1.55;color:#3F4D49;height:120px;overflow:hidden">Dear Bluefin team, I'm excited to apply for the Lead UX Designer role. Remote-first teams that ship fast are where I do my best work…</div>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span><b>Bluefin · Lead UX Designer</b><br><span style="font-size:13px;color:#3F4D49">From "Product Designer" · 2 days ago</span></span><span style="font-size:12px;font-weight:800;background:#FFF0C2;color:#6B4A00;padding:4px 10px;border-radius:999px">Draft</span></div>
+</a>
+<a href="CoverLetterEditor.dc.html" style="text-decoration:none;color:#0D1B19;border:2px dashed #C9C4B6;border-radius:20px;min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center;padding:20px"><span style="width:52px;height:52px;border-radius:16px;background:#E3F4EE;display:grid;place-items:center;font-size:26px;color:#0B6E5F;font-weight:800">+</span><b>Write a new one</b><span style="font-size:14px;color:#3F4D49">About 60 seconds</span></a>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

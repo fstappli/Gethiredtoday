@@ -17,7 +17,7 @@ export interface SubscriptionFields {
   subscription_ends_at?: string | null;
 }
 
-/** True if the user currently has Pro access — including the grace period
+/** True if the user currently has Pro access, including the grace period
  *  after cancelling when `subscription_ends_at` hasn't yet passed. */
 export function isProActive(
   p: SubscriptionFields | null | undefined,
@@ -55,7 +55,7 @@ export function isCancelledWithGrace(
 /** Default grace period (30 days) used when we don't know the exact cycle end. */
 export const DEFAULT_PERIOD_DAYS = 30;
 
-/** Returns an ISO timestamp for `now + 30 days` — used as the default
+/** Returns an ISO timestamp for `now + 30 days`, used as the default
  *  subscription_ends_at when we don't have a precise cycle end from Gumroad. */
 export function monthFromNow(now: Date = new Date()): string {
   const d = new Date(now);
@@ -77,29 +77,50 @@ export function formatEndsAt(ends: string | null | undefined): string {
 export const PLAN_LIMITS = {
   free: {
     maxResumes: 1,
-    maxCoverLetters: 1,
-    maxAISuggestions: 3,
+    maxCoverLetters: Infinity, // write and preview are free; downloads are Pro
+    maxAISuggestions: 5, // AI bullet rewrites per day
+    aiRewritesPerDay: 5,
     premiumTemplates: false,
-    atsCheckerFull: false,
-    pdfDownload: false,
+    atsCheckerFull: false, // free: score + top 3 fixes
+    atsTopFixes: 3,
+    pdfDownload: true, // PDF is always free
     wordDownload: false,
-    watermark: true,
+    watermark: false,
     jobTailoring: false,
-    coverLetterBuilder: false,
+    coverLetterBuilder: true,
+    coverLetterDownload: false,
+    jobMatchesPerDay: 3, // scored matches shown per day
+    autoApply: false,
+    autoApplyPerDay: 0,
   },
   pro: {
     maxResumes: Infinity,
     maxCoverLetters: Infinity,
     maxAISuggestions: Infinity,
+    aiRewritesPerDay: Infinity,
     premiumTemplates: true,
     atsCheckerFull: true,
+    atsTopFixes: Infinity,
     pdfDownload: true,
     wordDownload: true,
     watermark: false,
     jobTailoring: true,
     coverLetterBuilder: true,
+    coverLetterDownload: true,
+    jobMatchesPerDay: Infinity,
+    autoApply: true,
+    autoApplyPerDay: 50,
   },
 } as const;
+
+/** Template ids available on the Free plan. Everything else needs Pro. */
+export const FREE_TEMPLATE_IDS: readonly string[] = ['classic', 'modern', 'minimal', 'simple'];
+
+export function isTemplateAllowed(plan: Plan, templateId: string | null | undefined): boolean {
+  if (plan === 'pro') return true;
+  if (!templateId) return true;
+  return FREE_TEMPLATE_IDS.includes(templateId);
+}
 
 export type FeatureKey = keyof typeof PLAN_LIMITS['free'];
 
@@ -136,7 +157,7 @@ export async function getUserPlan(): Promise<Plan> {
 }
 
 /**
- * Redirects to Gumroad checkout. Requires the user to be authenticated.
+ * Redirects to the checkout page. Requires the user to be authenticated.
  * The server-side route at /api/lemonsqueezy/checkout-redirect handles
  * attaching the user's email and the post-purchase return URL.
  */

@@ -4,19 +4,19 @@ import Footer from "@/components/footer";
 import ExamplesView from "@/components/examples-view";
 
 export const metadata: Metadata = {
-  title: "Resume Examples by Job Title — 500+ Industry Samples",
-  description: "Browse 500+ professionally written resume examples across every industry and experience level. Find your job title and build a better resume in minutes.",
+  title: "Resume Examples by Job Title",
+  description: "Browse professionally written resume examples across industries and experience levels. Find your job title and build a better resume in minutes.",
   alternates: { canonical: "https://hiredtodayapp.com/resume-examples" },
   openGraph: {
-    title: "Resume Examples by Job Title — 500+ Industry Samples",
-    description: "Find real resume examples for your industry. Software engineers, nurses, teachers, marketers, and 50+ more job titles.",
+    title: "Resume Examples by Job Title",
+    description: "Find resume examples for your industry. Software engineers, nurses, teachers, marketers and more.",
     url: "https://hiredtodayapp.com/resume-examples",
   },
 };
 
 export default function ExamplesPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-ground-site text-ink">
       <Navbar />
       <main className="flex-1">
         <ExamplesView />

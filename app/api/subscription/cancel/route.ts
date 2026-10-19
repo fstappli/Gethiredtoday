@@ -1,5 +1,5 @@
 /**
- * Cancel the current user's Gumroad subscription from inside the app — so
+ * Cancel the current user's Gumroad subscription from inside the app, so
  * the user never has to leave hiredtodayapp.com to manage their subscription.
  *
  * Guiding principle: the user clicked Cancel, we respect that. No user ever
@@ -60,7 +60,7 @@ async function gumroadCancel(
 
 // Look up the Gumroad subscription_id for a given email via the /v2/sales
 // endpoint. Gumroad's /v2/subscribers endpoint does NOT support an email
-// query param — sales does. Each sale for a recurring product carries a
+// query param, sales does. Each sale for a recurring product carries a
 // subscription_id, which is the id we need for DELETE /v2/subscribers/:id.
 async function gumroadFindSubscriberIdByEmail(
   email: string,
@@ -129,7 +129,7 @@ export async function POST() {
     const admin = getAdminClient();
     const writer = admin || ssr;
 
-    // 3. Load the profile — but don't hard-fail if it's missing. We can still
+    // 3. Load the profile, but don't hard-fail if it's missing. We can still
     //    cancel locally using just the auth email + user id.
     let subscriptionId: string | null = null;
     let profileEmail: string | null = null;
@@ -211,7 +211,7 @@ export async function POST() {
       true
     );
   } catch (err) {
-    // Global fail-safe — no matter what blew up above, return JSON (never
+    // Global fail-safe, no matter what blew up above, return JSON (never
     // a Vercel HTML 500) so the client can at least show a clear message.
     console.error('[subscription/cancel] unhandled error:', err);
     return NextResponse.json(

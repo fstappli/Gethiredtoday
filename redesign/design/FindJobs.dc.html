@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Find jobs</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}@media (max-width:760px){.h1{font-size:40px !important}}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+
+<section style="background:#0D1B19;color:#fff">
+<div style="max-width:1100px;margin:0 auto;padding:56px 20px 40px;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center">
+<span style="background:#1C2D2A;color:#5FD3B3;font-weight:800;font-size:13px;padding:6px 12px;border-radius:999px">JOBS FROM 1,000+ EMPLOYERS</span>
+<h1 class="d h1" style="margin:0;font-size:58px;letter-spacing:-1.8px;line-height:1.02;max-width:820px">Find your next job, then apply with a resume that fits it.</h1>
+<p style="margin:0;color:#C9D8D3;font-size:18px;max-width:640px;line-height:1.5">Search here, see how well you match each role, and tailor your resume in one click.</p>
+<form role="search" style="width:min(860px,100%);background:#fff;border-radius:18px;padding:8px;display:flex;flex-wrap:wrap;gap:8px;box-sizing:border-box">
+<label style="flex:2 1 260px;display:flex;align-items:center;gap:10px;padding:0 12px;min-height:54px;border-radius:12px;background:#FBFAF6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F4D49" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span style="position:absolute;width:1px;height:1px;overflow:hidden">Job title or keyword</span><input value="{{q}}" onChange="{{onQ}}" placeholder="Job title, skill or company" style="flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;color:#0D1B19;outline:none"></label>
+<label style="flex:1 1 200px;display:flex;align-items:center;gap:10px;padding:0 12px;min-height:54px;border-radius:12px;background:#FBFAF6"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F4D49" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span style="position:absolute;width:1px;height:1px;overflow:hidden">Location</span><input value="{{loc}}" onChange="{{onLoc}}" placeholder="City or Remote" style="flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;color:#0D1B19;outline:none"></label>
+<button type="button" style="flex:0 1 auto;font:inherit;font-weight:800;font-size:16px;background:#0B6E5F;color:#fff;border:0;border-radius:12px;padding:0 26px;min-height:54px">Search jobs</button>
+</form>
+<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;font-size:14px"><span style="color:#A9BDB7;padding:8px 0">Popular:</span>
+<sc-for list="{{popular}}" as="p" hint-placeholder-count="5"><button type="button" onClick="{{p.pick}}" style="font:inherit;font-weight:700;font-size:14px;background:#1C2D2A;color:#fff;border:0;border-radius:999px;padding:0 14px;min-height:38px;cursor:pointer">{{p.label}}</button></sc-for>
+</div>
+</div>
+</section>
+
+<section style="max-width:1240px;margin:0 auto;padding:28px 20px 64px;display:flex;flex-wrap:wrap;gap:24px;align-items:flex-start">
+<div style="flex:999 1 560px;min-width:0;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+<b style="font-size:17px">{{countLabel}}</b>
+<div role="group" aria-label="Quick filters" style="display:flex;gap:6px;flex-wrap:wrap">
+<sc-for list="{{chips}}" as="c" hint-placeholder-count="3"><button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="font:inherit;font-weight:700;font-size:14px;border-radius:999px;padding:0 14px;min-height:40px;cursor:pointer;border:1.5px solid {{c.border}};background:{{c.bg}};color:{{c.fg}}">{{c.label}}</button></sc-for>
+</div>
+</div>
+<sc-for list="{{jobs}}" as="j" hint-placeholder-count="5">
+<article style="background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+<span style="flex:none;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-weight:800;background:{{j.bg}};color:{{j.fg}}">{{j.i}}</span>
+<span style="flex:1 1 220px"><b style="font-size:18px">{{j.t}}</b><br><span style="font-size:14px;color:#3F4D49">{{j.c}} · {{j.l}} · {{j.type}}</span></span>
+<a href="Signup.dc.html" style="flex:none;display:flex;gap:6px;align-items:center;font-size:13px;font-weight:800;background:#FFF1CC;color:#6B4A00;padding:7px 12px;border-radius:999px;text-decoration:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>See your match %</a>
+</div>
+<p style="margin:0;color:#3F4D49;font-size:15px;line-height:1.5">{{j.d}}</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><a href="Signup.dc.html" style="font-weight:800;background:#0B6E5F;color:#fff;border-radius:12px;padding:12px 16px;text-decoration:none">Apply with my resume</a><a href="Signup.dc.html" style="font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:12px;padding:11px 14px;text-decoration:none;color:#0D1B19">Save job</a><span style="font-size:13px;color:#5A6662;margin-left:auto">{{j.posted}}</span></div>
+</article>
+</sc-for>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:28px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center"><b class="d" style="font-size:22px">No jobs match that search yet</b><span style="color:#3F4D49">Try a broader title, or let us alert you when one is posted.</span><a href="Signup.dc.html" style="font-weight:800">Create a job alert →</a></div>
+</sc-if>
+</div>
+
+<aside style="flex:1 1 300px;min-width:0;display:flex;flex-direction:column;gap:16px">
+<div style="background:#0B6E5F;color:#fff;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px">
+<b class="d" style="font-size:24px;line-height:1.15">See how well you match every job</b>
+<span style="color:#CFEDE4;line-height:1.5">Create a free account and we'll score each job against your resume and show what's missing.</span>
+<a href="Signup.dc.html" style="text-align:center;background:#FFD166;color:#0D1B19;text-decoration:none;font-weight:800;padding:15px;border-radius:12px">Get my match scores, free</a>
+<span style="font-size:13px;color:#CFEDE4;text-align:center">Your top 3 matches free every day</span>
+</div>
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:12px">
+<b>How job search works here</b>
+<ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:8px;color:#3F4D49;line-height:1.45;font-size:15px"><li>Search or let us match jobs to your resume</li><li>Tailor your resume to a job in one click</li><li>Apply, then track every application in one place</li><li>With Pro, Auto-Apply sends the best ones for you</li></ol>
+</div>
+</aside>
+</section>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { q: 'Designer', loc: 'Dubai', remote: false, full: false, today: false }; }
+renderVals() {
+const st = this.state;
+const all = [
+{ i: 'N', t: 'Senior Product Designer', c: 'Northwind', l: 'Dubai', type: 'Hybrid · Full-time', remote: false, full: true, today: true, posted: 'Posted today', d: 'Own the checkout and payments experience end to end with a small, fast team.', bg: '#EDE9FF', fg: '#4B3BA8' },
+{ i: 'B', t: 'Lead UX Designer', c: 'Bluefin', l: 'Remote', type: 'Remote · Full-time', remote: true, full: true, today: false, posted: 'Posted yesterday', d: 'Lead research and design for a fintech app used across the region.', bg: '#FFE9D6', fg: '#8A3B12' },
+{ i: 'K', t: 'UX Designer, Payments', c: 'Kestrel', l: 'Dubai', type: 'On-site · Full-time', remote: false, full: true, today: false, posted: '2 days ago', d: 'Design payment flows and work closely with engineering on delivery.', bg: '#E3F4EE', fg: '#08574B' },
+{ i: 'H', t: 'Product Designer', c: 'Halcyon', l: 'Remote', type: 'Remote · Contract', remote: true, full: false, today: true, posted: 'Posted today', d: 'Six-month contract redesigning a B2B dashboard and design system.', bg: '#FFF1CC', fg: '#6B4A00' },
+{ i: 'M', t: 'Marketing Manager', c: 'Meridian', l: 'Dubai', type: 'Hybrid · Full-time', remote: false, full: true, today: false, posted: '3 days ago', d: 'Lead campaigns across paid, email and social for a growing retail brand.', bg: '#E8EEF8', fg: '#1F3F6B' },
+{ i: 'A', t: 'Data Analyst', c: 'Atlas', l: 'Abu Dhabi', type: 'On-site · Full-time', remote: false, full: true, today: true, posted: 'Posted today', d: 'Turn sales and operations data into dashboards leaders act on.', bg: '#FBE3EC', fg: '#8A1F48' },
+{ i: 'S', t: 'Software Engineer, Backend', c: 'Skyline', l: 'Remote', type: 'Remote · Full-time', remote: true, full: true, today: true, posted: 'Posted today', d: 'Build APIs in TypeScript and Go for a fast-growing logistics platform.', bg: '#EDE9FF', fg: '#4B3BA8' },
+{ i: 'O', t: 'Registered Nurse', c: 'Orchid Health', l: 'Dubai', type: 'On-site · Full-time', remote: false, full: true, today: false, posted: '4 days ago', d: 'Join a patient-first outpatient team. DHA licence required.', bg: '#E3F4EE', fg: '#08574B' }
+];
+const q = (st.q || '').toLowerCase().trim(), loc = (st.loc || '').toLowerCase().trim();
+const jobs = all.filter((j) => (!q || (j.t + ' ' + j.c).toLowerCase().includes(q)) && (!loc || j.l.toLowerCase().includes(loc) || (loc === 'remote' && j.remote) || (j.remote && !st.remote)) && (!st.remote || j.remote) && (!st.full || j.full) && (!st.today || j.today));
+const chip = (key, label) => ({ label, pressed: st[key] ? 'true' : 'false', bg: st[key] ? '#0D1B19' : '#fff', fg: st[key] ? '#fff' : '#0D1B19', border: st[key] ? '#0D1B19' : '#D6D2C6', pick: () => this.setState({ [key]: !st[key] }) });
+return {
+q: st.q, loc: st.loc,
+onQ: (e) => this.setState({ q: e.target.value }), onLoc: (e) => this.setState({ loc: e.target.value }),
+popular: ['Designer', 'Software Engineer', 'Nurse', 'Data Analyst', 'Marketing'].map((l) => ({ label: l, pick: () => this.setState({ q: l, loc: '' }) })),
+chips: [chip('remote', 'Remote'), chip('full', 'Full-time'), chip('today', 'Posted today')],
+jobs, empty: jobs.length === 0,
+countLabel: jobs.length + (jobs.length === 1 ? ' job' : ' jobs') + (q ? ' for "' + st.q + '"' : '') + (loc ? ' near ' + st.loc : '')
+};
+}
+}
+</script>
+</body>
+</html>

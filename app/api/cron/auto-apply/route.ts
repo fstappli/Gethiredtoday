@@ -5,7 +5,7 @@ import { isProActive } from '@/lib/subscription';
 
 /**
  * Daily auto-apply cron.
- * Runs at 9am UTC — iterates every user with auto-apply enabled and not paused,
+ * Runs at 9am UTC, iterates every user with auto-apply enabled and not paused,
  * queues matching jobs for their review.
  *
  * Auth: Vercel Cron sends Authorization: Bearer $CRON_SECRET
@@ -52,7 +52,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ processed: 0, message: 'No eligible Pro users with auto-apply enabled.' });
   }
 
-  // Run for each user — cap concurrency at 3 to avoid rate-limiting job APIs.
+  // Run for each user, cap concurrency at 3 to avoid rate-limiting job APIs.
   // Add 1s pause between batches so API quotas are not exhausted.
   const results: { userId: string; queued: number; message: string }[] = [];
   const batchSize = 3;

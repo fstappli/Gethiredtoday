@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Resume & Job Search Resources — Guides, Tips & Tools",
-  description: "Free guides and resources on resume writing, cover letters, ATS optimization, job search strategy, and interview prep. Everything you need to land your next job.",
+  title: "Career advice: guides on resumes, interviews and job search",
+  description: "Short, practical guides on resume writing, cover letters, ATS optimization, job search and interview prep.",
   alternates: { canonical: "https://hiredtodayapp.com/resources" },
   openGraph: {
-    title: "Resume & Job Search Resources — Guides, Tips & Tools",
-    description: "Free guides on resume writing, ATS optimization, cover letters, and job search strategy.",
+    title: "Career advice that's actually useful",
+    description: "Short, practical guides on resumes, interviews and job search.",
     url: "https://hiredtodayapp.com/resources",
   },
 };

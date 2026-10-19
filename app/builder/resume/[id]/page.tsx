@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft,
-  ArrowRight,
+  ZoomIn,
+  ZoomOut,
   User,
   FileText,
   Briefcase,
@@ -29,13 +30,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 import ClassicTemplate from '@/components/resume-templates/classic';
 import ModernTemplate from '@/components/resume-templates/modern';
@@ -55,7 +49,7 @@ import {
 } from '@/components/resume-templates/pro-templates';
 import { createClient } from '@/lib/supabase';
 import { isProActive } from '@/lib/subscription';
-import { resumeDataToText, scoreResume } from '@/lib/ats';
+import { resumeDataToText, scoreResume, calculateATSScore } from '@/lib/ats';
 import { SuggestionPanel } from '@/components/suggestion-panel';
 import {
   ProTipBox,
@@ -65,7 +59,8 @@ import {
   SECTION_TIPS,
 } from '@/components/wizard-helpers';
 import { TemplatePickerPopover } from '@/components/template-picker-popover';
-import ProUpgradeModal from '@/components/pro-upgrade-modal';
+import UpgradePrompt from '@/components/upgrade-prompt';
+import type { UpgradeTrigger } from '@/lib/upgrade-triggers';
 
 import { generateId } from '@/lib/utils';
 import type {
@@ -243,7 +238,14 @@ export default function ResumeBuilderPage() {
   const [resumeTitle, setResumeTitle] = useState('Untitled Resume');
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState('Untitled Resume');
-  const [saved, setSaved] = useState(false);
+  type SaveStatus = 'saved' | 'saving' | 'unsaved' | 'error';
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
+  // JSON of the last state we know the server has. null until the resume has loaded.
+  const baselineRef = useRef<string | null>(null);
+  const forceDirtyRef = useRef(false);
+  const savingRef = useRef(false);
+  const [zoom, setZoom] = useState(1);
+  const [moreOpen, setMoreOpen] = useState(false);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [bulletsLoading, setBulletsLoading] = useState<Record<string, boolean>>({});
   const [newSkillName, setNewSkillName] = useState('');
@@ -253,14 +255,14 @@ export default function ResumeBuilderPage() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [mobileTab, setMobileTab] = useState<'edit' | 'preview'>('edit');
   const [isPro, setIsPro] = useState(false);
-  // Full-screen paywall modal — shown when a free user hits a Pro-gated action.
-  const [proModal, setProModal] = useState<null | { trigger: 'pdf' | 'word'; templateLabel?: string }>(null);
+  // Contextual upgrade prompt, shown when a free user hits a Pro-only action.
+  const [prompt, setPrompt] = useState<UpgradeTrigger | null>(null);
   const [aiError, setAiError] = useState<string | null>(null);
   const printRef = useRef<HTMLDivElement>(null);
 
   const shouldDownload = searchParams.get('download') === '1';
 
-  // Fetch Pro status (including the post-cancel grace period — users keep
+  // Fetch Pro status (including the post-cancel grace period, users keep
   // Pro features until subscription_ends_at passes).
   useEffect(() => {
     const supabase = createClient();
@@ -279,7 +281,7 @@ export default function ResumeBuilderPage() {
   // Every change to the resume is mirrored to localStorage within a few
   // hundred milliseconds, keyed by resume id. If the page ever reloads for
   // any reason (auth refresh, tab recovery, webview quirk), we restore from
-  // localStorage the next time this builder opens — so a user never loses
+  // localStorage the next time this builder opens, so a user never loses
   // typing they haven't explicitly saved.
   const draftStorageKey = resumeId ? `ght:resume-draft:${resumeId}` : null;
   interface DraftSnapshot {
@@ -369,10 +371,11 @@ export default function ResumeBuilderPage() {
         setDataLoaded(true);
 
         if (preferLocal) {
-          // Let the user know we restored unsaved work — small non-blocking
+          forceDirtyRef.current = true;
+          // Let the user know we restored unsaved work, small non-blocking
           // indicator via the existing aiError banner. They can then click
           // Save to persist to the server.
-          setAiError('Restored unsaved changes from your last session. Click Save to keep them.');
+          setAiError('Restored unsaved changes from your last session. Saving them now.');
           setTimeout(() => setAiError(null), 6000);
         }
       })
@@ -391,10 +394,24 @@ export default function ResumeBuilderPage() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resumeId]);
 
-  // Persist every meaningful state change to localStorage (debounced 300ms)
-  // so nothing short of clearing the browser cache loses the user's work.
+  // Snapshot of everything that is persisted to the server. Compared with the
+  // baseline to decide whether there are REAL unsaved changes.
+  const stateKey = JSON.stringify({ t: resumeTitle, tp: template, c: colorScheme, f: fontSize, d: resumeData });
+  const stateKeyRef = useRef(stateKey);
+  stateKeyRef.current = stateKey;
+
+  // First render after the server data has hydrated: that state IS the baseline.
   useEffect(() => {
-    if (!dataLoaded || !draftStorageKey || typeof window === 'undefined') return;
+    if (!dataLoaded || baselineRef.current !== null) return;
+    baselineRef.current = forceDirtyRef.current ? '' : stateKeyRef.current;
+  }, [dataLoaded]);
+
+  const isDirty = dataLoaded && baselineRef.current !== null && baselineRef.current !== stateKey;
+
+  // Mirror edits to localStorage (debounced) ONLY when something actually changed,
+  // so simply opening a resume never leaves behind a "newer" local draft.
+  useEffect(() => {
+    if (!dataLoaded || !draftStorageKey || typeof window === 'undefined' || !isDirty) return;
     const t = setTimeout(() => {
       try {
         const snapshot: DraftSnapshot = {
@@ -407,28 +424,24 @@ export default function ResumeBuilderPage() {
           data: resumeData,
         };
         window.localStorage.setItem(draftStorageKey, JSON.stringify(snapshot));
-      } catch { /* quota / private-mode — non-fatal */ }
+      } catch { /* quota / private-mode, non-fatal */ }
     }, 300);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [resumeData, template, colorScheme, fontSize, resumeTitle, dataLoaded]);
+  }, [stateKey, dataLoaded]);
 
-  // Warn the user if they try to close the tab with unsaved edits pending.
+  // Warn about leaving ONLY when there are real unsaved changes (or a save is in flight).
+  const dirtyRef = useRef(false);
+  dirtyRef.current = isDirty || saveStatus === 'saving';
   useEffect(() => {
-    if (!dataLoaded) return;
     const onBeforeUnload = (e: BeforeUnloadEvent) => {
-      // Only warn if there's recent local state that we believe hasn't hit
-      // the server yet (Save button shows "Saved!" briefly after each save;
-      // if `saved` is false the user hasn't confirmed recent persistence).
-      if (!saved) {
-        e.preventDefault();
-        // The string return is ignored by modern browsers but kept for legacy
-        e.returnValue = '';
-      }
+      if (!dirtyRef.current) return;
+      e.preventDefault();
+      e.returnValue = '';
     };
     window.addEventListener('beforeunload', onBeforeUnload);
     return () => window.removeEventListener('beforeunload', onBeforeUnload);
-  }, [dataLoaded, saved]);
+  }, []);
 
   // Auto-download when ?download=1
   useEffect(() => {
@@ -451,9 +464,13 @@ export default function ResumeBuilderPage() {
   const buildResumeText = (data: ResumeData): string => resumeDataToText(data);
 
   const handleSave = async () => {
+    if (savingRef.current) return;
+    savingRef.current = true;
+    const keyAtSave = stateKeyRef.current;
+    setSaveStatus('saving');
     try {
       // Compute the ATS score locally from the current resume data.
-      // Previously this was a network round-trip to /api/ats/check — but
+      // Previously this was a network round-trip to /api/ats/check, but
       // the scoring logic is pure client-side (no LLM calls), so we can
       // compute synchronously from the shared lib and avoid the extra RTT.
       let ats_score: number | undefined;
@@ -477,43 +494,54 @@ export default function ResumeBuilderPage() {
         }),
       });
       if (patchRes.ok) {
-        // Clear the local-draft safety net — the server is now the source
+        // Clear the local-draft safety net, the server is now the source
         // of truth and we no longer need the duplicate copy.
         if (draftStorageKey && typeof window !== 'undefined') {
           try { window.localStorage.removeItem(draftStorageKey); } catch { /* ignore */ }
         }
-        setSaved(true);
-        setTimeout(() => setSaved(false), 2000);
+        baselineRef.current = keyAtSave;
+        setSaveStatus('saved');
       } else {
-        setAiError('Save failed — your changes are kept locally. Please try again.');
+        setSaveStatus('error');
+        setAiError('Save failed. Your changes are kept on this device. Please try again.');
         setTimeout(() => setAiError(null), 5000);
       }
     } catch {
-      setAiError('Save failed — your changes are kept locally. Please try again.');
+      setSaveStatus('error');
+      setAiError('Save failed. Your changes are kept on this device. Please try again.');
       setTimeout(() => setAiError(null), 5000);
+    } finally {
+      savingRef.current = false;
     }
   };
 
+  // Autosave: 1.5s after the last edit, but only when there is something to save.
+  useEffect(() => {
+    if (!isDirty || !resumeId || resumeId === 'new') return;
+    if (saveStatus === 'saving') return;
+    if (saveStatus !== 'error') setSaveStatus('unsaved');
+    const t = setTimeout(() => { handleSave(); }, saveStatus === 'error' ? 8000 : 1500);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stateKey, isDirty, saveStatus]);
+
+  // Back to "Saved" once a save lands (baseline caught up with the state).
+  useEffect(() => {
+    if (dataLoaded && !isDirty && saveStatus === 'unsaved') setSaveStatus('saved');
+  }, [dataLoaded, isDirty, saveStatus]);
+
   const handleDownload = async () => {
     if (!printRef.current) return;
-    // Check if the selected template is Pro and user is not Pro
-    const tpl = TEMPLATES.find((x) => x.id === template);
-    if (tpl?.isPro && !isPro) {
-      // Surface the upgrade paywall modal instead of silently failing or
-      // showing a tiny auto-dismissing pill. Gives the user a clear path to
-      // upgrade or to switch to the free Classic template.
-      setProModal({ trigger: 'pdf', templateLabel: tpl.label });
-      return;
-    }
+    // PDF download is always free, on every plan.
     setDownloadingPdf(true);
     try {
       // html-to-image renders the live DOM (with full CSS, fonts, backgrounds)
       // into a canvas/image. We then hand that to jsPDF for the actual export.
       //
       // Quality notes:
-      //   - toPng (lossless) — JPEG with quality:0.98 was still introducing
+      //   - toPng (lossless), JPEG with quality:0.98 was still introducing
       //     visible text artefacts around serif fonts and colored blocks.
-      //   - pixelRatio: 3 — renders at 3× the CSS resolution. 2× was too soft
+      //   - pixelRatio: 3, renders at 3× the CSS resolution. 2× was too soft
       //     on retina screens and looked washed-out once scaled into a PDF.
       //   - Multi-page: we compute the total height of the rendered image in
       //     mm and slice it across N A4 pages. Previously the entire image
@@ -545,16 +573,16 @@ export default function ResumeBuilderPage() {
       const imgHeightMm = (img.height * pageWidth) / img.width;
 
       if (imgHeightMm <= pageHeight + 1) {
-        // Single-page case — render at natural size (no stretching).
+        // Single-page case, render at natural size (no stretching).
         pdf.addImage(dataUrl, 'PNG', 0, 0, pageWidth, imgHeightMm, undefined, 'FAST');
       } else {
-        // Multi-page case — slice the source image into A4-sized pages.
+        // Multi-page case, slice the source image into A4-sized pages.
         //
         // Two bugs the previous slicer had:
         //   1. The slicing canvas was always pageHeightPx tall, even on the
         //      final page where the slice was shorter. We then exported the
         //      whole canvas (with white padding) but told jsPDF to render it
-        //      at the proportional height of just the slice content — which
+        //      at the proportional height of just the slice content, which
         //      vertically squeezed the entire image, producing a thick
         //      stretched/distorted band at the bottom of the last page.
         //      Fix: size the slice canvas to the actual slice each page so
@@ -564,8 +592,8 @@ export default function ResumeBuilderPage() {
         //      the middle of a line of body text. The result: the bottom of
         //      one page and the top of the next each show half a row of
         //      glyphs.
-        //      Fix: scan the rasterized resume for a "safe" break — a row
-        //      in the content area that's all whitespace — and slice there
+        //      Fix: scan the rasterized resume for a "safe" break, a row
+        //      in the content area that's all whitespace, and slice there
         //      instead. Whitespace gaps between paragraphs and sections are
         //      usually 4–8px tall at pixelRatio:3, so a small lookback is
         //      enough to land cleanly without losing real content.
@@ -573,7 +601,7 @@ export default function ResumeBuilderPage() {
         const pageHeightPx = (pageHeight * img.width) / pageWidth;
         const MAX_BREAK_LOOKBACK = Math.max(40, Math.floor(pageHeightPx * 0.06));
 
-        // Scanner canvas — rasterized full image so we can read pixel rows.
+        // Scanner canvas, rasterized full image so we can read pixel rows.
         // willReadFrequently keeps Chrome from optimizing the canvas for GPU
         // compositing, which would otherwise make getImageData slow.
         const scanCanvas = document.createElement('canvas');
@@ -586,7 +614,7 @@ export default function ResumeBuilderPage() {
         // Returns true if the central 50% of pixels in row `rowY` are all
         // close to white. We scan the middle band rather than the whole row
         // because sidebar templates have a dark column on one side that
-        // continues across every row — the middle band is content area in
+        // continues across every row, the middle band is content area in
         // every layout we ship, so this works for both classic and sidebar
         // designs without per-template logic.
         const sampleStartX = Math.floor(img.width * 0.25);
@@ -671,31 +699,32 @@ export default function ResumeBuilderPage() {
         pdf.setPage(pageCount);
         pdf.setFontSize(7);
         pdf.setTextColor(180, 180, 180);
-        pdf.text('Created with hiredtodayapp.com — Free Resume Builder', 105, 294, { align: 'center' });
+        pdf.text('Created with hiredtodayapp.com · Free Resume Builder', 105, 294, { align: 'center' });
       }
       pdf.save(`${resumeTitle || 'resume'}.pdf`);
+      try { window.localStorage.setItem('ght:pdf-downloaded', '1'); } catch { /* ignore */ }
     } catch (err) {
       console.error('PDF generation failed', err);
-      setAiError('PDF download failed. Please try again — if it keeps failing, try a shorter resume or a different template.');
+      setAiError('PDF download failed. Please try again. If it keeps failing, try a shorter resume or a different template.');
       setTimeout(() => setAiError(null), 6000);
     } finally {
       setDownloadingPdf(false);
     }
   };
 
-  // ----- Word (.doc) download — pro-gated, uses /api/resume/[id]/word -----
+  // ----- Word (.doc) download, pro-gated, uses /api/resume/[id]/word -----
   const handleDownloadWord = async () => {
     if (!isPro) {
-      // Word export is Pro-only regardless of template — surface the paywall.
-      setProModal({ trigger: 'word' });
+      // Word export is Pro-only: show the contextual upgrade prompt.
+      setPrompt('word_export');
       return;
     }
     setDownloadingWord(true);
     try {
       const res = await fetch(`/api/resume/${resumeId}/word`);
       if (!res.ok) {
-        const msg = res.status === 403 ? 'Word download is a Pro feature.' : 'Failed to generate Word file.';
-        setAiError(msg);
+        if (res.status === 402 || res.status === 403) { setPrompt('word_export'); return; }
+        setAiError('Failed to generate Word file.');
         setTimeout(() => setAiError(null), 5000);
         return;
       }
@@ -758,7 +787,7 @@ export default function ResumeBuilderPage() {
           ),
         }));
       } else {
-        setAiError('Failed to enhance bullets. Please check your API key.');
+        setAiError('Could not enhance bullets right now. Please try again.');
         setTimeout(() => setAiError(null), 5000);
       }
     } finally {
@@ -824,352 +853,355 @@ export default function ResumeBuilderPage() {
   };
 
   const handleTemplateChange = (t: Template) => {
+    const tpl = TEMPLATES.find((x) => x.id === t);
+    // Free plan has a free set of templates; Pro templates open the upgrade prompt.
+    if (tpl?.isPro && !isPro && t !== template) {
+      setPrompt('templates');
+      return;
+    }
     setTemplate(t);
-    // Close the upgrade paywall if it's open — user may be switching to a
-    // free template as the "escape" action from the modal.
-    setProModal(null);
   };
+
+  // ---------------------------------------------------------------------------
+  // Derived UI state
+  // ---------------------------------------------------------------------------
+
+  const atsScore = scoreResume(resumeData);
+  const atsIssues = (() => {
+    try {
+      const r = calculateATSScore(resumeDataToText(resumeData));
+      return r.top_issues.length + r.top_suggestions.length;
+    } catch { return 0; }
+  })();
+  const completeness = computeCompleteness(resumeData);
+  const sectionDone: Record<string, boolean> = {
+    contact: !!(resumeData.contact.full_name && resumeData.contact.email),
+    summary: (resumeData.summary || '').trim().length > 40,
+    experience: resumeData.work_experience.some((e) => e.job_title && e.company),
+    education: resumeData.education.some((e) => e.degree && e.institution),
+    skills: resumeData.skills.length >= 3,
+    certifications: resumeData.certifications.length > 0,
+    languages: resumeData.languages.length > 0,
+    projects: resumeData.projects.length > 0,
+    volunteer: resumeData.volunteer_work.length > 0,
+    custom: resumeData.custom_sections.length > 0,
+  };
+  const sectionIdx = SECTIONS.findIndex((x) => x.id === activeSection);
+  const prevSection = sectionIdx > 0 ? SECTIONS[sectionIdx - 1] : null;
+  const nextSection = sectionIdx < SECTIONS.length - 1 ? SECTIONS[sectionIdx + 1] : null;
+  const currentTpl = TEMPLATES.find((x) => x.id === template) ?? TEMPLATES[0];
+
+  const statusText =
+    saveStatus === 'saving' ? 'Saving...'
+    : saveStatus === 'error' ? 'Not saved. Retrying'
+    : saveStatus === 'unsaved' ? 'Unsaved changes'
+    : 'Saved';
+
+  const scoreBg = atsScore >= 80 ? '#5FD3B3' : atsScore >= 65 ? '#FFD166' : '#FFB59A';
 
   // ---------------------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------------------
 
+  const statusEl = (
+    <span role="status" aria-live="polite" className="flex items-center gap-1.5 text-[13px] text-text-muted">
+      {saveStatus === 'saving' ? (
+        <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" />
+      ) : saveStatus === 'saved' ? (
+        <Check className="h-3.5 w-3.5 text-brand" strokeWidth={3} aria-hidden="true" />
+      ) : (
+        <span aria-hidden="true" className={`h-2 w-2 rounded-full ${saveStatus === 'error' ? 'bg-danger-ink' : 'bg-sun'}`} />
+      )}
+      {statusText}
+    </span>
+  );
+
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+    <div className="builder-shell flex h-[100dvh] flex-col overflow-hidden bg-[#F6F7F3] font-sans text-ink">
+      <style>{BUILDER_CSS}</style>
 
-      {/* Pro upgrade paywall — shown when a free user tries to download a Pro
-          template (PDF) or any Word export. Proper modal with clear value
-          proposition + escape hatch to the free Classic template. */}
-      <ProUpgradeModal
-        open={proModal !== null}
-        trigger={proModal?.trigger}
-        templateLabel={proModal?.templateLabel}
-        onClose={() => setProModal(null)}
-        onSwitchToFree={() => handleTemplateChange('classic')}
-      />
+      <UpgradePrompt trigger={prompt ?? 'word_export'} open={prompt !== null} onClose={() => setPrompt(null)} />
 
-      {/* Capture target for PDF — off-screen but in normal flow so html-to-image renders it */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: '-9999px',
-          width: '794px',
-          overflow: 'hidden',
-          pointerEvents: 'none',
-        }}
-        aria-hidden="true"
-      >
-        <div ref={printRef}>
-          {renderTemplate()}
-        </div>
+      {/* Capture target for PDF: off-screen but in normal flow so html-to-image renders it */}
+      <div style={{ position: 'absolute', top: 0, left: '-9999px', width: '794px', overflow: 'hidden', pointerEvents: 'none' }} aria-hidden="true">
+        <div ref={printRef}>{renderTemplate()}</div>
       </div>
 
       {/* ======================== TOP HEADER ======================== */}
-      <header className="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm flex items-center gap-2 px-4 h-14 flex-shrink-0">
-        {/* Back */}
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition-colors flex-shrink-0 mr-1"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm hidden sm:inline font-medium">Dashboard</span>
-        </Link>
+      <header className="relative z-30 flex-none border-b border-[#E3E7E2] bg-white px-3 py-2 lg:flex lg:h-16 lg:items-center lg:gap-3.5 lg:px-5 lg:py-0">
+        <div className="flex items-center gap-1.5 lg:contents">
+          <Link href="/dashboard" aria-label="Back to dashboard" className="grid h-11 w-11 flex-none place-items-center rounded-xl text-ink hover:bg-ground-portal">
+            <ArrowLeft className="h-[22px] w-[22px]" aria-hidden="true" />
+          </Link>
 
-        <div className="w-px h-5 bg-gray-200 flex-shrink-0" />
-
-        {/* Editable title */}
-        <div className="flex items-center gap-1 min-w-0">
-          {editingTitle ? (
-            <>
-              <input
-                autoFocus
-                value={titleDraft}
-                onChange={(e) => setTitleDraft(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') { setResumeTitle(titleDraft); setEditingTitle(false); }
-                  if (e.key === 'Escape') setEditingTitle(false);
-                }}
-                className="text-sm font-semibold text-gray-800 border-b-2 border-teal-500 outline-none bg-transparent w-36"
-              />
-              <button onClick={() => { setResumeTitle(titleDraft); setEditingTitle(false); }} className="text-teal-600 hover:text-teal-700 ml-1">
-                <Check className="w-3.5 h-3.5" />
-              </button>
-              <button onClick={() => setEditingTitle(false)} className="text-gray-400 hover:text-gray-600">
-                <X className="w-3.5 h-3.5" />
-              </button>
-            </>
-          ) : (
-            <button
-              onClick={() => { setTitleDraft(resumeTitle); setEditingTitle(true); }}
-              className="flex items-center gap-1 text-sm font-semibold text-gray-800 hover:text-teal-600 group truncate max-w-[140px]"
-              title={resumeTitle}
-            >
-              <span className="truncate">{resumeTitle}</span>
-              <Pencil className="w-3 h-3 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-            </button>
-          )}
-        </div>
-
-        <div className="flex-1" />
-
-        {/* ── Design controls group ── */}
-        <div className="hidden sm:flex items-center gap-3 border border-gray-200 rounded-xl px-3 py-1.5 bg-gray-50">
-          {/* Template — visual picker popover with thumbnails */}
-          <TemplatePickerPopover
-            templates={TEMPLATES}
-            currentId={template}
-            onChange={(id) => handleTemplateChange(id as Template)}
-            isPro={isPro}
-          />
-
-          <div className="w-px h-4 bg-gray-300" />
-
-          {/* Color */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Color</span>
-            <div className="flex gap-1">
-              {COLOR_OPTIONS.map((c) => (
-                <button
-                  key={c.id}
-                  onClick={() => setColorScheme(c.id)}
-                  title={c.label}
-                  className={`w-4.5 h-4.5 rounded-full border-2 transition-all hover:scale-110 ${
-                    colorScheme === c.id ? 'border-gray-800 scale-110 shadow-sm' : 'border-white'
-                  }`}
-                  style={{ background: c.bg, width: '18px', height: '18px' }}
+          <div className="min-w-0 flex-1 lg:flex-none">
+            {editingTitle ? (
+              <div className="flex items-center gap-1">
+                <label className="sr-only" htmlFor="resume-title">Resume title</label>
+                <input
+                  id="resume-title"
+                  autoFocus
+                  value={titleDraft}
+                  onChange={(e) => setTitleDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { setResumeTitle(titleDraft); setEditingTitle(false); }
+                    if (e.key === 'Escape') setEditingTitle(false);
+                  }}
+                  className="font-display w-40 border-b-2 border-brand bg-transparent text-base font-bold outline-none"
                 />
-              ))}
-            </div>
+                <button type="button" aria-label="Save title" onClick={() => { setResumeTitle(titleDraft); setEditingTitle(false); }} className="grid h-11 w-11 place-items-center text-brand"><Check className="h-4 w-4" /></button>
+                <button type="button" aria-label="Cancel title edit" onClick={() => setEditingTitle(false)} className="grid h-11 w-11 place-items-center text-text-muted"><X className="h-4 w-4" /></button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => { setTitleDraft(resumeTitle); setEditingTitle(true); }}
+                aria-label={`Rename resume, currently ${resumeTitle}`}
+                className="group flex min-h-[44px] max-w-[200px] items-center gap-1.5 text-left lg:max-w-[260px]"
+              >
+                <span className="font-display truncate text-base font-bold lg:text-lg">{resumeTitle}</span>
+                <Pencil className="h-3 w-3 flex-shrink-0 opacity-50 group-hover:opacity-100" aria-hidden="true" />
+              </button>
+            )}
+            <div className="-mt-1 lg:hidden">{statusEl}</div>
           </div>
+          <div className="hidden lg:block">{statusEl}</div>
 
-          <div className="w-px h-4 bg-gray-300" />
-
-          {/* Font size */}
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Size</span>
-            <div className="flex gap-0.5 border border-gray-200 rounded-lg overflow-hidden bg-white">
-              {(['small', 'medium', 'large'] as const).map((s, i) => (
-                <button
-                  key={s}
-                  onClick={() => setFontSize(s)}
-                  title={s}
-                  className={`w-7 py-0.5 text-xs font-semibold transition-colors ${
-                    fontSize === s ? 'bg-teal-600 text-white' : 'text-gray-500 hover:bg-gray-50'
-                  }`}
-                >
-                  {['S', 'M', 'L'][i]}
+          <div className="relative lg:hidden">
+            <button type="button" aria-label="Template, download and more" aria-expanded={moreOpen} onClick={() => setMoreOpen((o) => !o)} className="grid h-11 w-11 place-items-center rounded-xl border border-[#E3E7E2] bg-white font-extrabold">···</button>
+            {moreOpen && (
+              <div className="absolute right-0 top-12 z-40 flex w-60 flex-col gap-1 rounded-2xl border border-line bg-white p-2 shadow-xl">
+                <div className="px-2 pt-1 text-xs font-bold uppercase tracking-wide text-text-subtle">Template</div>
+                <div className="grid max-h-56 grid-cols-2 gap-1 overflow-y-auto">
+                  {TEMPLATES.map((t) => (
+                    <button key={t.id} type="button" onClick={() => { handleTemplateChange(t.id); setMoreOpen(false); }} className={`min-h-[44px] rounded-lg px-2 text-left text-sm font-semibold ${template === t.id ? 'bg-ink text-white' : 'hover:bg-ground-portal'}`}>
+                      {t.label}{t.isPro && !isPro ? ' (Pro)' : ''}
+                    </button>
+                  ))}
+                </div>
+                <button type="button" onClick={() => { setMoreOpen(false); handleDownloadWord(); }} className="flex min-h-[44px] items-center justify-between rounded-lg px-2 text-sm font-semibold hover:bg-ground-portal">
+                  Download Word {!isPro && <span className="rounded bg-sun px-1.5 py-0.5 text-[11px] font-extrabold">PRO</span>}
                 </button>
-              ))}
-            </div>
+                <button type="button" onClick={() => { setMoreOpen(false); handleDownload(); }} disabled={downloadingPdf} className="flex min-h-[44px] items-center rounded-lg bg-brand px-2 text-sm font-bold text-white">
+                  {downloadingPdf ? 'Generating...' : 'Download PDF'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="w-px h-5 bg-gray-200 flex-shrink-0 hidden sm:block" />
+        <span className="hidden flex-1 lg:block" />
 
-        {/* Save */}
-        <button
-          onClick={handleSave}
-          className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg border transition-all flex-shrink-0 ${
-            saved
-              ? 'bg-green-50 text-green-700 border-green-200'
-              : 'bg-white text-gray-700 border-gray-200 hover:border-teal-400 hover:text-teal-700'
-          }`}
-        >
-          {saved ? <Check className="w-3.5 h-3.5" /> : null}
-          {saved ? 'Saved!' : 'Save'}
-        </button>
+        {/* Design controls (desktop) */}
+        <div className="hidden items-center gap-3 lg:flex">
+          <TemplatePickerPopover templates={TEMPLATES} currentId={template} onChange={(id) => handleTemplateChange(id as Template)} isPro={isPro} />
+          <div className="flex items-center gap-1.5" role="group" aria-label="Accent colour">
+            {COLOR_OPTIONS.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => setColorScheme(c.id)}
+                aria-label={`${c.label} accent`}
+                aria-pressed={colorScheme === c.id}
+                className="grid h-[30px] w-[30px] place-items-center rounded-full"
+              >
+                <span className={`block h-[18px] w-[18px] rounded-full border-2 ${colorScheme === c.id ? 'border-ink' : 'border-white ring-1 ring-line-strong'}`} style={{ background: c.bg }} />
+              </button>
+            ))}
+          </div>
+          <div className="flex overflow-hidden rounded-lg border border-[#CBD3CD] bg-white" role="group" aria-label="Font size">
+            {(['small', 'medium', 'large'] as const).map((sz, i) => (
+              <button key={sz} type="button" onClick={() => setFontSize(sz)} aria-label={`${sz} text`} aria-pressed={fontSize === sz} className={`h-10 w-9 text-xs font-bold ${fontSize === sz ? 'bg-brand text-white' : 'text-text-muted hover:bg-ground-portal'}`}>
+                {['S', 'M', 'L'][i]}
+              </button>
+            ))}
+          </div>
+        </div>
 
-        {/* Tips button in wizard mode */}
         {isWizard && (
-          <button
-            onClick={() => setShowTipOverride(true)}
-            className="flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2.5 py-1 hover:bg-amber-100 transition-colors flex-shrink-0"
-            title="Show section tips"
-          >
-            <Lightbulb className="w-3 h-3" />
-            <span className="hidden sm:inline">Tips</span>
+          <button type="button" onClick={() => setShowTipOverride(true)} className="hidden min-h-[44px] items-center gap-1.5 rounded-full border border-[#F2DB9A] bg-sun-soft px-3 text-xs font-bold text-warning-ink lg:flex">
+            <Lightbulb className="h-3.5 w-3.5" aria-hidden="true" /> Tips
           </button>
         )}
 
-        {/* Mobile preview tab toggle */}
-        <div className="flex lg:hidden rounded-full border border-gray-200 p-0.5 flex-shrink-0">
-          <button
-            onClick={() => setMobileTab('edit')}
-            className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${mobileTab === 'edit' ? 'bg-teal-600 text-white' : 'text-gray-500'}`}
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => setMobileTab('preview')}
-            className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${mobileTab === 'preview' ? 'bg-teal-600 text-white' : 'text-gray-500'}`}
-          >
-            Preview
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={handleDownloadWord}
+          disabled={downloadingWord}
+          className="hidden min-h-[44px] items-center gap-2 rounded-xl border-[1.5px] border-[#CBD3CD] bg-white px-3.5 font-semibold disabled:opacity-60 lg:flex"
+        >
+          {downloadingWord ? 'Generating...' : 'Word'}
+          {!isPro && <span className="rounded-md bg-sun px-1.5 py-0.5 text-[11px] font-extrabold">PRO</span>}
+        </button>
+        <button
+          type="button"
+          onClick={handleDownload}
+          disabled={downloadingPdf}
+          className="hidden min-h-[44px] items-center gap-2 rounded-xl bg-brand px-[18px] font-bold text-white hover:bg-brand-dark disabled:opacity-60 lg:flex"
+        >
+          {downloadingPdf ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : <Download className="h-4 w-4" aria-hidden="true" />}
+          {downloadingPdf ? 'Generating...' : 'Download PDF'}
+        </button>
 
-        {/* Download PDF */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          {/* Pro paywall is handled by ProUpgradeModal rendered at the top of
-              this component — nothing inline needed here. */}
-          <button
-            onClick={handleDownloadWord}
-            disabled={downloadingWord}
-            title={isPro ? 'Download as Word (.doc)' : 'Word download — Pro only'}
-            className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg border border-gray-200 hover:border-teal-400 hover:text-teal-700 disabled:opacity-60 disabled:cursor-not-allowed text-gray-700 bg-white transition-colors"
-          >
-            {downloadingWord
-              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              : <FileText className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{downloadingWord ? 'Generating…' : 'Download Word'}</span>
-            <span className="sm:hidden">{downloadingWord ? '…' : 'Word'}</span>
-            {!isPro && <span className="text-[9px] font-bold bg-amber-100 text-amber-700 px-1 py-0.5 rounded ml-0.5">PRO</span>}
-          </button>
-          <button
-            onClick={handleDownload}
-            disabled={downloadingPdf}
-            className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed text-white transition-colors"
-          >
-            {downloadingPdf
-              ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              : <Download className="w-3.5 h-3.5" />}
-            <span className="hidden sm:inline">{downloadingPdf ? 'Generating…' : 'Download PDF'}</span>
-            <span className="sm:hidden">{downloadingPdf ? '…' : 'PDF'}</span>
-          </button>
+        {/* Mobile Edit / Preview toggle */}
+        <div role="tablist" aria-label="View" className="mt-2 grid grid-cols-2 gap-[3px] rounded-xl bg-[#EEF1EE] p-[3px] lg:hidden">
+          {(['edit', 'preview'] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              role="tab"
+              aria-selected={mobileTab === tab}
+              onClick={() => setMobileTab(tab)}
+              className={`min-h-[40px] rounded-[9px] text-sm ${mobileTab === tab ? 'bg-white font-bold' : 'font-semibold text-text-muted'}`}
+            >
+              {tab === 'edit' ? 'Edit' : 'Preview'}
+            </button>
+          ))}
         </div>
       </header>
 
       {/* ======================== MAIN AREA ======================== */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* -------- LEFT PANEL: Editor -------- */}
-        <div className={`bg-white border-r border-gray-200 overflow-hidden lg:w-[44%] lg:flex-none ${mobileTab === 'preview' ? 'hidden lg:flex' : 'flex flex-1'}`}>
-          {/* Section nav sidebar — wizard mode shows numbered steps + completeness */}
-          <WizardSidebar
-            sections={SECTIONS}
-            activeSection={activeSection}
-            setActiveSection={setActiveSection}
-            resumeData={resumeData}
-            wizardMode={isWizard}
-          />
+      <div className="flex min-h-0 flex-1">
+        {/* Steps nav (desktop) */}
+        <nav aria-label="Resume sections" className="hidden w-[250px] flex-none flex-col gap-1 overflow-y-auto border-r border-[#E3E7E2] bg-white px-3.5 py-5 lg:flex">
+          <div className="px-2 pb-3.5">
+            <div className="flex justify-between text-[13px] font-bold"><span>Completeness</span><span>{completeness}%</span></div>
+            <div className="mt-2 h-2 rounded bg-[#EEF1EE]" role="progressbar" aria-valuenow={completeness} aria-valuemin={0} aria-valuemax={100} aria-label="Resume completeness">
+              <div className="h-2 rounded bg-brand transition-all" style={{ width: `${completeness}%` }} />
+            </div>
+          </div>
+          {SECTIONS.map(({ id, label }, idx) => {
+            const cur = activeSection === id;
+            const done = sectionDone[id];
+            return (
+              <button
+                key={id}
+                type="button"
+                onClick={() => setActiveSection(id)}
+                aria-current={cur ? 'step' : undefined}
+                className={`flex min-h-[44px] items-center gap-3 rounded-[10px] px-2.5 py-2 text-left text-[15px] font-semibold ${cur ? 'bg-[#DDF3EC]' : 'hover:bg-ground-portal'}`}
+              >
+                <span className={`grid h-6 w-6 flex-none place-items-center rounded-full text-xs font-extrabold ${done ? 'bg-brand text-white' : cur ? 'border border-brand bg-white text-brand' : 'bg-[#EEF1EE] text-brand'}`}>
+                  {done ? '✓' : idx + 1}
+                </span>
+                <span className="flex-1">{label}</span>
+              </button>
+            );
+          })}
+        </nav>
 
+        {/* Editor column */}
+        <main className={`min-w-0 flex-col overflow-y-auto bg-[#F6F7F3] lg:w-[560px] lg:flex-none lg:bg-[#F6F7F3] ${mobileTab === 'preview' ? 'hidden lg:flex' : 'flex flex-1 lg:flex-none'}`}>
+          {/* Mobile section pills */}
+          <nav aria-label="Sections" className="flex flex-none gap-2 overflow-x-auto px-3 py-3 lg:hidden">
+            {SECTIONS.map(({ id, label }) => {
+              const cur = activeSection === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setActiveSection(id)}
+                  aria-current={cur ? 'step' : undefined}
+                  className={`min-h-[44px] flex-none rounded-full px-3.5 text-sm ${cur ? 'bg-ink font-bold text-white' : 'border border-[#E3E7E2] bg-white font-semibold'}`}
+                >
+                  {sectionDone[id] && !cur ? '✓ ' : ''}{label}
+                </button>
+              );
+            })}
+          </nav>
 
-          {/* Section content */}
-          <div className="flex-1 overflow-y-auto flex flex-col">
-            <div className="flex-1 px-4 sm:px-5 py-5">
-              {aiError && (
-                <div className="mb-4 flex items-start gap-2 bg-red-50 border border-red-200 text-red-700 text-xs font-medium px-3 py-2.5 rounded-lg">
-                  <span className="flex-1">{aiError}</span>
-                  <button
-                    onClick={() => setAiError(null)}
-                    className="text-red-400 hover:text-red-600 flex-shrink-0 mt-0.5"
-                    aria-label="Dismiss"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+          <div className="flex flex-1 flex-col gap-4 px-3 pb-4 lg:px-7 lg:py-6">
+            <div className="hidden lg:block">
+              <div className="text-[13px] font-semibold text-text-muted">Step {sectionIdx + 1} of {SECTIONS.length}</div>
+              <h1 className="font-display m-0 mt-0.5 text-[26px]">{SECTIONS[sectionIdx]?.label}</h1>
+            </div>
+            {aiError && (
+              <div role="alert" className="flex items-start gap-2 rounded-xl border border-[#E8A48A] bg-[#FFF7F3] px-3 py-2.5 text-[13px] font-semibold text-danger-ink">
+                <span className="flex-1">{aiError}</span>
+                <button type="button" onClick={() => setAiError(null)} aria-label="Dismiss message" className="grid h-8 w-8 flex-none place-items-center"><X className="h-3.5 w-3.5" /></button>
+              </div>
+            )}
+            <div className="gh-editor rounded-2xl border border-[#E3E7E2] bg-white p-3.5 lg:p-[18px]">{renderSection()}</div>
+
+            <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+              {prevSection ? (
+                <button type="button" onClick={() => setActiveSection(prevSection.id)} className="min-h-[48px] rounded-xl border-[1.5px] border-[#CBD3CD] bg-white px-[18px] font-bold">
+                  Back: {prevSection.label}
+                </button>
+              ) : <span />}
+              {nextSection ? (
+                <button type="button" onClick={() => setActiveSection(nextSection.id)} className="min-h-[48px] rounded-xl bg-ink px-[18px] font-bold text-white">
+                  Next: {nextSection.label}
+                </button>
+              ) : (
+                <div className="flex flex-wrap justify-end gap-2">
+                  <button type="button" onClick={handleDownload} className="min-h-[48px] rounded-xl bg-brand px-[18px] font-bold text-white">Download PDF</button>
+                  <button type="button" onClick={() => router.push('/dashboard')} className="min-h-[48px] rounded-xl border-[1.5px] border-[#CBD3CD] bg-white px-[18px] font-bold">Back to dashboard</button>
                 </div>
               )}
-              {renderSection()}
-            </div>
-
-            {/* Wizard-mode bottom bar with "Next: [Section]" */}
-            {isWizard && (() => {
-              const idx = SECTIONS.findIndex((s) => s.id === activeSection);
-              const prev = idx > 0 ? SECTIONS[idx - 1] : null;
-              const next = idx < SECTIONS.length - 1 ? SECTIONS[idx + 1] : null;
-              return (
-                <div className="border-t border-slate-200 bg-white px-4 sm:px-5 py-3 flex items-center justify-between flex-shrink-0 sticky bottom-0">
-                  {prev ? (
-                    <button
-                      onClick={() => setActiveSection(prev.id)}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900 px-4 py-2 rounded-full border border-slate-200 hover:border-slate-300"
-                    >
-                      <ArrowLeft className="w-3.5 h-3.5" /> {prev.label}
-                    </button>
-                  ) : (
-                    <div />
-                  )}
-                  {next ? (
-                    <button
-                      onClick={() => setActiveSection(next.id)}
-                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-white px-5 py-2 rounded-full shadow-sm transition-all hover:shadow-md"
-                      style={{ backgroundColor: '#4AB7A6' }}
-                    >
-                      Next: {next.label} <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={handleDownload}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-white px-5 py-2 rounded-full shadow-sm transition-all hover:shadow-md"
-                        style={{ backgroundColor: '#4AB7A6' }}
-                      >
-                        Download PDF <Download className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        onClick={() => router.push('/dashboard')}
-                        className="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-700 px-4 py-2 rounded-full border border-slate-200 hover:border-slate-300 bg-white"
-                      >
-                        Finish — Back to Dashboard
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })()}
-          </div>
-        </div>
-
-        {/* -------- RIGHT PANEL: Preview -------- */}
-        <div className={`flex-1 overflow-y-auto bg-gray-200 flex-col ${mobileTab === 'edit' ? 'hidden lg:flex' : 'flex'}`}>
-          {/* Preview bar */}
-          <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-sm border-b border-gray-200 flex-shrink-0">
-            <div className="px-4 py-2 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Live Preview</span>
-                <span className="text-[10px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full capitalize">{template}</span>
-              </div>
-              <span className="text-[10px] text-gray-400">A4 · 210×297mm</span>
-            </div>
-            {/* Template quick-switch strip - highly visible */}
-            <div className="px-3 py-2 bg-teal-50 border-t border-teal-100 flex items-center gap-2 overflow-x-auto">
-              <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider flex-shrink-0">Switch Template:</span>
-              {TEMPLATES.map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => handleTemplateChange(t.id)}
-                  className={`flex-shrink-0 px-3 py-1.5 text-[11px] font-semibold rounded-full border transition-all ${
-                    template === t.id
-                      ? 'text-white border-teal-600 shadow-sm'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-teal-400 hover:text-teal-600'
-                  }`}
-                  style={template === t.id ? { backgroundColor: '#0d9488' } : {}}
-                >
-                  {t.label}{t.isPro ? ' ★' : ''}
-                </button>
-              ))}
             </div>
           </div>
+        </main>
 
-          {/* Scaled resume */}
-          <div className="flex-1 flex justify-center py-8 px-4">
-            <div
-              style={{
-                transform: 'scale(0.76)',
-                transformOrigin: 'top center',
-                width: '210mm',
-                flexShrink: 0,
-              }}
-            >
-              <div className="overflow-hidden bg-white shadow-2xl ring-1 ring-black/5">
-                {renderTemplate()}
-              </div>
+        {/* Live preview */}
+        <section aria-label="Live preview" className={`min-w-0 flex-1 flex-col gap-3.5 overflow-hidden bg-[#E9ECE8] p-4 lg:p-5 lg:px-7 ${mobileTab === 'edit' ? 'hidden lg:flex' : 'flex'}`}>
+          <div className="flex flex-none flex-wrap items-center gap-2.5">
+            <div className="flex items-center gap-2.5 rounded-full bg-ink py-1.5 pl-1.5 pr-3.5 text-white">
+              <span className="font-display grid h-[34px] w-[34px] place-items-center rounded-full font-extrabold text-ink" style={{ background: scoreBg }}>{atsScore}</span>
+              <span className="text-sm font-semibold">ATS score{atsIssues > 0 ? ` · ${atsIssues} fix${atsIssues === 1 ? '' : 'es'} left` : ''}</span>
             </div>
+            <span className="hidden text-[13px] text-text-muted sm:inline">Template: {currentTpl.label}</span>
+            <span className="flex-1" />
+            <button type="button" aria-label="Zoom out" onClick={() => setZoom((z) => Math.max(0.5, +(z - 0.1).toFixed(2)))} className="grid h-11 w-11 place-items-center rounded-[10px] border border-[#CBD3CD] bg-white"><ZoomOut className="h-4 w-4" aria-hidden="true" /></button>
+            <button type="button" aria-label="Zoom in" onClick={() => setZoom((z) => Math.min(1.4, +(z + 0.1).toFixed(2)))} className="grid h-11 w-11 place-items-center rounded-[10px] border border-[#CBD3CD] bg-white"><ZoomIn className="h-4 w-4" aria-hidden="true" /></button>
           </div>
-        </div>
+          <PreviewPane zoom={zoom}>{renderTemplate()}</PreviewPane>
+        </section>
       </div>
     </div>
   );
 }
+
+/** Scales the real A4 template (794px wide) to fit its container, times `zoom`. */
+function PreviewPane({ zoom, children }: { zoom: number; children: React.ReactNode }) {
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [wrapW, setWrapW] = useState(0);
+  const [innerH, setInnerH] = useState(1123);
+
+  useEffect(() => {
+    const w = wrapRef.current;
+    const i = innerRef.current;
+    if (!w || !i) return;
+    const ro = new ResizeObserver(() => {
+      setWrapW(w.clientWidth);
+      setInnerH(i.offsetHeight);
+    });
+    ro.observe(w);
+    ro.observe(i);
+    return () => ro.disconnect();
+  }, []);
+
+  const fit = wrapW > 0 ? Math.min(1, wrapW / 794) : 0.5;
+  const scale = fit * zoom;
+  return (
+    <div ref={wrapRef} className="min-h-0 flex-1 overflow-auto">
+      <div className="mx-auto bg-white shadow-[0_10px_30px_rgba(13,27,25,.14)]" style={{ width: 794 * scale, height: innerH * scale, overflow: 'hidden' }}>
+        <div ref={innerRef} style={{ width: 794, transform: `scale(${scale})`, transformOrigin: '0 0' }}>{children}</div>
+      </div>
+    </div>
+  );
+}
+
+/** Scoped restyle of the section editors to the redesign (16px inputs, 44px targets). */
+const BUILDER_CSS = `
+.gh-editor input:not([type=checkbox]):not([type=radio]):not([type=file]),
+.gh-editor textarea,
+.gh-editor select { font-size:16px !important; border-radius:10px; border:1.5px solid #CBD3CD; min-height:44px; }
+.gh-editor input:focus, .gh-editor textarea:focus, .gh-editor select:focus { outline:3px solid #0B6E5F; outline-offset:1px; }
+.gh-editor button { min-height:44px; }
+.gh-editor [class*="text-teal"], .gh-editor [class*="text-\\[\\#4AB7A6\\]"] { color:#08574B; }
+`;
 
 // ===========================================================================
 // Section editors
@@ -1216,7 +1248,7 @@ function ContactSection({
     <div>
       <SectionHeader title="Contact Information" />
 
-      {/* Photo upload — only shown for templates that actually render a photo.
+      {/* Photo upload, only shown for templates that actually render a photo.
           When the user switches to a non-photo template, this block is hidden
           so the editor stays in sync with the preview. The photo_url stays in
           state, so switching back restores the uploaded image. */}
@@ -1225,7 +1257,7 @@ function ContactSection({
           <Camera className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-amber-600" />
           <span>
             The <span className="font-semibold capitalize">{template}</span> template
-            doesn&apos;t display a profile photo. Your uploaded photo is saved — switch
+            doesn&apos;t display a profile photo. Your uploaded photo is saved. Switch
             to <span className="font-semibold">Modern</span> or <span className="font-semibold">Photo Card</span> to show it.
           </span>
         </div>
@@ -2272,7 +2304,7 @@ function CustomSectionEditor({
 }
 
 // ---------------------------------------------------------------------------
-// Wizard sidebar — industry-standard numbered steps + completeness
+// Wizard sidebar, industry-standard numbered steps + completeness
 // ---------------------------------------------------------------------------
 
 function computeCompleteness(data: ResumeData): number {
@@ -2299,111 +2331,3 @@ function computeCompleteness(data: ResumeData): number {
   if (data.certifications.length > 0 || data.projects.length > 0 || data.languages.length > 0) score += 5;
   return Math.min(max, score);
 }
-
-interface WizardSidebarProps {
-  sections: typeof SECTIONS;
-  activeSection: SectionId;
-  setActiveSection: (id: SectionId) => void;
-  resumeData: ResumeData;
-  wizardMode: boolean;
-}
-
-function WizardSidebar({ sections, activeSection, setActiveSection, resumeData, wizardMode }: WizardSidebarProps) {
-  const completeness = computeCompleteness(resumeData);
-  // Which "wizard steps" are considered done based on current data
-  const done: Record<string, boolean> = {
-    contact: !!(resumeData.contact.full_name && resumeData.contact.email),
-    summary: (resumeData.summary || '').trim().length > 40,
-    experience: resumeData.work_experience.some((e) => e.job_title && e.company),
-    education: resumeData.education.some((e) => e.degree && e.institution),
-    skills: resumeData.skills.length >= 3,
-    certifications: resumeData.certifications.length > 0,
-    languages: resumeData.languages.length > 0,
-    projects: resumeData.projects.length > 0,
-    volunteer: resumeData.volunteer_work.length > 0,
-    custom: resumeData.custom_sections.length > 0,
-  };
-
-  if (!wizardMode) {
-    // Standard non-wizard sidebar (original)
-    return (
-      <div className="flex flex-col gap-0.5 py-3 px-2 bg-gray-50 border-r border-gray-100 flex-shrink-0 overflow-y-auto w-[148px]">
-        {sections.map(({ id, label, Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveSection(id)}
-            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-left w-full ${
-              activeSection === id
-                ? 'text-white shadow-sm'
-                : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-            }`}
-            style={activeSection === id ? { backgroundColor: '#4AB7A6' } : {}}
-          >
-            <Icon className="w-4 h-4 shrink-0" />
-            <span className="truncate">{label}</span>
-          </button>
-        ))}
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col py-4 px-3 bg-slate-50 border-r border-slate-100 flex-shrink-0 overflow-y-auto w-[180px]">
-      <div className="flex flex-col gap-1 mb-5">
-        {sections.map(({ id, label }, idx) => {
-          const isActive = activeSection === id;
-          const isDone = done[id];
-          return (
-            <button
-              key={id}
-              onClick={() => setActiveSection(id)}
-              className={`flex items-center gap-2.5 px-2 py-2 rounded-lg text-left w-full transition-colors ${
-                isActive ? 'bg-white shadow-sm border border-slate-200' : 'hover:bg-white'
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 transition-colors ${
-                  isDone
-                    ? 'bg-emerald-500 text-white'
-                    : isActive
-                    ? 'text-white'
-                    : 'bg-white border border-slate-300 text-slate-600'
-                }`}
-                style={isActive && !isDone ? { backgroundColor: '#F59E0B', color: 'white' } : undefined}
-              >
-                {isDone ? (
-                  <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                ) : (
-                  idx + 1
-                )}
-              </div>
-              <span className={`text-sm truncate ${isActive ? 'font-semibold text-slate-900' : 'text-slate-600'}`}>
-                {label}
-              </span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Completeness bar */}
-      <div className="mt-auto">
-        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2">
-          Resume completeness
-        </div>
-        <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-          <div
-            className="h-full rounded-full transition-all duration-500"
-            style={{
-              width: `${completeness}%`,
-              background: completeness >= 80 ? '#10b981' : completeness >= 50 ? '#f59e0b' : '#94a3b8',
-            }}
-          />
-        </div>
-        <div className="text-right text-xs font-semibold text-slate-600 mt-1">{completeness}%</div>
-      </div>
-    </div>
-  );
-}
-

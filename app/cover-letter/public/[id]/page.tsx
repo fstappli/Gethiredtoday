@@ -45,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!cl) return { title: 'Cover letter not found' };
   const name = cl.contact?.full_name || cl.title;
   return {
-    title: `${name} — Cover Letter`,
+    title: `${name}, Cover Letter`,
     description: `Cover letter by ${name}.`,
     robots: { index: false, follow: false },
   };

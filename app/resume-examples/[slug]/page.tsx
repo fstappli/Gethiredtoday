@@ -1,19 +1,16 @@
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, ArrowRight, CheckCircle, Lightbulb, Sparkles, Eye } from 'lucide-react';
 import Navbar from '@/components/navbar';
 import Footer from '@/components/footer';
+import ResumeThumb from '@/components/resume-thumb';
 import { RESUME_EXAMPLES, getExampleBySlug } from '@/lib/resume-examples-data';
-import { exampleToResumeData } from '@/lib/example-to-resume';
-import ClassicTemplate from '@/components/resume-templates/classic';
-import ModernTemplate from '@/components/resume-templates/modern';
-import ExecutiveTemplate from '@/components/resume-templates/executive';
-import CreativeTemplate from '@/components/resume-templates/creative';
-import MinimalTemplate from '@/components/resume-templates/minimal';
-import SimpleTemplate from '@/components/resume-templates/simple';
+import { layoutForIndustry, previewForExample } from '@/lib/example-thumb';
 
 interface Props { params: Promise<{ slug: string }> }
+
+/** No em dashes in user-facing copy. */
+const clean = (s: string) => s.replace(/\s*—\s*/g, ', ');
 
 export async function generateStaticParams() {
   return RESUME_EXAMPLES.map((e) => ({ slug: e.slug }));
@@ -23,42 +20,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const ex = getExampleBySlug(slug);
   if (!ex) return {};
+  const title = clean(ex.metaTitle);
+  const description = clean(ex.metaDescription);
   return {
-    title: ex.metaTitle,
-    description: ex.metaDescription,
+    title,
+    description,
     alternates: { canonical: `https://hiredtodayapp.com/resume-examples/${ex.slug}` },
-    openGraph: {
-      title: ex.metaTitle,
-      description: ex.metaDescription,
-      url: `https://hiredtodayapp.com/resume-examples/${ex.slug}`,
-      type: 'article',
-    },
+    openGraph: { title, description, url: `https://hiredtodayapp.com/resume-examples/${ex.slug}`, type: 'article' },
   };
-}
-
-// Map industry → a best-fit template to showcase the example
-function pickTemplate(industry: string): { key: string; color: string } {
-  const i = industry.toLowerCase();
-  if (i.includes('technology')) return { key: 'modern', color: 'blue' };
-  if (i.includes('creative') || i.includes('design')) return { key: 'creative', color: 'purple' };
-  if (i.includes('executive') || i.includes('finance')) return { key: 'executive', color: 'slate' };
-  if (i.includes('academic') || i.includes('education')) return { key: 'minimal', color: 'blue' };
-  if (i.includes('healthcare')) return { key: 'classic', color: 'teal' };
-  return { key: 'classic', color: 'teal' };
-}
-
-// Render the chosen template at full size, but scale it visually to fit inside
-// a card using a CSS transform (wrapper sets a width, inner template is always A4).
-function ExampleResumeRender({ tpl, resumeData }: { tpl: { key: string; color: string }; resumeData: ReturnType<typeof exampleToResumeData> }) {
-  const props = { data: resumeData, colorScheme: tpl.color, fontSize: 'medium' as const };
-  switch (tpl.key) {
-    case 'modern':    return <ModernTemplate {...props} />;
-    case 'creative':  return <CreativeTemplate {...props} />;
-    case 'executive': return <ExecutiveTemplate {...props} />;
-    case 'minimal':   return <MinimalTemplate {...props} />;
-    case 'simple':    return <SimpleTemplate {...props} />;
-    default:          return <ClassicTemplate {...props} />;
-  }
 }
 
 export default async function ExamplePage({ params }: Props) {
@@ -66,184 +35,114 @@ export default async function ExamplePage({ params }: Props) {
   const ex = getExampleBySlug(slug);
   if (!ex) notFound();
 
-  const tpl = pickTemplate(ex.industry);
-  const resumeData = exampleToResumeData(ex);
-  // Inject a plausible fake name & contact so the rendered resume reads as a real person
-  // (the example data itself keeps contact fields empty for the builder pre-fill).
-  const displayData = {
-    ...resumeData,
-    contact: {
-      full_name: `${ex.title.split(/\s+/).slice(-1)[0]} Sample`.replace(/^[^A-Z]/, 'A'),
-      email: 'candidate@example.com',
-      phone: '+1 (555) 123-4567',
-      location: 'San Francisco, CA',
-      linkedin: `linkedin.com/in/${ex.slug}`,
-      website: '',
-      github: '',
-      photo_url: ex.photoUrl ?? '',
-    },
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: clean(ex.metaTitle),
+    description: clean(ex.metaDescription),
+    url: `https://hiredtodayapp.com/resume-examples/${ex.slug}`,
+    publisher: { '@type': 'Organization', name: 'GetHiredToday', url: 'https://hiredtodayapp.com' },
   };
 
-  const schema = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": ex.metaTitle,
-    "description": ex.metaDescription,
-    "url": `https://hiredtodayapp.com/resume-examples/${ex.slug}`,
-    "publisher": { "@type": "Organization", "name": "GetHiredToday", "url": "https://hiredtodayapp.com" },
-  };
+  const related = RESUME_EXAMPLES.filter((e) => e.slug !== ex.slug && e.industry === ex.industry)
+    .concat(RESUME_EXAMPLES.filter((e) => e.slug !== ex.slug && e.industry !== ex.industry))
+    .slice(0, 4);
+  const first = ex.sampleExperiences[0];
+  const useHref = `/builder/resume/new?example=${ex.slug}`;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="bg-ground-site text-ink">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <Navbar />
+      <main>
+        <div className="mx-auto max-w-[1240px] px-5 pt-7">
+          <nav aria-label="Breadcrumb" className="flex flex-wrap gap-2 text-sm text-text-muted">
+            <Link href="/resume-examples" className="text-brand">Examples</Link>
+            <span aria-hidden="true">/</span>
+            <span>{ex.industry}</span>
+            <span aria-hidden="true">/</span>
+            <span aria-current="page">{ex.title}</span>
+          </nav>
+          <h1 className="font-display mb-1.5 mt-3.5 text-[36px] font-bold leading-[1.04] tracking-[-1.6px] min-[761px]:text-[52px]">{ex.title} resume example</h1>
+          <p className="m-0 max-w-[720px] text-lg leading-normal text-text-muted">{clean(ex.intro)}</p>
+        </div>
 
-      <main className="flex-1">
-        {/* Breadcrumb + hero */}
-        <section className="bg-gradient-to-b from-[var(--teal-50)] to-white py-10">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <Link href="/resume-examples" className="inline-flex items-center gap-1.5 text-sm text-teal hover:underline mb-5">
-              <ArrowLeft className="w-4 h-4" /> Back to all examples
-            </Link>
-
-            <div className="flex items-start gap-4 mb-4">
-              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${ex.gradient} flex-shrink-0`} />
-              <div>
-                <span className="text-xs font-semibold text-teal uppercase tracking-wider">{ex.industry} · {ex.level}</span>
-                <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-1">{ex.title} Resume Example</h1>
-              </div>
-            </div>
-
-            <p className="text-base text-gray-600 leading-relaxed max-w-2xl">{ex.intro}</p>
+        <section className="mx-auto flex max-w-[1240px] flex-wrap items-start gap-8 px-5 pb-14 pt-7">
+          <div className="flex min-w-0 flex-[999_1_520px] justify-center rounded-3xl bg-[#F2EFE7] py-8">
+            <ResumeThumb layout={layoutForIndustry(ex.industry)} content={previewForExample(ex)} width={440} className="rounded-md shadow-[0_20px_48px_rgba(13,27,25,.16)]" />
           </div>
-        </section>
-
-        {/* ─── Rendered resume example ─────────────────────────────────── */}
-        <section className="py-12 bg-slate-50 border-y border-slate-100">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
-              <div className="inline-flex items-center gap-2 text-xs font-semibold text-teal uppercase tracking-wider">
-                <Eye className="w-4 h-4" />
-                Full Example Resume
-              </div>
-              <Link
-                href={`/builder/resume/new?example=${ex.slug}`}
-                className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-4 py-2 text-white"
-                style={{ backgroundColor: '#4AB7A6' }}
-              >
-                Use this example <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+          <aside className="flex min-w-0 flex-[1_1_320px] flex-col gap-4">
+            <div className="flex flex-col gap-3 rounded-[22px] bg-ink p-6 text-white">
+              <b className="font-display text-2xl leading-[1.15]">Make this resume yours in 3 minutes</b>
+              <span className="leading-normal text-on-dark-muted">We will load this example into the builder. Swap in your details and AI tailors the rest.</span>
+              <Link href={useHref} className="rounded-xl bg-mint-bright p-[15px] text-center font-extrabold text-ink no-underline">Use this example, free</Link>
+              <span className="text-center text-[13px] text-on-dark-muted">Free PDF download included</span>
             </div>
-            {/* Paper container: A4 aspect, horizontally scrollable on very narrow mobile */}
-            <div className="bg-white shadow-xl mx-auto overflow-auto border border-slate-200 rounded-lg"
-              style={{ maxWidth: '794px', maxHeight: '1120px' }}
-            >
-              <div style={{ minWidth: '794px' }}>
-                <ExampleResumeRender tpl={tpl} resumeData={displayData} />
-              </div>
-            </div>
-            <p className="text-xs text-center text-slate-400 mt-4">
-              Example candidate • Replace with your own details in the builder
-            </p>
-          </div>
-        </section>
-
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
-          {/* Sample summary */}
-          <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-teal" /> Sample Professional Summary
-            </h2>
-            <div className="bg-[var(--teal-50)] border-l-4 border-teal rounded-r-xl p-5">
-              <p className="text-gray-700 leading-relaxed italic">&ldquo;{ex.sampleSummary}&rdquo;</p>
-            </div>
-            <p className="text-sm text-gray-500 mt-2">Use this as a starting point — customise it with your own metrics and experience.</p>
-          </section>
-
-          {/* Sample experience */}
-          <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Sample Work Experience Entry</h2>
-            <div className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-baseline justify-between mb-1">
-                <span className="font-bold text-gray-900 text-base">{ex.sampleExperiences[0].role}</span>
-                <span className="text-xs text-gray-400">{ex.sampleExperiences[0].dates}</span>
-              </div>
-              <div className="text-sm font-semibold text-teal mb-3">{ex.sampleExperiences[0].company}</div>
-              <ul className="space-y-2">
-                {ex.sampleExperiences[0].bullets.map((b, i) => (
-                  <li key={i} className="flex gap-2 text-sm text-gray-700">
-                    <span className="text-teal font-bold mt-0.5 flex-shrink-0">›</span>
-                    <span>{b}</span>
-                  </li>
+            <div className="flex flex-col gap-2.5 rounded-[20px] border border-line bg-white p-5">
+              <b>Top skills for this role</b>
+              <div className="flex flex-wrap gap-1.5">
+                {ex.skills.map((s) => (
+                  <span key={s} className="rounded-lg bg-mint-soft px-2.5 py-1.5 text-[13px] font-bold text-brand-dark">{s}</span>
                 ))}
+              </div>
+            </div>
+          </aside>
+        </section>
+
+        <section className="border-t border-line bg-white">
+          <div className="mx-auto flex max-w-[820px] flex-col gap-5 px-5 py-16 text-[17px] leading-[1.65]">
+            <h2 className="font-display m-0 text-[34px] font-bold">How to write a {ex.title} resume</h2>
+
+            <h3 className="font-display mb-0 mt-2 text-[22px] font-bold">1. Lead with outcomes in your summary</h3>
+            <p className="m-0 text-text-muted">Name your speciality, years of experience and one result. Keep it to three or four lines.</p>
+            <div className="rounded-[14px] border border-line bg-ground-site px-[18px] py-4">
+              <div className="text-xs font-extrabold tracking-[.6px] text-brand">EXAMPLE SUMMARY</div>
+              <p className="mb-0 mt-1.5">{clean(ex.sampleSummary)}</p>
+            </div>
+
+            <h3 className="font-display mb-0 mt-2 text-[22px] font-bold">2. Quantify every bullet you can</h3>
+            <p className="m-0 text-text-muted">Recruiters scan for numbers. Users, revenue, time saved and ratings all count.</p>
+            <div className="rounded-[14px] border border-line bg-white p-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <b>{first.role}</b>
+                <span className="text-sm text-text-subtle">{clean(first.dates)}</span>
+              </div>
+              <div className="mb-2 text-sm font-semibold text-brand">{first.company}</div>
+              <ul className="m-0 flex flex-col gap-1.5 pl-[22px]">
+                {first.bullets.map((b, i) => <li key={i}>{clean(b)}</li>)}
               </ul>
             </div>
-          </section>
 
-          {/* Must-have section */}
-          <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-500" /> What to Include in a {ex.title} Resume
-            </h2>
-            <ul className="space-y-3">
-              {ex.mustHave.map((item, i) => (
-                <li key={i} className="flex gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
-                  <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-sm text-gray-700">{item}</span>
-                </li>
-              ))}
+            <h3 className="font-display mb-0 mt-2 text-[22px] font-bold">3. Include what recruiters look for</h3>
+            <ul className="m-0 flex flex-col gap-1.5 pl-[22px] text-text-muted">
+              {ex.mustHave.map((m, i) => <li key={i}>{clean(m)}</li>)}
             </ul>
-          </section>
 
-          {/* Tips */}
-          <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Lightbulb className="w-5 h-5 text-amber-500" /> Expert Tips for {ex.title} Resumes
-            </h2>
-            <div className="grid sm:grid-cols-2 gap-4">
+            <h3 className="font-display mb-0 mt-2 text-[22px] font-bold">4. Mirror the job ad&apos;s keywords</h3>
+            <p className="m-0 text-text-muted">Paste the job description into the ATS checker to see which terms you are missing.</p>
+            <Link href="/ats-checker" className="self-start font-extrabold text-brand">Check my resume against a job ad →</Link>
+
+            <h3 className="font-display mb-0 mt-2 text-[22px] font-bold">Expert tips</h3>
+            <div className="grid gap-3 min-[561px]:grid-cols-2">
               {ex.tips.map((tip, i) => (
-                <div key={i} className="bg-amber-50 border border-amber-100 rounded-xl p-4">
-                  <span className="text-xs font-bold text-amber-600 uppercase tracking-wide">Tip {i + 1}</span>
-                  <p className="text-sm text-gray-700 mt-1">{tip}</p>
+                <div key={i} className="rounded-xl border border-line bg-sun-soft p-4">
+                  <span className="text-xs font-extrabold uppercase tracking-wide text-warning-ink">Tip {i + 1}</span>
+                  <p className="m-0 mt-1 text-[15px] leading-normal">{clean(tip)}</p>
                 </div>
               ))}
             </div>
-          </section>
+          </div>
+        </section>
 
-          {/* Related examples */}
-          <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">More Resume Examples</h2>
-            <div className="grid sm:grid-cols-3 gap-4">
-              {RESUME_EXAMPLES.filter((e) => e.slug !== ex.slug && e.industry === ex.industry).slice(0, 3).concat(
-                RESUME_EXAMPLES.filter((e) => e.slug !== ex.slug && e.industry !== ex.industry).slice(0, 3)
-              ).slice(0, 3).map((rel) => (
-                <Link key={rel.slug} href={`/resume-examples/${rel.slug}`}
-                  className="flex items-center gap-3 p-3 border border-gray-100 rounded-xl hover:border-[var(--teal-200)] hover:bg-[var(--teal-50)] transition-colors">
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${rel.gradient} flex-shrink-0`} />
-                  <span className="text-sm font-medium text-gray-700">{rel.title}</span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        </div>
-
-        {/* CTA */}
-        <section className="gradient-teal py-16">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              Build Your {ex.title} Resume Now
-            </h2>
-            <p className="text-white/80 mb-8">
-              Use our AI-powered builder. Free to start — takes under 10 minutes.
-            </p>
-            <Link href={`/builder/resume/new?example=${ex.slug}`}
-              className="inline-flex items-center gap-2 bg-white text-teal font-semibold rounded-full px-8 py-3 hover:bg-gray-50 transition-colors">
-              Use This Example & Edit <ArrowRight className="w-4 h-4" />
-            </Link>
+        <section className="mx-auto flex max-w-[1240px] flex-col gap-4 px-5 pb-[72px] pt-14">
+          <h2 className="font-display m-0 text-[28px] font-bold">Related examples</h2>
+          <div className="flex flex-wrap gap-2.5">
+            {related.map((r) => (
+              <Link key={r.slug} href={`/resume-examples/${r.slug}`} className="flex min-h-[44px] items-center rounded-xl border border-line bg-white px-4 font-bold text-ink no-underline hover:border-ink">{r.title}</Link>
+            ))}
           </div>
         </section>
       </main>
-
       <Footer />
     </div>
   );

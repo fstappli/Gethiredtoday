@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Log in</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6;min-height:900px;display:flex;flex-direction:column;align-items:center;padding:32px 20px;box-sizing:border-box;position:relative;overflow:hidden">
+<div aria-hidden="true" style="position:absolute;left:-160px;top:200px;width:420px;height:420px;border-radius:50%;background:#E3F4EE"></div>
+<div aria-hidden="true" style="position:absolute;right:-140px;bottom:-120px;width:380px;height:380px;border-radius:50%;background:#FFF1CC"></div>
+<a href="Main.dc.html" style="position:relative;display:flex;align-items:center;gap:8px;text-decoration:none;color:#0D1B19"><span class="d" style="width:36px;height:36px;border-radius:10px;background:#0B6E5F;color:#fff;display:grid;place-items:center;font-weight:800">G</span><span class="d" style="font-weight:700;font-size:20px">GetHired<span style="color:#0B6E5F">Today</span></span></a>
+<div style="position:relative;margin-top:48px;width:min(440px,100%);background:#fff;border:1px solid #E6E3DA;border-radius:24px;padding:32px;box-shadow:0 24px 48px rgba(13,27,25,.08);display:flex;flex-direction:column;gap:16px;box-sizing:border-box">
+<div style="text-align:center"><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-1px">Welcome back!</h1><p style="margin:8px 0 0;color:#3F4D49">Your resumes and job matches are waiting.</p></div>
+<a href="Dashboard.dc.html" style="display:flex;gap:12px;align-items:center;justify-content:center;background:#0D1B19;color:#fff;text-decoration:none;font-weight:700;padding:15px;border-radius:12px"><span style="width:22px;height:22px;border-radius:50%;background:#fff;color:#0D1B19;display:grid;place-items:center;font-weight:800;font-size:13px">G</span>Continue with Google</a>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px"><a href="Dashboard.dc.html" style="text-align:center;background:#fff;color:#0D1B19;text-decoration:none;font-weight:700;padding:13px;border-radius:12px;border:1.5px solid #D6D2C6">LinkedIn</a><a href="Dashboard.dc.html" style="text-align:center;background:#fff;color:#0D1B19;text-decoration:none;font-weight:700;padding:13px;border-radius:12px;border:1.5px solid #D6D2C6">Apple</a></div>
+<div style="display:flex;align-items:center;gap:12px;color:#5A6662;font-size:14px"><span style="flex:1;height:1px;background:#E6E3DA"></span>or<span style="flex:1;height:1px;background:#E6E3DA"></span></div>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Email<input type="email" autocomplete="email" placeholder="you@example.com" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:14px"></label>
+<a href="CheckEmail.dc.html" style="text-align:center;background:#0B6E5F;color:#fff;text-decoration:none;font-weight:800;padding:15px;border-radius:12px">Email me a log-in link</a>
+<details><summary style="font-size:14px;font-weight:700;color:#0B6E5F;cursor:pointer;min-height:44px;display:flex;align-items:center;justify-content:center">Use a password instead</summary>
+<div style="display:flex;flex-direction:column;gap:10px;margin-top:8px"><label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Password<input type="password" autocomplete="current-password" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #D6D2C6;border-radius:12px;padding:14px"></label><a href="Dashboard.dc.html" style="text-align:center;background:#0D1B19;color:#fff;text-decoration:none;font-weight:700;padding:14px;border-radius:12px">Log in</a><a href="CheckEmail.dc.html" style="text-align:center;font-size:14px;padding:8px">Forgot password?</a></div></details>
+</div>
+<p style="position:relative;margin:20px 0 0;color:#3F4D49">New here? <a href="Signup.dc.html" style="font-weight:800">Create a free account</a></p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

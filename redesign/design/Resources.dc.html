@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Career advice</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}@media (max-width:760px){.h1{font-size:40px !important}}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+<section style="max-width:1240px;margin:0 auto;padding:56px 20px 20px;display:flex;flex-direction:column;gap:16px">
+<h1 class="d h1" style="margin:0;font-size:56px;letter-spacing:-1.8px;line-height:1.02">Career advice that's actually useful.</h1>
+<p style="margin:0;color:#3F4D49;font-size:18px;max-width:620px;line-height:1.5">Short, practical guides on resumes, interviews and job search.</p>
+<div role="tablist" aria-label="Topics" style="display:flex;gap:8px;flex-wrap:wrap">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="4">
+<button type="button" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="font:inherit;font-weight:700;font-size:15px;border-radius:999px;padding:0 18px;min-height:44px;cursor:pointer;border:1.5px solid {{t.border}};background:{{t.bg}};color:{{t.fg}}">{{t.label}}</button>
+</sc-for>
+</div>
+</section>
+<section style="max-width:1240px;margin:0 auto;padding:16px 20px 32px">
+<a href="Article.dc.html" style="text-decoration:none;color:#0D1B19;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr));background:#fff;border:1px solid #E6E3DA;border-radius:24px;overflow:hidden">
+<div style="background:#0B6E5F;min-height:260px;display:flex;align-items:flex-end;padding:28px"><span class="d" style="color:#fff;font-size:88px;font-weight:800;line-height:.9;opacity:.9">ATS</span></div>
+<div style="padding:32px;display:flex;flex-direction:column;gap:12px;justify-content:center"><span style="font-size:13px;font-weight:800;color:#0B6E5F;letter-spacing:.8px">RESUME WRITING · 8 MIN READ</span><b class="d" style="font-size:32px;line-height:1.1">How to write an ATS-friendly resume in 2026</b><span style="color:#3F4D49;line-height:1.55">The formatting rules, keyword habits and section order that get your resume read by people.</span><span style="font-weight:800;color:#0B6E5F">Read the guide →</span></div>
+</a>
+</section>
+<section style="max-width:1240px;margin:0 auto;padding:8px 20px 56px;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:18px">
+<sc-for list="{{posts}}" as="p" hint-placeholder-count="6">
+<a href="Article.dc.html" style="text-decoration:none;color:#0D1B19;background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:10px">
+<span style="font-size:12px;font-weight:800;color:{{p.color}};letter-spacing:.8px">{{p.cat}} · {{p.min}} MIN</span><b class="d" style="font-size:21px;line-height:1.2">{{p.t}}</b><span style="color:#3F4D49;line-height:1.5;font-size:15px">{{p.d}}</span>
+</a>
+</sc-for>
+</section>
+<section style="padding:0 20px 72px"><div style="max-width:1200px;margin:0 auto;background:#FFF1CC;border-radius:24px;padding:32px;display:flex;flex-wrap:wrap;gap:20px;align-items:center;box-sizing:border-box">
+<div style="flex:1 1 320px"><b class="d" style="font-size:26px">One helpful email a week</b><p style="margin:6px 0 0;color:#3F4D49">Resume tips, interview prep and new templates. Unsubscribe any time.</p></div>
+<form style="flex:1 1 360px;display:flex;gap:8px;flex-wrap:wrap"><label style="flex:1 1 220px;display:flex"><span style="position:absolute;width:1px;height:1px;overflow:hidden">Email</span><input type="email" placeholder="you@example.com" style="flex:1;font:inherit;font-size:16px;border:1.5px solid #D6C79A;border-radius:12px;padding:0 14px;min-height:50px;background:#fff"></label><button type="submit" style="font:inherit;font-weight:800;background:#0D1B19;color:#fff;border:0;border-radius:12px;padding:0 20px;min-height:50px">Send me tips</button></form>
+</div></section>
+<dc-import name="SiteFooter" hint-size="100%,420px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1900}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { tab: 'All' }; }
+renderVals() {
+const tab = this.state.tab;
+const posts = [
+{ cat: 'RESUME', color: '#0B6E5F', min: 6, t: '10 resume mistakes that cost you interviews', d: 'Small fixes with a big effect on callbacks.' },
+{ cat: 'RESUME', color: '#0B6E5F', min: 5, t: 'The perfect resume summary: examples that work', d: 'Three formulas plus 12 real-world examples.' },
+{ cat: 'INTERVIEW', color: '#4B3BA8', min: 7, t: 'Answering "Tell me about yourself"', d: 'A 60-second structure that feels natural.' },
+{ cat: 'INTERVIEW', color: '#4B3BA8', min: 9, t: 'The STAR method, with examples', d: 'Turn experience into stories that stick.' },
+{ cat: 'JOB SEARCH', color: '#8A3B12', min: 6, t: 'How many jobs should you apply to each week?', d: 'Quality versus volume, and how to balance both.' },
+{ cat: 'JOB SEARCH', color: '#8A3B12', min: 4, t: 'Following up after an application', d: 'When to send it and exactly what to say.' }
+];
+const map = { 'Resume writing': 'RESUME', 'Interview tips': 'INTERVIEW', 'Job search': 'JOB SEARCH' };
+return {
+tabs: ['All', 'Resume writing', 'Interview tips', 'Job search'].map((l) => ({ label: l, sel: l === tab ? 'true' : 'false', bg: l === tab ? '#0D1B19' : '#fff', fg: l === tab ? '#fff' : '#0D1B19', border: l === tab ? '#0D1B19' : '#D6D2C6', pick: () => this.setState({ tab: l }) })),
+posts: tab === 'All' ? posts : posts.filter((p) => p.cat === map[tab])
+};
+}
+}
+</script>
+</body>
+</html>

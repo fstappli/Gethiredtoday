@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
-import DashboardSidebar from './sidebar';
-import DashboardHeader from './header';
+import PortalNav from '@/components/portal/portal-nav';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { isProActive } from '@/lib/subscription';
 
@@ -12,29 +11,22 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   const isAdmin = user?.email === ADMIN_EMAIL;
 
   let isPro = isAdmin;
-  if (!isAdmin && user) {
+  let name = '';
+  if (user) {
     const { data: profile } = await ssr
       .from('profiles')
-      .select('subscription_status, subscription_ends_at')
+      .select('subscription_status, subscription_ends_at, full_name')
       .eq('id', user.id)
       .single();
-    isPro = isProActive(profile);
+    if (!isAdmin) isPro = isProActive(profile);
+    name = (profile as { full_name?: string } | null)?.full_name || '';
   }
+  const initial = (name || user?.email || 'U').trim().charAt(0).toUpperCase();
 
   return (
-    <div className="flex h-[100dvh] overflow-hidden bg-white">
-      {/* Sidebar — hidden on mobile, visible on lg+ */}
-      <div className="hidden lg:flex lg:flex-col lg:shrink-0">
-        <DashboardSidebar isAdmin={isAdmin} isPro={isPro} />
-      </div>
-
-      {/* Right column: header + scrollable content */}
-      <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
-        <DashboardHeader isPro={isPro} />
-        <main className="flex-1 overflow-y-auto bg-white flex flex-col">
-          {children}
-        </main>
-      </div>
+    <div className="flex min-h-[100dvh] flex-col bg-ground-portal text-ink">
+      <PortalNav isPro={isPro} isAdmin={isAdmin} initial={initial} />
+      <main className="flex flex-1 flex-col pb-20 min-[761px]:pb-0">{children}</main>
     </div>
   );
 }

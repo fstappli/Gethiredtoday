@@ -1,15 +1,15 @@
 /**
- * ATS scoring — pure functions, importable on both the server (API route) and
+ * ATS scoring, pure functions, importable on both the server (API route) and
  * the client (builder save, dashboard rendering).
  *
  * Single source of truth for:
- *   • `resumeDataToText(data)` — flattens a structured ResumeData object into
+ *   • `resumeDataToText(data)`, flattens a structured ResumeData object into
  *     the plain-text block the scorer expects. Used by the builder when it
  *     auto-scores on save, by the dashboard when it recomputes scores on-the-
  *     fly, and by the resume-import flow when it seeds the initial score.
- *   • `calculateATSScore(text, jobDescription?)` — runs the 30-point rubric
+ *   • `calculateATSScore(text, jobDescription?)`, runs the 30-point rubric
  *     on a resume text and returns the structured `ATSCheckResult`.
- *   • `scoreResume(data, jobDescription?)` — convenience helper that
+ *   • `scoreResume(data, jobDescription?)`, convenience helper that
  *     combines the two and returns just the overall_score number.
  *
  * Keeping this in one file means we can never drift between "what the builder
@@ -235,7 +235,7 @@ export function resumeDataToText(data: ResumeData): string {
   return parts.filter(Boolean).join('\n');
 }
 
-/** The core 30-point ATS rubric. Pure function — no IO, no state. */
+/** The core 30-point ATS rubric. Pure function, no IO, no state. */
 export function calculateATSScore(
   resumeText: string,
   jobDescription?: string
@@ -278,7 +278,7 @@ export function calculateATSScore(
     issues.push('Resume appears too short (under 300 words)');
     suggestions.push('Expand work experience bullet points with quantified achievements');
   } else {
-    suggestions.push('Resume may be too long for ATS — aim for 1-2 pages');
+    suggestions.push('Resume may be too long for ATS, aim for 1-2 pages');
   }
 
   // Keyword matching
@@ -305,7 +305,7 @@ export function calculateATSScore(
       },
       formatting: {
         score: !hasTableKeywords && !hasGraphicKeywords ? 90 : 50,
-        issues: hasTableKeywords ? ['Tables detected — ATS may fail to parse'] : [],
+        issues: hasTableKeywords ? ['Tables detected, ATS may fail to parse'] : [],
         suggestions: ['Use simple formatting with no tables or graphics'],
       },
       structure: {
@@ -329,7 +329,7 @@ export function calculateATSScore(
   };
 }
 
-/** Convenience helper — score a structured resume and return just the number.
+/** Convenience helper, score a structured resume and return just the number.
  *  Placeholder values from the starter template (Your Name, your.email@
  *  example.com, "Replace this with…") are stripped before scoring so a
  *  brand-new resume that hasn't been edited reads as near-zero instead of 100. */

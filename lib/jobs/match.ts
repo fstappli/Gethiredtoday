@@ -1,6 +1,6 @@
 /**
  * Resume → job matching engine.
- * Pure functions — no IO. Importable on server and client.
+ * Pure functions, no IO. Importable on server and client.
  */
 import type { ResumeData } from '@/types';
 import type { Job, ResumeProfile, SeniorityLevel } from '@/types/jobs';
@@ -147,7 +147,7 @@ function scoreSkillMatch(profileSkills: string[], jobText: string): { score: num
   const text = jobText.toLowerCase();
   const matched = profileSkills.filter((s) => skillMatchesText(s, text));
   const ratio = matched.length / profileSkills.length;
-  // Non-linear — 30% skill match = meaningful, 60%+ = excellent
+  // Non-linear, 30% skill match = meaningful, 60%+ = excellent
   const score = Math.min(100, Math.round(Math.pow(ratio, 0.6) * 100));
   return { score, matched };
 }

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Sign up · mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="width:390px;height:844px;box-sizing:border-box;background:#F6F7F3;font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;padding:12px 20px 28px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<a href="HomeMobile.dc.html" aria-label="Back" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#0D1B19"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+<a href="SignupMobile.dc.html" style="font-weight:600;padding:12px 4px">I have an account</a>
+</div>
+<div style="background:#0D1B19;color:#fff;border-radius:18px;padding:16px;display:flex;gap:14px;align-items:center">
+<div style="flex:none;width:52px;height:52px;border-radius:50%;background:conic-gradient(#5FD3B3 0 72%,#2A3A37 72%);display:grid;place-items:center"><div class="d" style="width:42px;height:42px;border-radius:50%;background:#0D1B19;display:grid;place-items:center;font-weight:800">72</div></div>
+<div style="font-size:14px;line-height:1.4"><b>Your report is ready to save</b><br><span style="color:#A9BDB7">3 fixes + 27 more checks</span></div>
+</div>
+<div><h1 class="d" style="margin:0;font-size:32px;letter-spacing:-1px;line-height:1.05">Save it and keep going.</h1><p style="margin:8px 0 0;color:#3F4D49">Free forever plan. No card needed.</p></div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<a href="OnboardingMobile.dc.html" style="display:flex;gap:12px;align-items:center;justify-content:center;background:#0D1B19;color:#fff;text-decoration:none;font-weight:700;padding:15px;border-radius:14px">Continue with Google</a>
+<a href="OnboardingMobile.dc.html" style="display:flex;gap:12px;align-items:center;justify-content:center;background:#fff;color:#0D1B19;text-decoration:none;font-weight:700;padding:15px;border-radius:14px;border:1.5px solid #CBD3CD">Continue with Apple</a>
+<a href="OnboardingMobile.dc.html" style="display:flex;gap:12px;align-items:center;justify-content:center;background:#fff;color:#0D1B19;text-decoration:none;font-weight:700;padding:15px;border-radius:14px;border:1.5px solid #CBD3CD">Continue with LinkedIn</a>
+</div>
+<div style="display:flex;align-items:center;gap:12px;color:#3F4D49;font-size:14px"><span style="flex:1;height:1px;background:#E3E7E2"></span>or<span style="flex:1;height:1px;background:#E3E7E2"></span></div>
+<form style="display:flex;flex-direction:column;gap:10px">
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:600;font-size:14px">Email<input type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" style="font:inherit;font-weight:400;font-size:16px;border:1.5px solid #CBD3CD;border-radius:12px;padding:14px;background:#fff"></label>
+<button type="submit" style="font:inherit;font-weight:700;font-size:16px;background:#0B6E5F;color:#fff;border:0;border-radius:14px;min-height:52px">Email me a sign-in link</button>
+</form>
+<p style="margin:auto 0 0;font-size:12px;color:#3F4D49;text-align:center;line-height:1.5">By continuing you agree to the <a href="#t">Terms</a> and <a href="#t">Privacy Policy</a>.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

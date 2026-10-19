@@ -1,9 +1,8 @@
 import { getAnthropicClient } from '@/lib/ai';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { isProActive } from '@/lib/subscription';
+import { getCaller, guardAiRewrite } from '@/lib/plan-guard';
 
-const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
 
 const TONE_INSTRUCTIONS: Record<string, string> = {
   professional: 'Use a polished, business-appropriate tone. Be confident and precise.',
@@ -18,16 +17,8 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (user.email !== ADMIN_EMAIL) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('subscription_status, subscription_ends_at')
-        .eq('id', user.id)
-        .single();
-      if (!isProActive(profile)) {
-        return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
-      }
-    }
+    const blocked = await guardAiRewrite(await getCaller());
+    if (blocked) return blocked;
 
     const { jobTitle, company, recipientName, tone, skills, yearsExperience } = await req.json();
 
@@ -52,7 +43,7 @@ export async function POST(req: Request) {
     const message = await getAnthropicClient().messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 800,
-      system: `You are a professional cover letter writer. Write a compelling cover letter body consisting of exactly 3 paragraphs. Do NOT include a salutation, greeting, closing, or signature — only the body paragraphs. ${toneInstruction} Be specific to the company and role. Avoid generic filler phrases. Return only the 3 body paragraphs separated by blank lines.`,
+      system: `You are a professional cover letter writer. Write a compelling cover letter body consisting of exactly 3 paragraphs. Do NOT include a salutation, greeting, closing, or signature, only the body paragraphs. ${toneInstruction} Be specific to the company and role. Avoid generic filler phrases. Return only the 3 body paragraphs separated by blank lines.`,
       messages: [{
         role: 'user',
         content: `Write a cover letter body for a ${jobTitle} position at ${company}.

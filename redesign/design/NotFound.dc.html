@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Page not found</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#FBFAF6}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#FBFAF6;min-height:900px;display:flex;flex-direction:column">
+<dc-import name="SiteHeader" hint-size="100%,66px"></dc-import>
+<main style="flex:1;max-width:720px;margin:0 auto;padding:96px 20px;display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center">
+<span class="d" style="font-size:120px;font-weight:800;line-height:1;color:#0B6E5F">404</span>
+<h1 class="d" style="margin:0;font-size:40px;letter-spacing:-1px">This page took a different job.</h1>
+<p style="margin:0;color:#3F4D49;font-size:18px;line-height:1.5">The link may be old or mistyped. Here are some good places to go next.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center">
+<a href="Main.dc.html" style="background:#0B6E5F;color:#fff;text-decoration:none;font-weight:800;padding:15px 20px;border-radius:12px">Go to home</a>
+<a href="Templates.dc.html" style="background:#fff;color:#0D1B19;text-decoration:none;font-weight:700;padding:15px 20px;border-radius:12px;border:1.5px solid #D6D2C6">Browse templates</a>
+<a href="Dashboard.dc.html" style="background:#fff;color:#0D1B19;text-decoration:none;font-weight:700;padding:15px 20px;border-radius:12px;border:1.5px solid #D6D2C6">My dashboard</a>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

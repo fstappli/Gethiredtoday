@@ -1,374 +1,232 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Zap, Pause, Play, AlertTriangle, CheckCircle2, Clock, Loader2, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { ApplyButton } from '@/components/jobs/apply-button';
-import { ProFeatureGate } from '@/components/pro-feature-gate';
-import type { AutoApplySettings, AutoApplyRun } from '@/types/jobs';
+import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
+import UpgradePrompt from '@/components/upgrade-prompt';
+import { tileFor } from '@/components/jobs/job-utils';
+import { createClient } from '@/lib/supabase';
+import type { AutoApplyRun, AutoApplySettings } from '@/types/jobs';
 
-interface QueuedJob {
+interface QueueItem {
   id: string;
-  status: string;
   created_at: string;
-  jobs: {
-    id: string;
-    title: string;
-    company: string | null;
-    location: string | null;
-    redirect_url: string;
-    category: string | null;
-    work_type: string | null;
-  } | null;
+  job: { id: string; title: string; company: string | null; location: string | null; redirect_url: string } | null;
 }
+interface ResumeOpt { id: string; title: string; ats_score: number | null; finalized_at: string | null }
 
-function formatTime(dateStr: string): string {
-  return new Date(dateStr).toLocaleString('en-US', {
-    month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
-  });
-}
+const inputCls = 'min-h-[48px] rounded-xl border-[1.5px] border-line-strong bg-white px-3.5 py-3 text-base font-medium';
 
 export default function AutoApplyPage() {
+  const [tab, setTab] = useState<'setup' | 'queue'>('setup');
   const [isPro, setIsPro] = useState<boolean | null>(null);
   const [settings, setSettings] = useState<AutoApplySettings | null>(null);
-  const [queuedJobs, setQueuedJobs] = useState<QueuedJob[]>([]);
+  const [queue, setQueue] = useState<QueueItem[]>([]);
   const [runs, setRuns] = useState<AutoApplyRun[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [running, setRunning] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [resumes, setResumes] = useState<ResumeOpt[]>([]);
+  const [titles, setTitles] = useState('');
+  const [locations, setLocations] = useState('');
+  const [resumeId, setResumeId] = useState('');
+  const [minScore, setMinScore] = useState(80);
+  const [cap, setCap] = useState(25);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState('');
+  const [prompt, setPrompt] = useState(false);
 
-  // Local editable state
-  const [enabled, setEnabled] = useState(false);
-  const [minScore, setMinScore] = useState(75);
-  const [dailyCap, setDailyCap] = useState(10);
-
-  useEffect(() => {
-    fetch('/api/user/subscription-status')
-      .then((r) => r.json())
-      .then((d) => setIsPro(d.isPro ?? false))
-      .catch(() => setIsPro(false));
-  }, []);
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  const loadData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [settingsRes, queueRes] = await Promise.all([
-        fetch('/api/jobs/auto-apply/settings'),
-        fetch('/api/jobs/auto-apply/queue'),
-      ]);
-      if (settingsRes.ok) {
-        const { settings: s } = await settingsRes.json();
-        setSettings(s);
-        if (s) {
-          setEnabled(s.enabled);
-          setMinScore(s.min_match_score ?? 75);
-          setDailyCap(s.daily_cap ?? 10);
-        }
-      }
-      if (queueRes.ok) {
-        const data = await queueRes.json();
-        setQueuedJobs(data.queue ?? []);
-        setRuns(data.runs ?? []);
-      }
-    } finally {
-      setLoading(false);
+  const load = useCallback(async () => {
+    const [sub, s, q, r] = await Promise.all([
+      fetch('/api/user/subscription-status').then((x) => x.json()).catch(() => ({ isPro: false })),
+      fetch('/api/jobs/auto-apply/settings').then((x) => (x.ok ? x.json() : { settings: null })).catch(() => ({ settings: null })),
+      fetch('/api/jobs/auto-apply/queue').then((x) => (x.ok ? x.json() : { queue: [], runs: [] })).catch(() => ({ queue: [], runs: [] })),
+      fetch('/api/resume', { cache: 'no-store' }).then((x) => (x.ok ? x.json() : { resumes: [] })).catch(() => ({ resumes: [] })),
+    ]);
+    setIsPro(Boolean(sub.isPro));
+    const st: AutoApplySettings | null = s.settings;
+    setSettings(st);
+    if (st) {
+      setMinScore(st.min_match_score ?? 80);
+      setCap(st.daily_cap ?? 25);
+      setTitles(st.filters?.query ?? '');
+      setLocations(st.filters?.location ?? '');
     }
+    setQueue(q.queue ?? []);
+    setRuns(q.runs ?? []);
+    const list: ResumeOpt[] = r.resumes ?? [];
+    setResumes(list);
+    setResumeId((list.find((x) => x.finalized_at) ?? list[0])?.id ?? '');
   }, []);
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => { load(); }, [load]);
 
-  const handleSave = async () => {
-    setSaving(true);
+  const start = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!isPro) { setPrompt(true); return; }
+    setBusy(true);
+    setMsg('');
     try {
+      if (resumeId) {
+        await fetch('/api/resume/finalize', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ resume_id: resumeId }) });
+      }
       const res = await fetch('/api/jobs/auto-apply/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ enabled, min_match_score: minScore, daily_cap: dailyCap }),
+        body: JSON.stringify({
+          enabled: true,
+          min_match_score: minScore,
+          daily_cap: cap,
+          paused_at: null,
+          filters: { ...(settings?.filters ?? {}), query: titles.trim(), location: locations.trim(), mode: 'review' },
+        }),
       });
-      if (res.ok) {
-        const { settings: s } = await res.json();
-        setSettings(s);
-        showToast('Settings saved.');
-      } else {
-        showToast('Failed to save settings. Please try again.');
-      }
+      if (!res.ok) { setMsg('We could not save your settings. Please try again.'); return; }
+      const run = await fetch('/api/jobs/auto-apply/queue', { method: 'POST' });
+      const out = run.ok ? await run.json().catch(() => ({})) : {};
+      setMsg(`Auto-Apply is on. ${out.queued ?? 0} jobs are waiting for your OK.`);
+      await load();
+      setTab('queue');
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
   };
 
-  const handlePause = async () => {
-    const isPaused = Boolean(settings?.paused_at);
+  const togglePause = async () => {
+    const paused = Boolean(settings?.paused_at);
     const res = await fetch('/api/jobs/auto-apply/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ paused_at: isPaused ? null : new Date().toISOString() }),
+      body: JSON.stringify({ paused_at: paused ? null : new Date().toISOString() }),
     });
-    if (res.ok) {
-      await loadData();
-      showToast(isPaused ? 'Auto-apply resumed.' : 'Auto-apply paused.');
-    } else {
-      showToast('Failed to update. Please try again.');
-    }
+    setMsg(res.ok ? (paused ? 'Auto-Apply resumed.' : 'Auto-Apply paused.') : 'Could not update. Try again.');
+    if (res.ok) load();
   };
 
-  const handleRunNow = async () => {
-    setRunning(true);
-    try {
-      const res = await fetch('/api/jobs/auto-apply/queue', { method: 'POST' });
-      if (res.ok) {
-        const data = await res.json();
-        showToast(data.message ?? `Queued ${data.queued ?? 0} jobs.`);
-        await loadData();
-      } else {
-        showToast('Failed to queue jobs. Please try again.');
-      }
-    } finally {
-      setRunning(false);
-    }
+  const approve = async (item: QueueItem) => {
+    if (item.job?.redirect_url) window.open(item.job.redirect_url, '_blank', 'noopener,noreferrer');
+    const res = await fetch('/api/jobs/apply/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ application_id: item.id, confirmed: true }),
+    });
+    if (res.ok) setQueue((q) => q.filter((x) => x.id !== item.id));
+    else setMsg('Could not record that application. Try again.');
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-      </div>
-    );
-  }
+  const skip = async (item: QueueItem) => {
+    const { error } = await createClient().from('applications').delete().eq('id', item.id);
+    if (!error) setQueue((q) => q.filter((x) => x.id !== item.id));
+    else setMsg('Could not skip that job. Try again.');
+  };
 
-  const isPaused = Boolean(settings?.paused_at);
-
-  if (isPro === null) {
-    return (
-      <div className="flex-1 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-      </div>
-    );
-  }
-
-  if (!isPro) {
-    return (
-      <ProFeatureGate
-        title="Auto-Apply"
-        description="Let AI apply to matching jobs while you sleep. Set your preferences once and get applications sent automatically."
-        features={[
-          'Up to 50 auto-applications per day',
-          'Only applies to jobs above your match score threshold',
-          'AI-tailored applications for each role',
-          'Full tracking in Applied Jobs',
-        ]}
-        from="/dashboard/auto-apply"
-      />
-    );
-  }
+  const running = Boolean(settings?.enabled) && !settings?.paused_at;
+  const lastRun = runs[0];
 
   return (
-    <div className="min-h-full bg-white">
-      <div className="border-b border-slate-100 px-6 lg:px-8 py-6">
-        <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-          <Zap className="w-6 h-6 shrink-0" style={{ color: '#4AB7A6' }} />
-          Auto-Apply
-        </h1>
-        <p className="text-slate-500 mt-1 text-sm">
-          Automatically queue top matching jobs for your 1-tap review.
-        </p>
-      </div>
-
-      {/* Important safety notice */}
-      <div className="mx-6 lg:mx-8 mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex gap-3">
-        <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-        <div className="text-sm">
-          <p className="font-semibold text-blue-900 mb-1">How auto-apply works</p>
-          <p className="text-blue-700">
-            Because jobs are on employer and ATS sites, auto-apply queues matching jobs for <strong>your review</strong> — it never submits
-            on your behalf. You visit each employer site and apply with one tap.
-            This means your applications are always deliberate and properly completed.
-          </p>
+    <main className="mx-auto flex w-full max-w-[1100px] flex-col gap-[18px] px-5 pb-14 pt-7">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display m-0 text-[34px] tracking-[-0.8px]">
+            Auto-Apply <span className="align-middle font-sans text-[13px] font-extrabold" style={{ background: '#FFD166', padding: '4px 10px', borderRadius: 999 }}>PRO</span>
+          </h1>
+          <p className="mt-1 text-text-muted">Set it once. Approve applications each morning.</p>
+        </div>
+        <div role="tablist" aria-label="Auto-Apply" className="flex gap-1 rounded-[14px] border border-line bg-white p-1">
+          {([['setup', 'Settings'], ['queue', `Queue${queue.length ? ` (${queue.length})` : ''}`]] as const).map(([id, label]) => (
+            <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`min-h-[44px] rounded-[10px] px-[18px] font-bold ${tab === id ? 'bg-ink text-white' : 'bg-transparent text-ink'}`}>
+              {label}
+            </button>
+          ))}
         </div>
       </div>
+      <p role="status" className="m-0 min-h-[1px] font-semibold text-brand-dark">{msg}</p>
 
-      <div className="px-6 lg:px-8 py-6 grid lg:grid-cols-2 gap-6">
-        {/* Settings card */}
-        <Card className="border-slate-200">
-          <CardContent className="p-6">
-            <h2 className="font-semibold text-slate-900 mb-4">Settings</h2>
-
-            <div className="space-y-5">
-              {/* Enable toggle */}
-              <label className="flex items-center justify-between gap-4 cursor-pointer">
-                <div>
-                  <p className="text-sm font-medium text-slate-800">Enable auto-apply</p>
-                  <p className="text-xs text-slate-500 mt-0.5">Queue top-matching jobs automatically</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setEnabled(!enabled)}
-                  className={`relative w-11 h-6 rounded-full transition-colors ${enabled ? 'bg-[#4AB7A6]' : 'bg-slate-200'}`}
-                  role="switch"
-                  aria-checked={enabled}
-                >
-                  <span
-                    className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${enabled ? 'translate-x-5' : 'translate-x-0'}`}
-                  />
-                </button>
+      {tab === 'setup' ? (
+        <div className="flex flex-wrap items-start gap-5">
+          <form onSubmit={start} className="flex min-w-0 flex-[999_1_520px] flex-col gap-[18px] rounded-[22px] border border-line bg-white p-6">
+            <label className="flex flex-col gap-1.5 font-bold">Job titles
+              <input value={titles} onChange={(e) => setTitles(e.target.value)} placeholder="Senior UX Designer" className={inputCls} />
+            </label>
+            <label className="flex flex-col gap-1.5 font-bold">Locations
+              <input value={locations} onChange={(e) => setLocations(e.target.value)} placeholder="City or Remote" className={inputCls} />
+            </label>
+            <label className="flex flex-col gap-1.5 font-bold">Resume to send
+              <select value={resumeId} onChange={(e) => setResumeId(e.target.value)} className={inputCls}>
+                {resumes.length === 0 ? <option value="">No resumes yet</option> : null}
+                {resumes.map((r) => <option key={r.id} value={r.id}>{r.title}{r.ats_score != null ? ` (ATS ${r.ats_score})` : ''}</option>)}
+              </select>
+              <span className="text-[13px] font-medium text-text-muted">This is also the resume we match jobs against.</span>
+            </label>
+            <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))]">
+              <label className="flex flex-col gap-1.5 font-bold">Minimum match: {minScore}%
+                <input type="range" min={50} max={100} value={minScore} onChange={(e) => setMinScore(Number(e.target.value))} className="accent-[#0B6E5F]" />
               </label>
-
-              {/* Min match score */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-slate-800">
-                    Minimum match score
-                  </label>
-                  <span className="text-sm font-bold" style={{ color: '#4AB7A6' }}>{minScore}%</span>
-                </div>
-                <input
-                  type="range"
-                  min={40}
-                  max={95}
-                  step={5}
-                  value={minScore}
-                  onChange={(e) => setMinScore(Number(e.target.value))}
-                  className="w-full accent-[#4AB7A6]"
-                  aria-label="Minimum match score"
-                />
-                <div className="flex justify-between text-xs text-slate-400 mt-1">
-                  <span>40% (broader)</span>
-                  <span>95% (stricter)</span>
-                </div>
-              </div>
-
-              {/* Daily cap */}
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-slate-800">Daily queue limit</label>
-                  <span className="text-sm font-bold" style={{ color: '#4AB7A6' }}>{dailyCap} jobs</span>
-                </div>
-                <input
-                  type="range"
-                  min={1}
-                  max={25}
-                  step={1}
-                  value={dailyCap}
-                  onChange={(e) => setDailyCap(Number(e.target.value))}
-                  className="w-full accent-[#4AB7A6]"
-                  aria-label="Daily queue limit"
-                />
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <Button
-                  className="flex-1 bg-[#4AB7A6] hover:bg-[#3da090] text-white rounded-full"
-                  onClick={handleSave}
-                  disabled={saving}
-                >
-                  {saving ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-                  Save settings
-                </Button>
-
-                {settings && (
-                  <Button
-                    variant="outline"
-                    className="rounded-full"
-                    onClick={handlePause}
-                    disabled={saving}
-                  >
-                    {isPaused ? <Play className="w-4 h-4 mr-1.5" /> : <Pause className="w-4 h-4 mr-1.5" />}
-                    {isPaused ? 'Resume' : 'Pause'}
-                  </Button>
-                )}
-              </div>
-
-              {settings?.enabled && (
-                <Button
-                  variant="outline"
-                  className="w-full rounded-full"
-                  onClick={handleRunNow}
-                  disabled={running}
-                >
-                  {running ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Zap className="w-4 h-4 mr-2" />}
-                  Run now
-                </Button>
-              )}
+              <label className="flex flex-col gap-1.5 font-bold">Up to {cap} a day
+                <input type="range" min={5} max={50} value={cap} onChange={(e) => setCap(Number(e.target.value))} className="accent-[#0B6E5F]" />
+              </label>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Activity log */}
-        <Card className="border-slate-200">
-          <CardContent className="p-6">
-            <h2 className="font-semibold text-slate-900 mb-4">Recent runs</h2>
-            {runs.length === 0 ? (
-              <p className="text-sm text-slate-400">No runs yet. Enable auto-apply and click Run now.</p>
-            ) : (
-              <div className="space-y-3">
-                {runs.map((run) => (
-                  <div key={run.id} className="flex items-start gap-3 p-3 rounded-lg bg-slate-50">
-                    <CheckCircle2 className="w-4 h-4 text-[#4AB7A6] mt-0.5 shrink-0" />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm text-slate-700">
-                        <strong>{run.queued}</strong> queued for review · <strong>{run.skipped}</strong> skipped
-                      </p>
-                      <p className="text-xs text-slate-400 mt-0.5">{formatTime(run.run_at)}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Queued jobs */}
-      {queuedJobs.length > 0 && (
-        <div className="px-6 lg:px-8 pb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-5 h-5 text-amber-500" />
-            <h2 className="font-semibold text-slate-900">Ready to apply ({queuedJobs.length})</h2>
-            <span className="text-xs text-slate-500">— tap Apply to visit each employer site</span>
+            <fieldset className="m-0 flex flex-col gap-2.5 border-0 p-0">
+              <legend className="mb-2 font-bold">How should we send them?</legend>
+              <label className="flex items-start gap-3 rounded-[14px] border-2 border-brand bg-[#F2FBF8] p-3.5">
+                <input type="radio" name="mode" checked readOnly className="mt-0.5 h-5 w-5 accent-[#0B6E5F]" />
+                <span><b>Review first (recommended)</b><br /><span className="text-sm text-text-muted">We queue matches. Nothing is sent until you approve.</span></span>
+              </label>
+              <label className="flex items-start gap-3 rounded-[14px] border-[1.5px] border-line p-3.5 opacity-70">
+                <input type="radio" name="mode" disabled className="mt-0.5 h-5 w-5" />
+                <span><b>Fully automatic</b><br /><span className="text-sm text-text-muted">Not available yet. Employers apply on their own sites, so you confirm each one.</span></span>
+              </label>
+            </fieldset>
+            <button type="submit" disabled={busy} className="min-h-[52px] rounded-[14px] bg-brand p-4 text-[17px] font-extrabold text-white hover:bg-brand-dark disabled:opacity-60">
+              {busy ? 'Starting...' : isPro ? 'Save and start Auto-Apply' : 'Start Auto-Apply with Pro'}
+            </button>
+          </form>
+          <aside className="flex min-w-0 flex-[1_1_280px] flex-col gap-2.5 rounded-[22px] border border-line bg-white p-5">
+            <b className="font-display text-xl">With these settings</b>
+            <div className="flex justify-between"><span className="text-text-muted">Minimum match</span><b>{minScore}%</b></div>
+            <div className="flex justify-between"><span className="text-text-muted">Daily limit</span><b>{cap}</b></div>
+            <div className="flex justify-between"><span className="text-text-muted">Mode</span><b>Review first</b></div>
+            {lastRun ? (
+              <div className="flex justify-between"><span className="text-text-muted">Last run queued</span><b>{lastRun.queued}</b></div>
+            ) : null}
+            <span className="border-t border-[#EEEBE3] pt-2.5 text-[13px] leading-normal text-text-muted">Pause or stop any time. Every application appears in your <Link href="/dashboard/applied-jobs" className="font-bold">tracker</Link>.</span>
+          </aside>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center gap-3.5 rounded-[20px] bg-ink px-5 py-[18px] text-white">
+            <span aria-hidden="true" className={`h-2.5 w-2.5 rounded-full ${running ? 'bg-mint-bright' : 'bg-sun'}`} />
+            <b className="min-w-[200px] flex-1">
+              {settings?.enabled ? (running ? 'Running' : 'Paused') : 'Not started'} · review mode{lastRun ? ` · last run queued ${lastRun.queued}` : ''}
+            </b>
+            {settings?.enabled ? (
+              <button type="button" onClick={togglePause} className="min-h-[44px] rounded-[10px] bg-white px-4 font-bold text-ink">{settings.paused_at ? 'Resume' : 'Pause'}</button>
+            ) : null}
           </div>
-
-          <div className="space-y-2">
-            {queuedJobs.map((app) => {
-              const job = app.jobs;
-              if (!job) return null;
-              return (
-                <div key={app.id} className="flex items-center gap-4 p-4 border border-amber-200 bg-amber-50 rounded-xl">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-slate-900 truncate">{job.title}</h3>
-                    <p className="text-sm text-slate-500 mt-0.5">
-                      {job.company ?? '—'}{job.location ? ` · ${job.location}` : ''}
-                    </p>
-                  </div>
-                  <ApplyButton
-                    jobId={job.id}
-                    redirectUrl={job.redirect_url}
-                    existingStatus="redirected"
-                    size="sm"
-                  />
-                </div>
-              );
-            })}
-          </div>
-
-          <div className="mt-4 p-3 bg-slate-50 rounded-lg flex gap-2 text-xs text-slate-500">
-            <AlertTriangle className="w-4 h-4 text-slate-400 shrink-0" />
-            Auto-apply never submits on external employer sites — you confirm each application yourself.
-          </div>
+          <h2 className="font-display m-0 text-[22px]">Needs your OK · {queue.length}</h2>
+          {queue.length === 0 ? (
+            <div className="rounded-[18px] border border-line bg-white p-6 text-center text-text-muted">
+              Nothing waiting. {settings?.enabled ? 'New matches appear here after each run.' : 'Start Auto-Apply in Settings to fill your queue.'}
+            </div>
+          ) : null}
+          {queue.map((item) => {
+            const j = item.job;
+            if (!j) return null;
+            const t = tileFor(j.company);
+            return (
+              <article key={item.id} className="flex flex-wrap items-center gap-3.5 rounded-[18px] border border-line bg-white p-4">
+                <span aria-hidden="true" className="grid h-11 w-11 flex-none place-items-center rounded-xl font-extrabold" style={{ background: t.bg, color: t.fg }}>{t.initial}</span>
+                <span className="min-w-[240px] flex-1">
+                  <b>{j.title}</b><br />
+                  <span className="text-sm text-text-muted">{[j.company, j.location].filter(Boolean).join(' · ')}</span>
+                </span>
+                <span className="flex flex-wrap gap-2">
+                  <Link href={`/dashboard/find-jobs/${encodeURIComponent(j.id)}`} className="inline-flex min-h-[44px] items-center px-3 font-bold text-brand no-underline">Preview</Link>
+                  <button type="button" onClick={() => skip(item)} className="min-h-[44px] rounded-[10px] border border-line-strong bg-white px-3.5 font-bold">Skip</button>
+                  <button type="button" onClick={() => approve(item)} className="min-h-[44px] rounded-[10px] bg-brand px-3.5 font-extrabold text-white">Approve &amp; send</button>
+                </span>
+              </article>
+            );
+          })}
         </div>
       )}
-
-      {toastMessage && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900 text-white text-sm font-medium px-5 py-3 rounded-full shadow-lg">
-          {toastMessage}
-        </div>
-      )}
-    </div>
+      <UpgradePrompt trigger="auto_apply" open={prompt} onClose={() => setPrompt(false)} />
+    </main>
   );
 }

@@ -1,9 +1,8 @@
 import { getAnthropicClient } from '@/lib/ai';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { isProActive } from '@/lib/subscription';
+import { getCaller, guardAiRewrite } from '@/lib/plan-guard';
 
-const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
 
 type SuggestionType = 'bullets' | 'skills' | 'summary' | 'related-titles';
 
@@ -40,16 +39,8 @@ export async function POST(req: Request) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    if (user.email !== ADMIN_EMAIL) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('subscription_status, subscription_ends_at')
-        .eq('id', user.id)
-        .single();
-      if (!isProActive(profile)) {
-        return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
-      }
-    }
+    const blocked = await guardAiRewrite(await getCaller());
+    if (blocked) return blocked;
 
     const body = await req.json();
     const type = (body.type ?? '') as SuggestionType;
@@ -115,7 +106,7 @@ export async function POST(req: Request) {
     }
 
     // If the whole response was a refusal we may have ended up with zero
-    // suggestions after filtering — return an empty array so the UI shows
+    // suggestions after filtering, return an empty array so the UI shows
     // its friendly "no suggestions yet" state instead of a mangled refusal.
     return NextResponse.json({ suggestions });
   } catch (error) {

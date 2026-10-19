@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>UX audit and conversion strategy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="width:1440px;height:2300px;box-sizing:border-box;background:#F6F7F3;font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;padding:80px;display:flex;flex-direction:column;gap:56px">
+
+<div style="display:flex;justify-content:space-between;align-items:end;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px;max-width:820px">
+<div style="font-size:14px;font-weight:700;color:#0B6E5F;letter-spacing:1px">GETHIREDTODAY · UX AUDIT · OCT 2026</div>
+<h1 class="d" style="margin:0;font-size:60px;letter-spacing:-2px;line-height:1">The product is strong. The funnel asks for money before it shows value.</h1>
+</div>
+<div style="background:#0D1B19;color:#fff;border-radius:20px;padding:24px 28px;width:340px;display:flex;flex-direction:column;gap:6px">
+<div style="font-size:13px;color:#A9BDB7">North-star goal</div>
+<div class="d" style="font-size:22px;font-weight:700;line-height:1.2">More sign-ups at the top, more Pro upgrades at the moment of need.</div>
+</div>
+</div>
+
+<!-- findings -->
+<div style="display:flex;flex-direction:column;gap:20px">
+<h2 class="d" style="margin:0;font-size:30px">What we found on every page, logged out and logged in</h2>
+<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+<sc-for list="{{findings}}" as="f" hint-placeholder-count="12">
+<div style="background:#fff;border:1px solid #E3E7E2;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;gap:8px;align-items:center"><span style="font-size:12px;font-weight:800;padding:4px 10px;border-radius:999px;background:{{f.bg}};color:{{f.fg}}">{{f.sev}}</span><span style="font-size:13px;color:#3F4D49;font-weight:600">{{f.where}}</span></div>
+<div style="font-weight:700;font-size:17px;line-height:1.3">{{f.title}}</div>
+<div style="font-size:14px;color:#3F4D49;line-height:1.5"><b style="color:#0B6E5F">Fix:</b> {{f.fix}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- funnel -->
+<div style="display:flex;flex-direction:column;gap:20px">
+<h2 class="d" style="margin:0;font-size:30px">The new funnel: value first, account second, payment third</h2>
+<div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px">
+<sc-for list="{{funnel}}" as="s" hint-placeholder-count="5">
+<div style="background:{{s.bg}};color:{{s.fg}};border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:8px;min-height:180px">
+<div class="d" style="font-size:32px;font-weight:800;opacity:.5">{{s.n}}</div>
+<div style="font-weight:700;font-size:17px">{{s.t}}</div>
+<div style="font-size:14px;line-height:1.5;opacity:.85">{{s.d}}</div>
+</div>
+</sc-for>
+</div>
+</div>
+
+<!-- competitor + kpis -->
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px">
+<div style="background:#fff;border:1px solid #E3E7E2;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:14px">
+<h2 class="d" style="margin:0;font-size:24px">LiveCareer: what to borrow, where to beat it</h2>
+<ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:10px;line-height:1.5;color:#3F4D49">
+<li><b style="color:#0D1B19">Borrow:</b> "Create" + "Upload your CV" side by side in the hero; free-to-try framing; review widget and long track record as proof.</li>
+<li><b style="color:#0D1B19">Borrow:</b> template cards pass the chosen template straight into the builder, with no second choice screen.</li>
+<li><b style="color:#0D1B19">Beat:</b> their free tier only downloads TXT while the funnel promises PDF. We give a free PDF and say so plainly: honesty is the differentiator.</li>
+<li><b style="color:#0D1B19">Beat:</b> they stop at the document. Job matching + Auto-Apply with a review queue is a reason to stay subscribed.</li>
+<li><b style="color:#0D1B19">Beat:</b> dated, ad-heavy UI. We go mobile-first with a builder that works one-handed.</li>
+</ul>
+</div>
+<div style="background:#fff;border:1px solid #E3E7E2;border-radius:20px;padding:28px;display:flex;flex-direction:column;gap:14px">
+<h2 class="d" style="margin:0;font-size:24px">Measure these from launch</h2>
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="6">
+<div style="background:#F6F7F3;border-radius:12px;padding:14px"><div style="font-weight:700">{{k.t}}</div><div style="font-size:13px;color:#3F4D49;margin-top:4px">{{k.d}}</div></div>
+</sc-for>
+</div>
+<div style="font-size:13px;color:#3F4D49">Tag every upgrade with its trigger (Word download, 2nd resume, jobs, Auto-Apply) so you can see which moment sells Pro.</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":2300}}'>
+class Component extends DCLogic {
+renderVals() {
+const C = { sev: 'Critical', bg: '#FFE1D6', fg: '#8A2A0B' };
+const H = { sev: 'High', bg: '#FFF0C2', fg: '#6B4A00' };
+const M = { sev: 'Medium', bg: '#E3ECF8', fg: '#1F3F6B' };
+return {
+findings: [
+{ ...C, where: 'Home hero', title: 'Primary CTA is "Get Started, $9.99/mo": a price before any value.', fix: '"Build my resume free" + "Upload my resume". Price moves to pricing.' },
+{ ...C, where: 'Global nav', title: 'No Log in or Sign up on public pages; returning users cannot find their way back.', fix: 'Persistent "Log in" + "Start free" in nav and mobile menu.' },
+{ ...C, where: 'Portal · Find Jobs, Auto-Apply', title: 'Hard walls: a generic price card, though the dashboard already knows "+29 matches".', fix: 'Soft paywall: show the user’s real matches, blur the rest, unlock with Pro.' },
+{ ...H, where: 'Site vs portal', title: 'Free plan exists in the portal (1 resume, basic templates) but the site never says so.', fix: 'A clear Free vs Pro table on home and pricing.' },
+{ ...H, where: 'Upgrade page', title: '"Cancel Anytime" is styled as the top-right button and competes with checkout.', fix: 'One CTA. Cancellation becomes reassurance text under it.' },
+{ ...H, where: 'Dashboard', title: 'Stats say "0 Total Resumes" while My Resumes lists 3. Broken numbers erode trust.', fix: 'Fix the count query; show progress, not zeroes.' },
+{ ...H, where: 'Builder', title: 'Opening a resume with no edits triggers a "Leave site?" warning.', fix: 'Autosave with a visible "Saved" state; warn only on real unsaved changes.' },
+{ ...H, where: 'Builder', title: '10 section tabs and 10+ template pills at once; no sense of progress.', fix: 'Guided steps with a completeness bar and inline AI suggestions.' },
+{ ...M, where: 'Portal · ATS Checker', title: 'Marketing copy inside the app ("No Sign-Up Required" to a signed-in user).', fix: 'Pre-select the user’s resume; show last score and what changed.' },
+{ ...M, where: 'Home · proof', title: 'Unsourced stats (75%, 94%, Fortune 500) and a logo strip of single letters.', fix: 'Real reviews widget, named testimonials, sourced or removed stats.' },
+{ ...M, where: 'Nav · mobile', title: '7 items plus a NEW badge; crowded on small screens.', fix: '5 items; Examples and Cover letter move under Resources.' },
+{ ...M, where: 'Auto-Apply story', title: 'No answer to "what gets sent in my name?", the #1 trust doubt.', fix: 'Review mode, match threshold and pause, shown on home and in-app.' }
+],
+funnel: [
+{ n: '01', t: 'Land', d: 'One promise, one free CTA, upload as the second path. Log in always visible.', bg: '#FFFFFF', fg: '#0D1B19' },
+{ n: '02', t: 'Try without an account', d: 'Free ATS check and the first builder step work logged out.', bg: '#DDF3EC', fg: '#0D1B19' },
+{ n: '03', t: 'Save = sign up', d: 'Google / LinkedIn / Apple one-tap to keep progress. No password field up front.', bg: '#9FE0CC', fg: '#0D1B19' },
+{ n: '04', t: 'Aha moment', d: 'ATS score jumps after AI fixes. First PDF download is free.', bg: '#0B6E5F', fg: '#FFFFFF' },
+{ n: '05', t: 'Upgrade at need', d: 'Word export, 2nd resume, job matches, Auto-Apply each open a contextual upgrade sheet.', bg: '#0D1B19', fg: '#FFFFFF' }
+],
+kpis: [
+{ t: 'Visit → sign-up', d: 'Target the hero and ATS tool first' },
+{ t: 'Sign-up → first PDF', d: 'Activation within the first session' },
+{ t: 'ATS score lift', d: 'Average points gained after AI fixes' },
+{ t: 'Free → Pro', d: 'By trigger and by device' },
+{ t: 'Paywall view → checkout', d: 'Per upgrade sheet' },
+{ t: 'Month-2 retention', d: 'And cancellation reasons' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resume builder</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="width:1440px;height:900px;display:flex;flex-direction:column;background:#F6F7F3;font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;overflow:hidden">
+
+<header style="height:64px;flex:none;background:#fff;border-bottom:1px solid #E3E7E2;display:flex;align-items:center;gap:14px;padding:0 20px">
+<a href="Dashboard.dc.html" aria-label="Back to dashboard" style="width:44px;height:44px;border-radius:12px;display:grid;place-items:center;color:#0D1B19"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+<b class="d" style="font-size:18px">Sr. UX Designer</b>
+<span style="display:flex;gap:6px;align-items:center;font-size:13px;color:#3F4D49"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>Saved</span>
+<span style="flex:1"></span>
+<button type="button" style="font:inherit;font-weight:600;background:#fff;border:1.5px solid #CBD3CD;border-radius:12px;padding:0 14px;min-height:44px;display:flex;gap:8px;align-items:center">Template: Classic<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></button>
+<button type="button" style="font:inherit;font-weight:600;background:#fff;border:1.5px solid #CBD3CD;border-radius:12px;padding:0 14px;min-height:44px;display:flex;gap:8px;align-items:center">Word<span style="font-size:11px;font-weight:800;background:#FFD166;padding:2px 6px;border-radius:6px">PRO</span></button>
+<button type="button" style="font:inherit;font-weight:700;background:#0B6E5F;color:#fff;border:0;border-radius:12px;padding:0 18px;min-height:44px;display:flex;gap:8px;align-items:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M12 4v12M7 11l5 5 5-5M4 20h16"/></svg>Download PDF</button>
+</header>
+
+<div style="flex:1;display:flex;min-height:0">
+<!-- steps -->
+<nav aria-label="Resume sections" style="width:250px;flex:none;background:#fff;border-right:1px solid #E3E7E2;padding:20px 14px;display:flex;flex-direction:column;gap:4px;box-sizing:border-box">
+<div style="padding:0 8px 14px"><div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700"><span>Completeness</span><span>70%</span></div><div style="height:8px;background:#EEF1EE;border-radius:4px;margin-top:8px"><div style="height:8px;width:70%;background:#0B6E5F;border-radius:4px"></div></div></div>
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="7">
+<a href="Builder.dc.html" aria-current="{{s.cur}}" style="display:flex;align-items:center;gap:12px;padding:11px 10px;border-radius:10px;text-decoration:none;font-weight:600;font-size:15px;color:#0D1B19;background:{{s.bg}}">
+<span style="width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:800;background:{{s.dotBg}};color:{{s.dotFg}}">{{s.mark}}</span><span style="flex:1">{{s.label}}</span><span style="font-size:12px;font-weight:700;color:#8A2A0B">{{s.issue}}</span></a>
+</sc-for>
+<button type="button" style="margin-top:8px;font:inherit;font-weight:600;color:#0B6E5F;background:transparent;border:1.5px dashed #9FB0AA;border-radius:10px;min-height:44px">+ Add section</button>
+</nav>
+
+<!-- editor -->
+<main style="width:560px;flex:none;overflow:hidden;padding:24px 28px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px">
+<div><div style="font-size:13px;color:#3F4D49;font-weight:600">Step 3 of 7</div><h1 class="d" style="margin:2px 0 0;font-size:26px">Experience</h1></div>
+<div style="background:#fff;border:1px solid #E3E7E2;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Job title<input value="Sr. UX Designer" style="font:inherit;font-weight:400;font-size:15px;border:1.5px solid #CBD3CD;border-radius:10px;padding:11px"></label>
+<label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:600">Company<input value="Majid Al Futtaim" style="font:inherit;font-weight:400;font-size:15px;border:1.5px solid #CBD3CD;border-radius:10px;padding:11px"></label>
+</div>
+<div style="font-size:13px;font-weight:600">Achievements</div>
+<div style="border:1.5px solid #CBD3CD;border-radius:10px;padding:11px;font-size:15px;line-height:1.5">Leading design for the Cart &amp; Checkout squad responsible for seamless payment experiences.</div>
+<div style="border:1.5px solid #E8A48A;background:#FFF7F3;border-radius:10px;padding:11px;font-size:15px;line-height:1.5">Responsible for redesigning the store dashboard.<div style="font-size:12px;color:#8A2A0B;font-weight:700;margin-top:6px">No measurable result · weak verb</div></div>
+<div style="background:#F2FBF8;border:2px solid #0B6E5F;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px">
+<div style="display:flex;gap:8px;align-items:center;font-size:13px;font-weight:800;color:#08574B"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3l1.8 4.7L18 9.5l-4.2 1.8L12 16l-1.8-4.7L6 9.5l4.2-1.8z"/></svg>AI SUGGESTION · +6 ATS POINTS</div>
+<div style="font-size:15px;line-height:1.5">Redesigned the store dashboard used by [N] managers, cutting task time by [X]% and reducing support tickets.</div>
+<div style="font-size:12px;color:#3F4D49">Fill in the brackets with your real numbers.</div>
+<div style="display:flex;gap:8px"><button type="button" style="font:inherit;font-weight:700;background:#0B6E5F;color:#fff;border:0;border-radius:10px;padding:0 16px;min-height:44px">Use this</button><button type="button" style="font:inherit;font-weight:600;background:#fff;border:1px solid #CBD3CD;border-radius:10px;padding:0 14px;min-height:44px">Try another</button><button type="button" style="font:inherit;font-weight:600;background:transparent;border:0;color:#3F4D49;padding:0 10px;min-height:44px">Dismiss</button></div>
+</div>
+<button type="button" style="align-self:flex-start;font:inherit;font-weight:600;color:#0B6E5F;background:transparent;border:0;min-height:44px">+ Add bullet</button>
+</div>
+<div style="display:flex;justify-content:space-between;margin-top:auto">
+<a href="Builder.dc.html" style="font-weight:700;padding:14px 18px;border-radius:12px;border:1.5px solid #CBD3CD;text-decoration:none;color:#0D1B19">Back: Summary</a>
+<a href="Builder.dc.html" style="font-weight:700;padding:14px 18px;border-radius:12px;background:#0D1B19;color:#fff;text-decoration:none">Next: Education</a>
+</div>
+</main>
+
+<!-- preview -->
+<section aria-label="Live preview" style="flex:1;min-width:0;background:#E9ECE8;padding:20px 28px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+<div style="display:flex;gap:10px;align-items:center">
+<div style="background:#0D1B19;color:#fff;border-radius:999px;padding:6px 14px 6px 6px;display:flex;gap:10px;align-items:center"><span class="d" style="width:34px;height:34px;border-radius:50%;background:#FFD166;color:#0D1B19;display:grid;place-items:center;font-weight:800">72</span><span style="font-size:14px;font-weight:600">ATS score · 3 fixes left</span></div>
+<span style="flex:1"></span>
+<button type="button" aria-label="Zoom out" style="width:40px;height:40px;border-radius:10px;border:1px solid #CBD3CD;background:#fff;font:inherit;font-weight:700">−</button>
+<button type="button" aria-label="Zoom in" style="width:40px;height:40px;border-radius:10px;border:1px solid #CBD3CD;background:#fff;font:inherit;font-weight:700">+</button>
+</div>
+<div style="flex:1;display:flex;justify-content:center;overflow:hidden"><div style="width:540px;height:698px;overflow:hidden;box-shadow:0 10px 30px rgba(13,27,25,.14);background:#fff"><div style="width:600px;height:776px;transform:scale(.9);transform-origin:0 0"><dc-import name="ResumeThumb" variant="classic" who="fahad" hint-size="600px,776px"></dc-import></div></div></div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+const s = (label, state, issue) => {
+const done = state === 'done', cur = state === 'cur';
+return { label, issue: issue || '', cur: cur ? 'step' : 'false', bg: cur ? '#DDF3EC' : 'transparent', mark: done ? '✓' : '', dotBg: done ? '#0B6E5F' : (cur ? '#fff' : '#EEF1EE'), dotFg: done ? '#fff' : '#0B6E5F' };
+};
+return { steps: [s('Contact', 'done'), s('Summary', 'done'), s('Experience', 'cur', '2 fixes'), s('Education', ''), s('Skills', '', '1 fix'), s('Certifications', ''), s('Languages', '')] };
+}
+}
+</script>
+</body>
+</html>

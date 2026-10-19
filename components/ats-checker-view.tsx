@@ -193,7 +193,7 @@ export default function AtsCheckerView() {
   const [selectedResumeId, setSelectedResumeId] = useState<string | null>(null);
 
   // Try to load the user's saved resumes. Returns 401 for anonymous visitors
-  // on the public /ats-checker page — we silently ignore and fall back to
+  // on the public /ats-checker page, we silently ignore and fall back to
   // the paste-your-text flow.
   useEffect(() => {
     let cancelled = false;
@@ -213,7 +213,7 @@ export default function AtsCheckerView() {
           : [];
         setSavedResumes(list);
       } catch {
-        /* not signed in, or network blip — paste-your-text still works */
+        /* not signed in, or network blip, paste-your-text still works */
       }
     })();
     return () => {
@@ -236,7 +236,7 @@ export default function AtsCheckerView() {
       return;
     }
     if (trimmed.length < 50) {
-      setError(`Your resume text is too short (${trimmed.length} characters). Please paste at least 50 characters — ideally the full plain-text content of your resume.`);
+      setError(`Your resume text is too short (${trimmed.length} characters). Please paste at least 50 characters, ideally the full plain-text content of your resume.`);
       return;
     }
 
@@ -264,7 +264,7 @@ export default function AtsCheckerView() {
             serverMessage = body.error;
           }
         } catch {
-          /* response wasn't JSON — keep the HTTP-status fallback */
+          /* response wasn't JSON, keep the HTTP-status fallback */
         }
         setError(serverMessage);
         return;
@@ -284,7 +284,7 @@ export default function AtsCheckerView() {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ ats_score: data.overall_score }),
-        }).catch(() => { /* non-critical — score is still shown in this view */ });
+        }).catch(() => { /* non-critical, score is still shown in this view */ });
       }
     } catch (err) {
       // Network / fetch-level failure (offline, CORS, DNS, etc.)
@@ -327,7 +327,7 @@ export default function AtsCheckerView() {
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
             {/* Input */}
             <div className="lg:col-span-3 space-y-5">
-              {/* Resume picker — visible only for signed-in users with saved
+              {/* Resume picker, visible only for signed-in users with saved
                   resumes. Lets them pick which resume to score instead of
                   pasting raw text. The score saves back to that resume. */}
               {savedResumes.length > 0 && (
@@ -349,7 +349,7 @@ export default function AtsCheckerView() {
                       }}
                       className="w-full appearance-none rounded-lg border border-slate-200 bg-white px-4 py-2.5 pr-10 text-sm text-slate-900 focus:border-[#4AB7A6] focus:outline-none focus:ring-2 focus:ring-[#4AB7A6]/20"
                     >
-                      <option value="">— Pick a resume —</option>
+                      <option value="">Pick a resume</option>
                       {savedResumes.map((r) => (
                         <option key={r.id} value={r.id}>
                           {r.title}
@@ -386,7 +386,7 @@ export default function AtsCheckerView() {
                     value={resumeText}
                     onChange={(e) => {
                       setResumeText(e.target.value);
-                      // User is typing their own text now — don't save the
+                      // User is typing their own text now, don't save the
                       // score back to whichever resume was previously picked.
                       if (selectedResumeId) setSelectedResumeId(null);
                     }}
@@ -397,7 +397,7 @@ export default function AtsCheckerView() {
                 </div>
               ) : (
                 <div>
-                  <Label htmlFor="job-desc" className="text-sm font-semibold text-slate-700 mb-2 block">Job Description <span className="text-slate-400 font-normal">(optional — for targeted keyword analysis)</span></Label>
+                  <Label htmlFor="job-desc" className="text-sm font-semibold text-slate-700 mb-2 block">Job Description <span className="text-slate-400 font-normal">(optional, for targeted keyword analysis)</span></Label>
                   <Textarea id="job-desc" placeholder="Paste the full job description here to get a keyword gap analysis..." value={jobDescription} onChange={(e) => setJobDescription(e.target.value)} rows={14} className="text-sm resize-none rounded-xl border-slate-200 focus:border-[#4AB7A6] focus:ring-[#4AB7A6]" />
                 </div>
               )}
@@ -489,7 +489,7 @@ export default function AtsCheckerView() {
 
               <div className="rounded-2xl p-8 text-white text-center" style={{ backgroundColor: '#4AB7A6' }}>
                 <h3 className="text-xl font-bold mb-2">Fix These Issues in Minutes</h3>
-                <p className="text-white/80 mb-6 text-sm max-w-md mx-auto">Our AI resume builder helps you resolve every issue found above — automatically.</p>
+                <p className="text-white/80 mb-6 text-sm max-w-md mx-auto">Our AI resume builder helps you resolve every issue found above, automatically.</p>
                 <Link href="/builder/resume/new" className="inline-flex items-center gap-2 bg-white font-semibold rounded-full px-7 py-3 hover:bg-slate-50 transition-colors" style={{ color: '#4AB7A6' }}>
                   Fix My Resume <ChevronRight className="w-4 h-4" />
                 </Link>

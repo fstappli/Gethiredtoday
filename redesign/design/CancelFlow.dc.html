@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cancel subscription</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1000px">
+<dc-import name="PortalNav" active="none" hint-size="100%,64px"></dc-import>
+<main style="max-width:640px;margin:0 auto;padding:48px 20px;display:flex;flex-direction:column;gap:18px">
+<sc-if value="{{ask}}" hint-placeholder-val="{{ true }}">
+<a href="Billing.dc.html" style="font-weight:700;align-self:flex-start;padding:8px 0">← Plan &amp; billing</a>
+<h1 class="d" style="margin:0;font-size:38px;letter-spacing:-1px;line-height:1.05">Cancel Pro?</h1>
+<p style="margin:0;color:#3F4D49;font-size:17px;line-height:1.55">You'll keep Pro until [renewal date]. After that you move to Free, and all your resumes stay in your account.</p>
+<fieldset style="border:0;margin:0;padding:0;background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:4px"><legend style="font-weight:800;padding:0 4px">Mind telling us why? (optional)</legend>
+<sc-for list="{{reasons}}" as="r" hint-placeholder-count="5"><label style="display:flex;gap:12px;align-items:center;min-height:46px;cursor:pointer"><input type="radio" name="why" style="width:20px;height:20px;accent-color:#0B6E5F;margin:0">{{r}}</label></sc-for>
+</fieldset>
+<div style="background:#FFF1CC;border-radius:18px;padding:16px 18px;display:flex;gap:12px;align-items:center;flex-wrap:wrap"><span style="flex:1 1 260px;line-height:1.5"><b>Taking a break?</b> Pause for a month instead. No charge, and everything is waiting when you're back.</span><a href="Billing.dc.html" style="font-weight:800;background:#0D1B19;color:#fff;border-radius:10px;padding:11px 14px;text-decoration:none">Pause instead</a></div>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" onClick="{{confirm}}" style="font:inherit;font-weight:800;background:#fff;color:#8A2A0B;border:1.5px solid #E8A48A;border-radius:14px;padding:0 20px;min-height:52px;cursor:pointer">Cancel subscription</button><a href="Dashboard.dc.html" style="font-weight:800;background:#0B6E5F;color:#fff;border-radius:14px;padding:15px 20px;text-decoration:none">Keep Pro</a></div>
+</sc-if>
+<sc-if value="{{done}}" hint-placeholder-val="{{ false }}">
+<div role="status" style="background:#fff;border:1px solid #E6E3DA;border-radius:24px;padding:32px;display:flex;flex-direction:column;gap:14px;align-items:center;text-align:center">
+<span style="width:72px;height:72px;border-radius:22px;background:#E3F4EE;display:grid;place-items:center"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#0B6E5F" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span>
+<h1 class="d" style="margin:0;font-size:32px">Your subscription is cancelled</h1>
+<p style="margin:0;color:#3F4D49;line-height:1.55">Pro stays active until [renewal date]. We've emailed a confirmation. Good luck out there, Fahad.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center"><a href="Dashboard.dc.html" style="font-weight:800;background:#0D1B19;color:#fff;border-radius:12px;padding:14px 18px;text-decoration:none">Back to dashboard</a><button type="button" onClick="{{undo}}" style="font:inherit;font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:12px;padding:0 18px;min-height:50px;cursor:pointer">Undo, keep Pro</button></div>
+</div>
+</sc-if>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1000}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { done: false }; }
+renderVals() {
+const d = this.state.done;
+return {
+ask: !d, done: d, confirm: () => this.setState({ done: true }), undo: () => this.setState({ done: false }),
+reasons: ["I got a job", "It's too expensive", "I'm taking a break from searching", "Missing a feature I need", "Something else"]
+};
+}
+}
+</script>
+</body>
+</html>

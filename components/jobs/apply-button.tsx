@@ -130,7 +130,7 @@ export function ApplyButton({
     );
   }
 
-  // Not Pro — prompt upgrade
+  // Not Pro, prompt upgrade
   if (!isPro) {
     return (
       <a

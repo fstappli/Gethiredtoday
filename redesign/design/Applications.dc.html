@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Applications tracker</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1100px">
+<dc-import name="PortalNav" active="apps" hint-size="100%,64px"></dc-import>
+<main style="max-width:1240px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+<div><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-.8px">Applications</h1><p style="margin:4px 0 0;color:#3F4D49">Every job you save or apply to, in one place. Drag cards as things move.</p></div>
+<button type="button" style="font:inherit;font-weight:800;background:#0B6E5F;color:#fff;border:0;border-radius:12px;padding:0 16px;min-height:46px">+ Add a job manually</button>
+</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;align-items:start">
+<sc-for list="{{cols}}" as="c" hint-placeholder-count="4">
+<section style="background:#EEEBE3;border-radius:20px;padding:12px;display:flex;flex-direction:column;gap:10px">
+<h2 style="margin:0;padding:6px 6px 2px;font-size:15px;display:flex;justify-content:space-between"><span>{{c.title}}</span><span style="background:#fff;border-radius:999px;padding:2px 10px;font-size:13px">{{c.count}}</span></h2>
+<sc-for list="{{c.cards}}" as="k" hint-placeholder-count="2">
+<a href="JobDetail.dc.html" style="text-decoration:none;color:#0D1B19;background:#fff;border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px">
+<span style="display:flex;gap:10px;align-items:center"><span style="flex:none;width:36px;height:36px;border-radius:10px;background:{{k.bg}};color:{{k.fg}};display:grid;place-items:center;font-weight:800">{{k.i}}</span><span><b style="font-size:15px">{{k.t}}</b><br><span style="font-size:13px;color:#3F4D49">{{k.c}}</span></span></span>
+<span style="font-size:12px;color:#3F4D49">{{k.note}}</span>
+</a>
+</sc-for>
+</section>
+</sc-for>
+</div>
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:18px;padding:16px 18px;display:flex;gap:14px;align-items:center;flex-wrap:wrap"><span style="flex:1 1 300px;line-height:1.5"><b>Tip:</b> following up 5 to 7 days after applying keeps you top of mind. We'll remind you.</span><a href="Article.dc.html" style="font-weight:800">How to follow up →</a></div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1100}}'>
+class Component extends DCLogic {
+renderVals() {
+const P = { bg: '#EDE9FF', fg: '#4B3BA8' }, O = { bg: '#FFE9D6', fg: '#8A3B12' }, G = { bg: '#E3F4EE', fg: '#08574B' };
+return { cols: [
+{ title: 'Saved', count: 2, cards: [{ ...P, i: 'N', t: 'Senior Product Designer', c: 'Northwind · Dubai', note: 'Saved today · 91% match' }, { ...O, i: 'H', t: 'Product Designer', c: 'Halcyon · Remote', note: 'Saved yesterday' }] },
+{ title: 'Applied', count: 2, cards: [{ ...O, i: 'B', t: 'Lead UX Designer', c: 'Bluefin · Remote', note: 'Applied 3 days ago · follow up Friday' }, { ...G, i: 'M', t: 'UX Lead', c: 'Meridian · Dubai', note: 'Applied via Auto-Apply' }] },
+{ title: 'Interview', count: 1, cards: [{ ...G, i: 'K', t: 'UX Designer, Payments', c: 'Kestrel · Dubai', note: 'Interview Thu, 2:00 PM · prep notes' }] },
+{ title: 'Offer', count: 0, cards: [] }
+] };
+}
+}
+</script>
+</body>
+</html>

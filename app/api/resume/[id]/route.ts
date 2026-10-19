@@ -1,5 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { NextResponse } from 'next/server';
+import { getCaller, upgradeRequired } from '@/lib/plan-guard';
+import { isTemplateAllowed } from '@/lib/subscription';
 
 export async function GET(
   _req: Request,
@@ -42,6 +44,13 @@ export async function PATCH(
   const body = await req.json();
   const { title, data, template_id, ats_score, color_scheme, font_size, is_public } = body;
 
+  if (template_id !== undefined) {
+    const caller = await getCaller();
+    if (!isTemplateAllowed(caller.plan, template_id)) {
+      return upgradeRequired('templates', 'That template is on Pro. Pick a free template or upgrade.');
+    }
+  }
+
   const updatePayload: Record<string, unknown> = { updated_at: new Date().toISOString() };
   if (title !== undefined) updatePayload.title = title;
   if (data !== undefined) updatePayload.data = data;
@@ -66,7 +75,7 @@ export async function PATCH(
   return NextResponse.json({ resume });
 }
 
-// PUT is an alias for PATCH — supports clients that send PUT for updates
+// PUT is an alias for PATCH, supports clients that send PUT for updates
 export async function PUT(
   req: Request,
   context: { params: Promise<{ id: string }> }

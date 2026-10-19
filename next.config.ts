@@ -21,6 +21,15 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      { source: '/blog', destination: '/resources', permanent: true },
+      { source: '/blog/:slug', destination: '/resources/:slug', permanent: true },
+    ];
+  },
+  turbopack: {
+    root: process.cwd(),
+  },
   async headers() {
     return [
       {

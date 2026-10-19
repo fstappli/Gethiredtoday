@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Find jobs</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1500px">
+<dc-import name="PortalNav" active="jobs" hint-size="100%,64px"></dc-import>
+<main style="max-width:1240px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:16px">
+<div><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-.8px">Find jobs</h1><p style="margin:4px 0 0;color:#3F4D49">Search any role, or browse jobs matched to your resume.</p></div>
+<form role="search" style="background:#fff;border:1px solid #E6E3DA;border-radius:18px;padding:8px;display:flex;flex-wrap:wrap;gap:8px">
+<label style="flex:2 1 260px;display:flex;align-items:center;gap:10px;padding:0 12px;min-height:54px;border-radius:12px;background:#F6F5F0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F4D49" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span style="position:absolute;width:1px;height:1px;overflow:hidden">Job title or keyword</span><input value="{{q}}" onChange="{{onQ}}" placeholder="Job title, skill or company" style="flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;outline:none"></label>
+<label style="flex:1 1 200px;display:flex;align-items:center;gap:10px;padding:0 12px;min-height:54px;border-radius:12px;background:#F6F5F0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3F4D49" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11a7 7 0 0114 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg><span style="position:absolute;width:1px;height:1px;overflow:hidden">Location</span><input value="{{loc}}" onChange="{{onLoc}}" placeholder="City or Remote" style="flex:1;min-width:0;border:0;background:transparent;font:inherit;font-size:16px;outline:none"></label>
+<button type="button" style="font:inherit;font-weight:800;background:#0B6E5F;color:#fff;border:0;border-radius:12px;padding:0 24px;min-height:54px">Search</button>
+</form>
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+<div role="tablist" aria-label="Job lists" style="display:flex;gap:6px;flex-wrap:wrap">
+<sc-for list="{{tabs}}" as="t" hint-placeholder-count="3"><button type="button" role="tab" aria-selected="{{t.sel}}" onClick="{{t.pick}}" style="font:inherit;font-weight:700;font-size:14px;border-radius:999px;padding:0 16px;min-height:42px;cursor:pointer;border:1.5px solid {{t.border}};background:{{t.bg}};color:{{t.fg}}">{{t.label}}</button></sc-for>
+</div>
+<b style="font-size:15px">{{countLabel}}</b>
+</div>
+<div style="display:flex;flex-wrap:wrap;gap:20px;align-items:flex-start">
+<aside aria-label="Filters" style="flex:1 1 260px;min-width:0;max-width:320px;background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px">
+<b style="font-size:16px">Filters</b>
+<fieldset style="border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px"><legend style="font-weight:700;font-size:14px;margin-bottom:6px">Work type</legend>
+<label style="display:flex;gap:10px;align-items:center;min-height:32px"><input type="checkbox" checked style="width:20px;height:20px;accent-color:#0B6E5F">Hybrid</label>
+<label style="display:flex;gap:10px;align-items:center;min-height:32px"><input type="checkbox" checked style="width:20px;height:20px;accent-color:#0B6E5F">Remote</label>
+<label style="display:flex;gap:10px;align-items:center;min-height:32px"><input type="checkbox" style="width:20px;height:20px;accent-color:#0B6E5F">On-site</label></fieldset>
+<fieldset style="border:0;margin:0;padding:0;display:flex;flex-direction:column;gap:8px"><legend style="font-weight:700;font-size:14px;margin-bottom:6px">Posted</legend>
+<label style="display:flex;gap:10px;align-items:center;min-height:32px"><input type="radio" name="posted" style="width:20px;height:20px;accent-color:#0B6E5F">Today</label>
+<label style="display:flex;gap:10px;align-items:center;min-height:32px"><input type="radio" name="posted" checked style="width:20px;height:20px;accent-color:#0B6E5F">Past week</label>
+<label style="display:flex;gap:10px;align-items:center;min-height:32px"><input type="radio" name="posted" style="width:20px;height:20px;accent-color:#0B6E5F">Any time</label></fieldset>
+<label style="display:flex;flex-direction:column;gap:6px;font-weight:700;font-size:14px">Minimum match: 70%<input type="range" min="50" max="100" value="70" style="accent-color:#0B6E5F"></label>
+<label style="display:flex;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid #EEEBE3;padding-top:14px;cursor:pointer"><span><b>Alert me about new jobs like this</b><br><span style="font-size:13px;color:#3F4D49">Free, one email each morning</span></span><input type="checkbox" checked style="width:22px;height:22px;accent-color:#0B6E5F"></label>
+</aside>
+<section style="flex:999 1 520px;min-width:0;display:flex;flex-direction:column;gap:12px">
+<sc-for list="{{jobs}}" as="j" hint-placeholder-count="3">
+<article style="background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;gap:14px;align-items:flex-start"><span style="flex:none;width:48px;height:48px;border-radius:12px;display:grid;place-items:center;font-weight:800;background:{{j.bg}};color:{{j.fg}}">{{j.i}}</span><span style="flex:1"><a href="JobDetail.dc.html" style="color:#0D1B19;text-decoration:none"><b style="font-size:18px">{{j.t}}</b></a><br><span style="font-size:14px;color:#3F4D49">{{j.c}} · {{j.posted}}</span></span><span style="text-align:right"><b class="d" style="font-size:24px;color:#0B6E5F">{{j.m}}</b><br><span style="font-size:12px;color:#3F4D49">match</span></span></div>
+<div style="font-size:14px;color:#3F4D49">Missing from your resume: <b style="color:#0D1B19">{{j.gap}}</b></div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><a href="JobDetail.dc.html" style="font-weight:800;background:#0B6E5F;color:#fff;border-radius:12px;padding:12px 16px;text-decoration:none">Tailor &amp; apply</a><a href="JobDetail.dc.html" style="font-weight:700;background:#fff;border:1.5px solid #D6D2C6;border-radius:12px;padding:11px 14px;text-decoration:none;color:#0D1B19">View job</a><button type="button" style="font:inherit;font-weight:700;background:transparent;border:0;color:#3F4D49;min-height:44px">{{j.saveLabel}}</button></div>
+</article>
+</sc-for>
+<sc-if value="{{empty}}" hint-placeholder-val="{{ false }}">
+<div style="background:#fff;border:1px solid #E6E3DA;border-radius:20px;padding:28px;text-align:center;display:flex;flex-direction:column;gap:8px;align-items:center"><b class="d" style="font-size:22px">Nothing here yet</b><span style="color:#3F4D49">Try a broader search, or turn on alerts and we'll email you new jobs.</span></div>
+</sc-if>
+<div style="position:relative">
+<div aria-hidden="true" style="display:flex;flex-direction:column;gap:12px;filter:blur(6px);opacity:.7"><div style="background:#fff;border-radius:20px;height:140px"></div><div style="background:#fff;border-radius:20px;height:140px"></div><div style="background:#fff;border-radius:20px;height:140px"></div></div>
+<div style="position:absolute;left:50%;top:40px;transform:translateX(-50%);width:min(460px,92%);background:#0D1B19;color:#fff;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 48px rgba(13,27,25,.25);box-sizing:border-box">
+<b class="d" style="font-size:24px;line-height:1.15">See every result with a match score</b>
+<span style="color:#A9BDB7;line-height:1.5">Free shows your top 3 matches a day. Pro scores every job you search and lets Auto-Apply send the best ones.</span>
+<a href="Checkout.dc.html" style="text-align:center;background:#5FD3B3;color:#0D1B19;text-decoration:none;font-weight:800;padding:15px;border-radius:12px">Unlock all results · $9.99/mo</a>
+<span style="text-align:center;font-size:13px;color:#A9BDB7">Cancel in two clicks</span>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { q: 'Designer', loc: 'Dubai', tab: 'match' }; }
+renderVals() {
+const st = this.state;
+const all = [
+{ i: 'N', t: 'Senior Product Designer', c: 'Northwind · Dubai · Hybrid', posted: 'Posted today', m: '91%', gap: 'design ops', bg: '#EDE9FF', fg: '#4B3BA8', saved: true },
+{ i: 'B', t: 'Lead UX Designer', c: 'Bluefin · Remote', posted: 'Posted yesterday', m: '88%', gap: 'Figma variables', bg: '#FFE9D6', fg: '#8A3B12', saved: false },
+{ i: 'K', t: 'UX Designer, Payments', c: 'Kestrel · Dubai', posted: '2 days ago', m: '84%', gap: 'PCI, fintech', bg: '#E3F4EE', fg: '#08574B', saved: true },
+{ i: 'H', t: 'Product Designer', c: 'Halcyon · Remote · Contract', posted: 'Posted today', m: '79%', gap: 'B2B dashboards', bg: '#FFF1CC', fg: '#6B4A00', saved: false },
+{ i: 'A', t: 'Data Analyst', c: 'Atlas · Abu Dhabi', posted: 'Posted today', m: '52%', gap: 'SQL, Python', bg: '#FBE3EC', fg: '#8A1F48', saved: false }
+];
+const q = (st.q || '').toLowerCase().trim(), loc = (st.loc || '').toLowerCase().trim();
+let jobs = all.filter((j) => (!q || (j.t + ' ' + j.c).toLowerCase().includes(q)) && (!loc || j.c.toLowerCase().includes(loc) || j.c.includes('Remote')));
+if (st.tab === 'match') jobs = jobs.filter((j) => parseInt(j.m, 10) >= 70);
+if (st.tab === 'saved') jobs = jobs.filter((j) => j.saved);
+const tab = (id, label) => ({ label, sel: st.tab === id ? 'true' : 'false', bg: st.tab === id ? '#0D1B19' : '#fff', fg: st.tab === id ? '#fff' : '#0D1B19', border: st.tab === id ? '#0D1B19' : '#D6D2C6', pick: () => this.setState({ tab: id }) });
+return {
+q: st.q, loc: st.loc,
+onQ: (e) => this.setState({ q: e.target.value }), onLoc: (e) => this.setState({ loc: e.target.value }),
+tabs: [tab('match', 'Matched to my resume'), tab('all', 'All results'), tab('saved', 'Saved')],
+jobs: jobs.slice(0, 3).map((j) => ({ ...j, saveLabel: j.saved ? 'Saved' : 'Save' })),
+empty: jobs.length === 0,
+countLabel: jobs.length + (jobs.length === 1 ? ' job' : ' jobs') + (q ? ' for "' + st.q + '"' : '') + (loc ? ' near ' + st.loc : '')
+};
+}
+}
+</script>
+</body>
+</html>

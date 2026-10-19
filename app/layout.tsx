@@ -1,24 +1,32 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import "./globals.css";
 
-const inter = Inter({
+const figtree = Figtree({
   subsets: ["latin"],
   display: "swap",
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-figtree",
+});
+
+const bricolage = Bricolage_Grotesque({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["600", "700", "800"],
+  variable: "--font-bricolage",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://hiredtodayapp.com"),
   title: {
-    default: "AI Resume Builder — Get Hired Today | GetHiredToday",
+    default: "AI Resume Builder, Get Hired Today | GetHiredToday",
     template: "%s | GetHiredToday",
   },
   description:
-    "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checker, and Auto-Apply — everything you need to get hired, for $9.99/month.",
+    "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checker, and Auto-Apply, everything you need to get hired, for $9.99/month.",
   keywords: [
     "AI resume builder", "ATS-friendly resume", "resume maker",
     "AI resume writer", "ATS checker", "resume templates 2026", "cover letter builder",
@@ -33,14 +41,14 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://hiredtodayapp.com",
     siteName: "GetHiredToday",
-    title: "AI Resume Builder — Get Hired Today",
-    description: "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checking, and Auto-Apply — $9.99/month.",
-    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "GetHiredToday — AI Resume Builder" }],
+    title: "AI Resume Builder, Get Hired Today",
+    description: "Build an ATS-friendly resume in 3 minutes with AI. Tailored bullet points, professional templates, ATS checking, and Auto-Apply, $9.99/month.",
+    images: [{ url: "/og-image.png", width: 1200, height: 630, alt: "GetHiredToday, AI Resume Builder" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Resume Builder — Get Hired Today",
-    description: "Build an ATS-friendly resume in 3 minutes with AI. $9.99/month — cancel anytime.",
+    title: "AI Resume Builder, Get Hired Today",
+    description: "Build an ATS-friendly resume in 3 minutes with AI. $9.99/month, cancel anytime.",
     images: ["/og-image.png"],
     creator: "@hiredtodayapp",
   },
@@ -62,7 +70,7 @@ export default function RootLayout({
   const ga4Id = process.env.NEXT_PUBLIC_GA4_ID;
 
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`}>
+    <html lang="en" className={`${figtree.variable} ${bricolage.variable} h-full antialiased`}>
       <head>
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
@@ -98,7 +106,7 @@ export default function RootLayout({
         {children}
         <Analytics />
         <SpeedInsights />
-        {/* Google Ads tag — always active */}
+        {/* Google Ads tag, always active */}
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=AW-862628997"
           strategy="afterInteractive"

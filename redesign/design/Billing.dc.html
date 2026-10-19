@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Plan and billing</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#F6F5F0}a{color:#0B6E5F}.d{font-family:'Bricolage Grotesque',Georgia,serif}</style>
+</helmet>
+<div style="font-family:'Figtree',system-ui,sans-serif;color:#0D1B19;background:#F6F5F0;min-height:1200px">
+<dc-import name="PortalNav" active="none" hint-size="100%,64px"></dc-import>
+<main style="max-width:1000px;margin:0 auto;padding:28px 20px 56px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><h1 class="d" style="margin:0;font-size:34px;letter-spacing:-.8px">Plan &amp; billing</h1>
+<div role="group" aria-label="Preview state" style="display:flex;background:#fff;border:1px solid #E6E3DA;border-radius:12px;padding:3px;gap:3px">
+<sc-for list="{{views}}" as="v" hint-placeholder-count="2"><button type="button" aria-pressed="{{v.pressed}}" onClick="{{v.pick}}" style="font:inherit;font-weight:700;font-size:14px;border:0;border-radius:9px;padding:0 12px;min-height:38px;cursor:pointer;background:{{v.bg}};color:{{v.fg}}">{{v.label}}</button></sc-for>
+</div></div>
+
+<sc-if value="{{isFree}}" hint-placeholder-val="{{ true }}">
+<section style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span><span style="font-size:14px;color:#3F4D49;font-weight:600">Current plan</span><br><b class="d" style="font-size:28px">Free</b></span><a href="Checkout.dc.html" style="font-weight:800;background:#0B6E5F;color:#fff;border-radius:12px;padding:13px 18px;text-decoration:none">Upgrade to Pro · $9.99/mo</a></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:16px">
+<div><div style="display:flex;justify-content:space-between;font-size:14px"><span>Resumes</span><b>1 of 1</b></div><div style="height:8px;background:#EEEBE3;border-radius:4px;margin-top:6px"><div style="height:8px;width:100%;background:#E0A800;border-radius:4px"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:14px"><span>AI rewrites today</span><b>3 of 5</b></div><div style="height:8px;background:#EEEBE3;border-radius:4px;margin-top:6px"><div style="height:8px;width:60%;background:#0B6E5F;border-radius:4px"></div></div></div>
+<div><div style="display:flex;justify-content:space-between;font-size:14px"><span>Job matches visible</span><b>3 of 31</b></div><div style="height:8px;background:#EEEBE3;border-radius:4px;margin-top:6px"><div style="height:8px;width:10%;background:#0B6E5F;border-radius:4px"></div></div></div>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{isPro}}" hint-placeholder-val="{{ false }}">
+<section style="background:#0D1B19;color:#fff;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><span><span style="font-size:14px;color:#A9BDB7;font-weight:600">Current plan</span><br><b class="d" style="font-size:28px">Pro · monthly</b></span><span style="font-size:13px;font-weight:800;background:#5FD3B3;color:#0D1B19;padding:5px 12px;border-radius:999px">Active</span></div>
+<div style="color:#C9D8D3">Renews on [date] for $9.99. Paid with [card ending 0000].</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" style="font:inherit;font-weight:700;background:#fff;color:#0D1B19;border:0;border-radius:10px;padding:0 14px;min-height:44px">Switch to 3-month billing</button><button type="button" style="font:inherit;font-weight:700;background:transparent;color:#fff;border:1.5px solid #3F4D49;border-radius:10px;padding:0 14px;min-height:44px">Update payment method</button><button type="button" style="font:inherit;font-weight:700;background:transparent;color:#fff;border:1.5px solid #3F4D49;border-radius:10px;padding:0 14px;min-height:44px">Pause for a month</button><a href="CancelFlow.dc.html" style="font-weight:700;color:#FFB4A0;padding:12px 8px">Cancel subscription</a></div>
+</section>
+</sc-if>
+
+<section style="background:#fff;border:1px solid #E6E3DA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:10px">
+<h2 class="d" style="margin:0;font-size:22px">Receipts</h2>
+<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:15px;min-width:460px">
+<thead><tr style="text-align:left;color:#3F4D49"><th scope="col" style="padding:10px 8px;font-weight:700">Date</th><th scope="col" style="padding:10px 8px;font-weight:700">Description</th><th scope="col" style="padding:10px 8px;font-weight:700">Amount</th><th scope="col" style="padding:10px 8px"><span style="position:absolute;width:1px;height:1px;overflow:hidden">Download</span></th></tr></thead>
+<tbody><sc-for list="{{receipts}}" as="r" hint-placeholder-count="2"><tr style="border-top:1px solid #EEEBE3"><td style="padding:12px 8px">{{r.d}}</td><td style="padding:12px 8px">{{r.t}}</td><td style="padding:12px 8px">{{r.a}}</td><td style="padding:12px 8px;text-align:right"><a href="Billing.dc.html" style="font-weight:700">{{r.link}}</a></td></tr></sc-for></tbody>
+</table></div>
+<span style="font-size:14px;color:#3F4D49">{{receiptNote}}</span>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1200}}'>
+class Component extends DCLogic {
+constructor(p) { super(p); this.state = { v: 'free' }; }
+renderVals() {
+const v = this.state.v, pro = v === 'pro';
+const b = (id, label) => ({ label, pressed: v === id ? 'true' : 'false', bg: v === id ? '#0D1B19' : 'transparent', fg: v === id ? '#fff' : '#0D1B19', pick: () => this.setState({ v: id }) });
+return {
+views: [b('free', 'Free user'), b('pro', 'Pro user')], isFree: !pro, isPro: pro,
+receipts: pro ? [{ d: '[Date]', t: 'Pro · monthly', a: '$9.99', link: 'PDF' }, { d: '[Date]', t: 'Pro · monthly', a: '$9.99', link: 'PDF' }] : [],
+receiptNote: pro ? 'Receipts are also emailed to you.' : 'No payments yet. Receipts will appear here after you upgrade.'
+};
+}
+}
+</script>
+</body>
+</html>

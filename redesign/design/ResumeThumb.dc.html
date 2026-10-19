@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Resume thumbnail</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&amp;family=Figtree:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>body{margin:0}</style>
+</helmet>
+<div style="width:600px;height:776px;box-sizing:border-box;background:#fff;color:#1A1F1E;font-family:'Figtree',Arial,sans-serif;font-size:11.5px;line-height:1.45;overflow:hidden;position:relative">
+
+<!-- CLASSIC -->
+<sc-if value="{{isClassic}}" hint-placeholder-val="{{ true }}">
+<div style="padding:44px 48px;display:flex;flex-direction:column;gap:12px">
+<div><div style="font-size:30px;font-weight:700;letter-spacing:-.5px">{{p.name}}</div><div style="font-size:14px;color:#0B6E5F;font-weight:600">{{p.role}}</div><div style="font-size:10.5px;color:#55605C;margin-top:4px">{{p.contact}}</div></div>
+<div style="height:2px;background:#0B6E5F"></div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#0B6E5F">SUMMARY</div>
+<div>{{p.summary}}</div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#0B6E5F;border-top:1px solid #E1E5E3;padding-top:10px">EXPERIENCE</div>
+<sc-for list="{{p.exp}}" as="e" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:3px"><div style="display:flex;justify-content:space-between"><b>{{e.title}}, {{e.co}}</b><span style="color:#55605C">{{e.dates}}</span></div><sc-for list="{{e.bullets}}" as="b" hint-placeholder-count="2"><div style="padding-left:12px">• {{b}}</div></sc-for></div></sc-for>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#0B6E5F;border-top:1px solid #E1E5E3;padding-top:10px">EDUCATION</div>
+<div style="display:flex;justify-content:space-between"><b>{{p.edu}}</b><span style="color:#55605C">{{p.eduYear}}</span></div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#0B6E5F;border-top:1px solid #E1E5E3;padding-top:10px">SKILLS</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px"><sc-for list="{{p.skills}}" as="s" hint-placeholder-count="6"><span style="background:#EEF4F2;padding:3px 8px;border-radius:4px">{{s}}</span></sc-for></div>
+</div>
+</sc-if>
+
+<!-- SIDEBAR -->
+<sc-if value="{{isSidebar}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;height:776px">
+<div style="width:190px;background:#16302C;color:#E7F1EE;padding:40px 22px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box">
+<div style="width:76px;height:76px;border-radius:50%;background:#2E5A53;display:grid;place-items:center;font-size:26px;font-weight:700;align-self:center">{{initials}}</div>
+<div style="font-size:10px;font-weight:800;letter-spacing:1.4px;color:#8FD1BF">CONTACT</div>
+<div style="font-size:10.5px;line-height:1.6">{{p.contact}}</div>
+<div style="font-size:10px;font-weight:800;letter-spacing:1.4px;color:#8FD1BF">SKILLS</div>
+<sc-for list="{{p.skills}}" as="s" hint-placeholder-count="6"><div style="font-size:10.5px">{{s}}</div></sc-for>
+<div style="font-size:10px;font-weight:800;letter-spacing:1.4px;color:#8FD1BF">LANGUAGES</div>
+<div style="font-size:10.5px">English · Arabic</div>
+</div>
+<div style="flex:1;padding:40px 32px;display:flex;flex-direction:column;gap:11px">
+<div><div style="font-size:28px;font-weight:700">{{p.name}}</div><div style="font-size:13px;color:#0B6E5F;font-weight:600">{{p.role}}</div></div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px">PROFILE</div><div>{{p.summary}}</div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;margin-top:4px">EXPERIENCE</div>
+<sc-for list="{{p.exp}}" as="e" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:3px"><b>{{e.title}}</b><span style="color:#0B6E5F;font-weight:600">{{e.co}} · {{e.dates}}</span><sc-for list="{{e.bullets}}" as="b" hint-placeholder-count="2"><div>• {{b}}</div></sc-for></div></sc-for>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;margin-top:4px">EDUCATION</div><div><b>{{p.edu}}</b> · {{p.eduYear}}</div>
+</div>
+</div>
+</sc-if>
+
+<!-- EXECUTIVE -->
+<sc-if value="{{isExecutive}}" hint-placeholder-val="{{ false }}">
+<div style="background:#1F2A44;color:#fff;padding:36px 48px"><div style="font-family:Georgia,serif;font-size:32px;letter-spacing:.5px">{{p.name}}</div><div style="font-size:13px;color:#C9D3EA;letter-spacing:2px;margin-top:4px;text-transform:uppercase">{{p.role}}</div><div style="font-size:10.5px;color:#C9D3EA;margin-top:8px">{{p.contact}}</div></div>
+<div style="padding:24px 48px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px">
+<div style="grid-column:span 2;display:flex;flex-direction:column;gap:10px">
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#1F2A44;border-bottom:2px solid #1F2A44;padding-bottom:4px">EXECUTIVE SUMMARY</div><div>{{p.summary}}</div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#1F2A44;border-bottom:2px solid #1F2A44;padding-bottom:4px">EXPERIENCE</div>
+<sc-for list="{{p.exp}}" as="e" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:3px"><b>{{e.title}}</b><span style="color:#55605C">{{e.co}} · {{e.dates}}</span><sc-for list="{{e.bullets}}" as="b" hint-placeholder-count="2"><div>• {{b}}</div></sc-for></div></sc-for>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#1F2A44;border-bottom:2px solid #1F2A44;padding-bottom:4px">CORE STRENGTHS</div>
+<sc-for list="{{p.skills}}" as="s" hint-placeholder-count="6"><div>{{s}}</div></sc-for>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#1F2A44;border-bottom:2px solid #1F2A44;padding-bottom:4px;margin-top:6px">EDUCATION</div>
+<div><b>{{p.edu}}</b><br>{{p.eduYear}}</div>
+</div>
+</div>
+</sc-if>
+
+<!-- CONTEMPORARY (teal centered) -->
+<sc-if value="{{isTeal}}" hint-placeholder-val="{{ false }}">
+<div style="padding:42px 52px;display:flex;flex-direction:column;gap:12px">
+<div style="text-align:center"><div style="font-size:30px;font-weight:700;color:#0E5E6F">{{p.name}}</div><div style="font-size:13px;font-weight:600">{{p.role}}</div><div style="font-size:10.5px;color:#55605C;margin-top:4px">{{p.contact}}</div></div>
+<div style="display:flex;align-items:center;gap:10px"><span style="flex:1;height:1px;background:#0E5E6F"></span><b style="color:#0E5E6F;font-size:10.5px;letter-spacing:1.4px">SUMMARY</b><span style="flex:1;height:1px;background:#0E5E6F"></span></div>
+<div style="text-align:center">{{p.summary}}</div>
+<div style="display:flex;align-items:center;gap:10px"><span style="flex:1;height:1px;background:#0E5E6F"></span><b style="color:#0E5E6F;font-size:10.5px;letter-spacing:1.4px">EXPERIENCE</b><span style="flex:1;height:1px;background:#0E5E6F"></span></div>
+<sc-for list="{{p.exp}}" as="e" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:3px"><div style="display:flex;justify-content:space-between"><b>{{e.title}} · {{e.co}}</b><span style="color:#55605C">{{e.dates}}</span></div><sc-for list="{{e.bullets}}" as="b" hint-placeholder-count="2"><div style="padding-left:12px">• {{b}}</div></sc-for></div></sc-for>
+<div style="display:flex;align-items:center;gap:10px"><span style="flex:1;height:1px;background:#0E5E6F"></span><b style="color:#0E5E6F;font-size:10.5px;letter-spacing:1.4px">SKILLS</b><span style="flex:1;height:1px;background:#0E5E6F"></span></div>
+<div style="text-align:center">Figma · Design systems · User research · Prototyping · A/B testing · Accessibility</div>
+</div>
+</sc-if>
+
+<!-- CREATIVE -->
+<sc-if value="{{isCreative}}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;height:776px">
+<div style="flex:1;padding:40px 34px;display:flex;flex-direction:column;gap:11px">
+<div style="font-family:'Bricolage Grotesque',Georgia,serif;font-size:36px;font-weight:800;line-height:1;color:#B4235A">{{p.name}}</div>
+<div style="font-size:13px;font-weight:700">{{p.role}}</div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#B4235A;margin-top:6px">HELLO</div><div>{{p.summary}}</div>
+<div style="font-size:10.5px;font-weight:800;letter-spacing:1.4px;color:#B4235A;margin-top:4px">WORK</div>
+<sc-for list="{{p.exp}}" as="e" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:3px"><b>{{e.title}} @ {{e.co}}</b><span style="color:#55605C">{{e.dates}}</span><sc-for list="{{e.bullets}}" as="b" hint-placeholder-count="2"><div>• {{b}}</div></sc-for></div></sc-for>
+</div>
+<div style="width:170px;background:#FBE3EC;padding:40px 20px;display:flex;flex-direction:column;gap:12px;box-sizing:border-box">
+<div style="width:90px;height:90px;border-radius:50%;background:#B4235A;color:#fff;display:grid;place-items:center;font-size:28px;font-weight:700;align-self:center">{{initials}}</div>
+<div style="font-size:10px;font-weight:800;letter-spacing:1.4px;color:#B4235A">CONTACT</div><div style="font-size:10.5px">{{p.contact}}</div>
+<div style="font-size:10px;font-weight:800;letter-spacing:1.4px;color:#B4235A">TOOLKIT</div>
+<sc-for list="{{p.skills}}" as="s" hint-placeholder-count="6"><div style="font-size:10.5px">{{s}}</div></sc-for>
+<div style="font-size:10px;font-weight:800;letter-spacing:1.4px;color:#B4235A">EDUCATION</div><div style="font-size:10.5px">{{p.edu}}</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ACADEMIC -->
+<sc-if value="{{isAcademic}}" hint-placeholder-val="{{ false }}">
+<div style="padding:46px 54px;display:flex;flex-direction:column;gap:10px;font-family:Georgia,'Times New Roman',serif;font-size:12px">
+<div style="text-align:center;font-size:28px;letter-spacing:1px">{{p.name}}</div>
+<div style="text-align:center;font-size:11px;color:#444">{{p.contact}}</div>
+<div style="border-top:1px solid #222;border-bottom:1px solid #222;padding:3px 0;text-align:center;font-size:11px;letter-spacing:2px">EDUCATION</div>
+<div style="display:flex;justify-content:space-between"><b>{{p.edu}}</b><i>{{p.eduYear}}</i></div>
+<div style="border-top:1px solid #222;border-bottom:1px solid #222;padding:3px 0;text-align:center;font-size:11px;letter-spacing:2px">PROFESSIONAL EXPERIENCE</div>
+<sc-for list="{{p.exp}}" as="e" hint-placeholder-count="2"><div style="display:flex;flex-direction:column;gap:3px"><div style="display:flex;justify-content:space-between"><b>{{e.co}}</b><i>{{e.dates}}</i></div><i>{{e.title}}</i><sc-for list="{{e.bullets}}" as="b" hint-placeholder-count="2"><div style="padding-left:14px">• {{b}}</div></sc-for></div></sc-for>
+<div style="border-top:1px solid #222;border-bottom:1px solid #222;padding:3px 0;text-align:center;font-size:11px;letter-spacing:2px">SKILLS</div>
+<div>Figma, design systems, user research, prototyping, A/B testing, accessibility (WCAG 2.2).</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"variant":{"editor":"enum","options":["classic","sidebar","executive","teal","creative","academic"],"default":"classic"},"who":{"editor":"enum","options":["sarah","fahad"],"default":"sarah"},"$preview":{"width":600,"height":776}}'>
+class Component extends DCLogic {
+renderVals() {
+const v = this.props.variant ?? 'classic';
+const fahad = {
+name: 'Fahad Basil', role: 'Senior UX Designer',
+contact: 'fahad@example.com · Dubai, UAE · linkedin.com/in/fahad-basil',
+summary: 'Senior UX designer focused on retail, checkout and in-store digital products. I turn customer research into simple experiences that measurably move conversion.',
+exp: [
+{ title: 'Senior UX Designer', co: 'Majid Al Futtaim', dates: '2019 to present', bullets: ['Lead design for the Cart and Checkout squad, owning payment and promotion experiences.', 'Previously led the Instore squad, shipping in-store digital tools.', 'Redesigned the store dashboard used by [N] managers, cutting task time by [X]%.'] },
+{ title: 'UX Designer', co: 'Creative agency', dates: '[Year] to 2019', bullets: ['Delivered UX for banking and e-commerce clients.', 'Ran workshops with stakeholders to align on research findings.'] }
+],
+edu: 'Fine Arts, Government Standard College Lahore', eduYear: '2012',
+skills: ['Figma', 'Design systems', 'UX research', 'Prototyping', 'Checkout UX', 'Accessibility']
+};
+const who = this.props.who ?? 'sarah';
+return {
+initials: who === 'fahad' ? 'FB' : 'SA', isClassic: v === 'classic', isSidebar: v === 'sidebar', isExecutive: v === 'executive', isTeal: v === 'teal', isCreative: v === 'creative', isAcademic: v === 'academic',
+p: who === 'fahad' ? fahad : {
+name: 'Sarah Ahmed', role: 'Senior Product Designer',
+contact: 'sarah.ahmed@email.com · +971 50 000 0000 · Dubai, UAE',
+summary: 'Product designer with 8 years of experience shipping consumer and fintech apps. I turn research into measurable wins: higher conversion, faster flows and calmer support queues.',
+exp: [
+{ title: 'Senior Product Designer', co: 'Northwind Retail', dates: '2021 to present', bullets: ['Redesigned checkout for 2.1M monthly shoppers, lifting conversion by 14%.', 'Built a 120-component design system that cut build time by 30%.', 'Mentored 5 designers and ran weekly critique.'] },
+{ title: 'Product Designer', co: 'Bluefin Labs', dates: '2018 to 2021', bullets: ['Led the mobile banking redesign, raising the app rating from 3.6 to 4.7.', 'Ran 40+ usability sessions that shaped a new onboarding flow.'] },
+{ title: 'UI Designer', co: 'Harbor Studio', dates: '2016 to 2018', bullets: ['Designed 20+ marketing sites and dashboards for retail clients.'] }
+],
+edu: 'B.A. Visual Communication', eduYear: '2016',
+skills: ['Figma', 'Design systems', 'User research', 'Prototyping', 'A/B testing', 'Accessibility']
+}
+};
+}
+}
+</script>
+</body>
+</html>

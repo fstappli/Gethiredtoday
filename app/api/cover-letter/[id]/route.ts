@@ -2,7 +2,7 @@ import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// GET /api/cover-letter/[id] — fetch a single cover letter
+// GET /api/cover-letter/[id], fetch a single cover letter
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -38,7 +38,7 @@ export async function GET(
   }
 }
 
-// PATCH /api/cover-letter/[id] — partial update (same as PUT, used by share modal)
+// PATCH /api/cover-letter/[id], partial update (same as PUT, used by share modal)
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -46,7 +46,7 @@ export async function PATCH(
   return PUT(req, { params });
 }
 
-// PUT /api/cover-letter/[id] — update a cover letter
+// PUT /api/cover-letter/[id], update a cover letter
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -106,7 +106,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/cover-letter/[id] — delete a cover letter
+// DELETE /api/cover-letter/[id], delete a cover letter
 export async function DELETE(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }

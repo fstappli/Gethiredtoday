@@ -32,10 +32,10 @@ function NewCoverLetterContent() {
   }, [router, searchParams]);
 
   return (
-    <div className="h-screen flex items-center justify-center bg-gray-50">
+    <div className="h-screen flex items-center justify-center bg-ground-portal">
       <div className="flex flex-col items-center gap-3 text-gray-500">
-        <Loader2 className="w-7 h-7 animate-spin" style={{ color: "#4AB7A6" }} />
-        <p className="text-sm font-medium">Creating cover letter…</p>
+        <Loader2 className="w-7 h-7 animate-spin" style={{ color: "#0B6E5F" }} />
+        <p className="text-sm font-medium">Creating your cover letter</p>
       </div>
     </div>
   );
@@ -44,8 +44,8 @@ function NewCoverLetterContent() {
 export default function NewCoverLetterPage() {
   return (
     <Suspense fallback={
-      <div className="h-screen flex items-center justify-center bg-gray-50">
-        <Loader2 className="w-7 h-7 animate-spin" style={{ color: "#4AB7A6" }} />
+      <div className="h-screen flex items-center justify-center bg-ground-portal">
+        <Loader2 className="w-7 h-7 animate-spin" style={{ color: "#0B6E5F" }} />
       </div>
     }>
       <NewCoverLetterContent />
