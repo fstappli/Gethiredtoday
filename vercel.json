@@ -3,9 +3,11 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
-  "regions": ["iad1"],
+  "regions": [
+    "iad1"
+  ],
   "env": {
-    "NEXT_PUBLIC_APP_URL": "https://hiredtodayapp.com"
+    "NEXT_PUBLIC_APP_URL": "https://www.hiredtodayapp.com"
   },
   "crons": [
     {
@@ -15,6 +17,10 @@
     {
       "path": "/api/cron/auto-apply",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/indexnow",
+      "schedule": "0 7 * * 1"
     }
   ]
 }

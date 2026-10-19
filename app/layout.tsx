@@ -3,6 +3,7 @@ import { Bricolage_Grotesque, Figtree } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
+import Attribution from "@/components/seo/attribution";
 import JsonLd from "@/components/seo/json-ld";
 import { organizationSchema, websiteSchema, softwareApplicationSchema } from "@/lib/seo/jsonld";
 import { SITE, SITE_URL } from "@/lib/site-config";
@@ -51,13 +52,11 @@ export const metadata: Metadata = {
     siteName: SITE.name,
     title: `${SITE.name}: ${DEFAULT_TITLE}`,
     description: DEFAULT_DESCRIPTION,
-    images: [{ url: "/og?title=Get%20hired%20faster%20with%20a%20resume%20that%20passes%20the%20ATS&sub=Free%20resume%20builder%2C%20ATS%20checker%20and%20job%20search", width: 1200, height: 630, alt: `${SITE.name}, resume builder and job search` }],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE.name}: ${DEFAULT_TITLE}`,
     description: DEFAULT_DESCRIPTION,
-    images: ["/og?title=Get%20hired%20faster%20with%20a%20resume%20that%20passes%20the%20ATS&sub=Free%20resume%20builder%2C%20ATS%20checker%20and%20job%20search"],
     creator: SITE.twitterHandle,
   },
   robots: {
@@ -85,6 +84,7 @@ export default function RootLayout({
         <JsonLd data={[organizationSchema(), websiteSchema(), softwareApplicationSchema()]} />
       </head>
       <body className="min-h-full flex flex-col">
+        <Attribution />
         {children}
         <Analytics />
         <SpeedInsights />

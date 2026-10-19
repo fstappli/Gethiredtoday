@@ -28,7 +28,7 @@ export const RESUME_EXAMPLES: ResumeExample[] = [
     photoUrl: "https://randomuser.me/api/portraits/men/33.jpg",
     metaTitle: "Software Engineer Resume Example 2025, ATS-Optimized",
     metaDescription: "See a real software engineer resume example with ATS tips, key skills, and a sample summary. Copy the structure and build yours free.",
-    intro: "A strong software engineer resume highlights your technical stack, measurable impact, and problem-solving ability. Recruiters spend under 10 seconds on a first pass, your resume needs to communicate value instantly.",
+    intro: "A strong software engineer resume highlights your technical stack, measurable impact, and problem-solving ability. Recruiters skim quickly, so your resume needs to communicate value at a glance.",
     mustHave: ["Technical skills section with languages/frameworks/tools", "Quantified achievements (e.g., reduced load time by 40%)", "Links to GitHub and portfolio", "ATS keywords: React, TypeScript, CI/CD, Agile, REST API"],
     sampleSummary: "Full-stack software engineer with 5+ years building scalable web applications in React and Node.js. Reduced API response times by 60% at Acme Corp through query optimization. Passionate about clean architecture and developer experience.",
     sampleExperiences: [

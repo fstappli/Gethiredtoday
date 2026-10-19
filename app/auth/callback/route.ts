@@ -18,7 +18,10 @@ export async function GET(request: Request) {
         if (isNewUser) {
           fetch(`${origin}/api/email/welcome`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type': 'application/json',
+              'x-internal-secret': process.env.INTERNAL_API_SECRET || process.env.CRON_SECRET || '',
+            },
             body: JSON.stringify({
               email: user.email,
               firstName: user.user_metadata?.full_name?.split(' ')[0] ?? user.user_metadata?.name?.split(' ')[0] ?? '',

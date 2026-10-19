@@ -1,4 +1,4 @@
-const FAQS: { q: string; a: string }[] = [
+export const FAQS: { q: string; a: string }[] = [
   {
     q: "What happens to my resumes if I cancel?",
     a: "They stay in your account. You keep the Free plan: edit one resume and download it as a PDF.",

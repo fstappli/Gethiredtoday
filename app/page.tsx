@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import EmailCaptureCard from "@/components/seo/email-capture-card";
 import Link from "next/link";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -11,11 +12,11 @@ export const metadata: Metadata = {
   title: { absolute: "GetHiredToday: Free AI Resume Builder, ATS Checker and Job Search" },
   description:
     "Build an ATS-friendly resume in about 3 minutes, check your ATS score, search jobs and apply with a tailored resume. Free to start, PDF download always free.",
-  alternates: { canonical: "https://hiredtodayapp.com" },
+  alternates: { canonical: "https://www.hiredtodayapp.com" },
   openGraph: {
     title: "GetHiredToday: Free AI Resume Builder",
     description: "Build an ATS-friendly resume in about 3 minutes. Free to start.",
-    url: "https://hiredtodayapp.com",
+    url: "https://www.hiredtodayapp.com",
   },
   twitter: {
     card: "summary_large_image",
@@ -173,7 +174,7 @@ export default function HomePage() {
         {/* PROOF */}
         <section aria-label="By the numbers" className="border-y border-line bg-white">
           <div className="mx-auto grid max-w-[1240px] gap-6 px-5 py-7 [grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))]">
-            {[["50K+", "resumes built"], ["~3 min", "to a first draft"], ["60+", "ATS-ready templates"], ["4.8/5", "average rating"]].map(([v, l]) => (
+            {[["50K+", "resumes built"], ["~3 min", "to a first draft"], ["30+", "ATS-ready templates"], ["4.8/5", "average rating"]].map(([v, l]) => (
               <div key={l}><div className="font-display text-4xl font-extrabold">{v}</div><div className="text-text-muted">{l}</div></div>
             ))}
           </div>
@@ -265,7 +266,7 @@ export default function HomePage() {
               <div className={`${eyebrow} text-brand`}>TEMPLATES</div>
               <h2 className={`${h2} text-[34px] tracking-[-1.3px] min-[761px]:text-[46px]`}>Designs recruiters actually like.</h2>
             </div>
-            <Link href="/resume-templates" className="inline-flex min-h-[44px] items-center font-extrabold text-brand">Browse all 60+ →</Link>
+            <Link href="/resume-templates" className="inline-flex min-h-[44px] items-center font-extrabold text-brand">Browse all 30+ →</Link>
           </div>
           <div className="grid gap-[22px] [grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))]">
             {TEMPLATES.map((t) => (
@@ -297,7 +298,7 @@ export default function HomePage() {
               <b className="font-display text-[22px]">Pro</b>
               <span><span className="font-display text-[44px] font-extrabold">$9.99</span><span className="text-[#CFEDE4]"> per month</span></span>
               <ul className="m-0 flex flex-col gap-2 pl-[18px] text-[#E8F7F2]">
-                <li>Unlimited resumes and cover letters</li><li>All 60+ templates and Word export</li><li>Full ATS report and every job match</li><li>Auto-Apply up to 50 jobs a day</li>
+                <li>Unlimited resumes and cover letters</li><li>All 30+ templates and Word export</li><li>Full ATS report and every job match</li><li>Auto-Apply up to 50 jobs a day</li>
               </ul>
               <Link href="/pricing" className="mt-auto rounded-[14px] bg-white p-[15px] text-center font-extrabold text-brand no-underline">See Pro plans</Link>
             </div>
@@ -326,6 +327,7 @@ export default function HomePage() {
             <Link href="/signup" className="rounded-[14px] bg-sun px-7 py-[18px] text-[17px] font-extrabold text-ink no-underline">Create my free account</Link>
           </div>
         </section>
+        <section className="mx-auto w-full max-w-[860px] px-5 pb-16"><EmailCaptureCard source="home" /></section>
       </main>
       <Footer />
     </div>

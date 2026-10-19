@@ -2,23 +2,11 @@
 
 import Link from "next/link";
 import { upgradeHref } from "@/lib/upgrade-triggers";
+import { FREE_FEATURES, PRO_FEATURES, PRICING } from "@/lib/site-config";
+import { track } from "@/lib/analytics";
 
-const FREE = [
-  "1 resume, free templates",
-  "AI writer with daily rewrites",
-  "ATS score and top 3 fixes",
-  "PDF download",
-  "Free ATS checker, unlimited",
-];
-const PRO = [
-  "Unlimited resumes and cover letters",
-  "All 60+ templates",
-  "Word (.docx) export",
-  "Full 30-point ATS report + job-description match",
-  "Every job match scored against your resume",
-  "Auto-Apply: up to 50 jobs a day, with review mode",
-  "Priority support",
-];
+const FREE = FREE_FEATURES;
+const PRO = PRO_FEATURES;
 
 function Tick({ color }: { color: string }) {
   return (
@@ -51,7 +39,7 @@ export default function PricingToggle() {
             <span className="font-display text-[52px] font-extrabold">$0</span>
             <span className="text-text-muted"> forever</span>
           </div>
-          <Link href="/signup" className="flex min-h-[44px] items-center justify-center rounded-[14px] border-[1.5px] border-ink p-4 text-center font-bold text-ink no-underline">Start free</Link>
+          <Link href="/signup?from=pricing" onClick={() => track("sign_up_start", { source: "pricing" })} className="flex min-h-[44px] items-center justify-center rounded-[14px] border-[1.5px] border-ink p-4 text-center font-bold text-ink no-underline">Start free</Link>
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {FREE.map((f) => (
               <li key={f} className="flex gap-2.5 leading-[1.4]"><Tick color="#0B6E5F" />{f}</li>
@@ -60,18 +48,19 @@ export default function PricingToggle() {
         </div>
 
         <div className="relative flex flex-col gap-5 rounded-3xl bg-ink p-8 text-white shadow-[0_30px_60px_rgba(13,27,25,.25)]">
-          <span className="absolute -top-3.5 left-8 rounded-full bg-sun px-3 py-1.5 text-[13px] font-extrabold text-ink">MOST CHOSEN</span>
+          <span className="absolute -top-3.5 left-8 rounded-full bg-sun px-3 py-1.5 text-[13px] font-extrabold text-ink">BEST FOR APPLYING</span>
           <div>
             <div className="font-display text-2xl font-bold">Pro</div>
             <div className="mt-1 text-on-dark-muted">Everything to land interviews faster</div>
           </div>
           <div>
-            <span className="font-display text-[52px] font-extrabold">$9.99</span>
+            <span className="font-display text-[52px] font-extrabold">${PRICING.proMonthly}</span>
             <span className="text-on-dark-muted"> /month</span>
             <div className="mt-1 text-sm text-on-dark-muted">Billed monthly. Cancel any time.</div>
           </div>
           <Link
             href={upgradeHref("pricing", "monthly")}
+            onClick={() => track("upgrade_prompt_click", { trigger: "pricing", surface: "pricing_card" })}
             className="flex min-h-[44px] items-center justify-center rounded-[14px] bg-mint-bright p-4 text-center font-extrabold text-ink no-underline"
           >
             Get Pro

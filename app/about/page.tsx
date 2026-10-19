@@ -17,7 +17,7 @@ const VALUES = [
 export default function AboutPage() {
   const stats = [
     { v: "50K+", l: "resumes built" },
-    { v: "60+", l: "templates" },
+    { v: "30+", l: "templates" },
     { v: String(RESUME_EXAMPLES.length), l: "resume examples" },
   ];
   return (

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import FreePlanCard from '@/components/portal/free-plan-card';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
@@ -355,13 +356,7 @@ export default function DashboardPage() {
             <Link href="/dashboard/ats-checker" className="border-b border-[#EEEBE3] py-2.5 font-semibold text-ink no-underline">Match resume to a job ad</Link>
             <Link href="/resume-templates" className="py-2.5 font-semibold text-ink no-underline">Try a new template</Link>
           </div>
-          {!isPro && (
-            <div className="flex flex-col gap-2.5 rounded-[22px] bg-sun-soft p-5">
-              <b className="font-display text-xl leading-[1.2]">Let Auto-Apply send your top matches</b>
-              <span className="text-sm leading-normal text-text-muted">Approve each one, or let it run above your match score.</span>
-              <Link href={upgradeHref('auto_apply')} className="rounded-xl bg-ink p-[13px] text-center font-extrabold text-white no-underline">Go Pro · $9.99/mo</Link>
-            </div>
-          )}
+          {!isPro && <FreePlanCard resumeCount={resumes.length} />}
         </aside>
       </div>
     </div>

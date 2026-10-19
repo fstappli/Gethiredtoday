@@ -106,3 +106,7 @@ export function ogImageUrl(title: string, sub?: string): string {
   if (sub) p.set('sub', sub);
   return `/og?${p.toString()}`;
 }
+
+export function ogImages(title: string, sub?: string) {
+  return [{ url: ogImageUrl(title, sub), width: 1200, height: 630, alt: title }];
+}

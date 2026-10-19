@@ -1,3 +1,8 @@
+import { INTERVIEW_POSTS } from "@/lib/guides/interview";
+import { JOB_SEARCH_POSTS } from "@/lib/guides/job-search";
+import { RESUME_POSTS } from "@/lib/guides/resume";
+import { BACKFILL } from "@/lib/guides/backfill";
+
 export interface BlogPost {
   slug: string;
   title: string;
@@ -7,20 +12,24 @@ export interface BlogPost {
   category: string;
   gradient: string;
   content: string; // HTML string
+  /** One or two sentences an AI engine or a skimming reader can lift as the answer. */
+  quickAnswer?: string;
+  /** Answer-first, standalone Q&As. Rendered visibly and as FAQPage schema. */
+  faqs?: { q: string; a: string }[];
 }
 
-export const BLOG_POSTS: BlogPost[] = [
+const BASE_POSTS: BlogPost[] = [
   {
     slug: "how-to-write-ats-friendly-resume-2025",
     title: "How to Write an ATS-Friendly Resume in 2025",
-    description: "75% of resumes are rejected by ATS before a human sees them. Here's exactly how to beat the bots and land more interviews.",
+    description: "Many employers use applicant tracking systems to filter resumes before a person reads them. Here's exactly how to format yours so it gets read and lands more interviews.",
     date: "2025-04-10",
     readTime: "8 min read",
     category: "Resume Tips",
     gradient: "from-teal-500 to-cyan-600",
     content: `
 <h2>What Is an ATS and Why Does It Matter?</h2>
-<p>An Applicant Tracking System (ATS) is software used by 99% of Fortune 500 companies and most mid-size businesses to automatically screen, rank, and filter resumes before a recruiter ever sees them. Industry research suggests <strong>roughly 75% of resumes are rejected by ATS before reaching a human</strong>.</p>
+<p>An Applicant Tracking System (ATS) is software that many large and mid-size employers use to collect, screen, rank and filter resumes before a recruiter reads them. <strong>If your resume is hard for the software to read, a person may never see it</strong>.</p>
 <p>The system scans your resume for keywords, formatting compatibility, and relevance to the job description. If your resume fails these checks, you're invisible, regardless of how qualified you are.</p>
 
 <h2>The 7 Rules for ATS-Friendly Resumes</h2>
@@ -168,7 +177,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Every bullet point should answer: <em>what happened because you were there?</em> If the bullet sounds like it could have been on anyone's job description, rewrite it with a metric.</p>
 
 <h2>Mistake 2: Not Tailoring for Each Application</h2>
-<p>Sending the same resume to every job is one of the biggest silent killers. ATS systems score your resume against the job description, a generic resume typically scores 30–50% lower than a tailored one.</p>
+<p>Sending the same resume to every job is one of the biggest silent killers. ATS systems score your resume against the job description, a generic resume usually matches fewer of the job's keywords than a tailored one.</p>
 <p>You don't need to rewrite your entire resume for every job. Make these targeted changes:</p>
 <ul>
   <li>Adjust your professional summary to reflect the role</li>
@@ -216,7 +225,7 @@ export const BLOG_POSTS: BlogPost[] = [
 </ol>
 
 <h2>Mistake 7: Typos, Inconsistent Formatting, and Grammar Errors</h2>
-<p>Surveys consistently show that 60–70% of hiring managers will reject a resume with a single typo. In competitive hiring environments, a typo signals carelessness, exactly the wrong message.</p>
+<p>Many hiring managers say a single typo can be enough to pass on a resume. In competitive hiring environments, a typo signals carelessness, exactly the wrong message.</p>
 <p>How to catch them:</p>
 <ul>
   <li>Read your resume backwards (bottom to top) to catch spelling errors your brain autocorrects</li>
@@ -342,9 +351,9 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>The Format Trend in 2026</h2>
 <p>Here's what we're seeing across the job market:</p>
 <ul>
-  <li><strong>Chronological is still dominant</strong>, about 60% of resumes follow this format.</li>
-  <li><strong>Combination is on the rise</strong>, up from ~15% three years ago to ~30% now.</li>
-  <li><strong>Functional is declining</strong>, only about 10% of submissions now, and trending lower.</li>
+  <li><strong>Chronological is still the most common</strong> format, and the one recruiters and ATS software expect.</li>
+  <li><strong>Combination is popular with career changers</strong>, because it puts skills first without hiding your history.</li>
+  <li><strong>Functional is the least common</strong> and is often distrusted by recruiters, so use it with care.</li>
 </ul>
 <p>The trend is clear: <strong>hiring managers want to know both what you can do AND where you proved it.</strong> The combination format delivers both.</p>
 
@@ -402,7 +411,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>The formula: <em>[situation] → [what you did] → [measurable outcome] → [why it matters for this role].</em></p>
 <p><strong>Example:</strong></p>
 <p>"At my previous role, our email open rates had flatlined at 14% for over a year. I rebuilt the segmentation model using purchase behavior instead of demographics, ran a four-week A/B test against the existing approach, and pushed open rates to 31% while growing revenue per send by 47%. I'd bring that same diagnostic approach to Acme's lifecycle marketing, especially given what I've read about the upcoming loyalty program expansion."</p>
-<p>Notice how it ties back to the company at the end. That's the part 90% of cover letters skip.</p>
+<p>Notice how it ties back to the company at the end. That's the part many cover letters skip.</p>
 
 <h3>Paragraph 3: Close (2–3 sentences)</h3>
 <p>End with a confident, specific call to action. Don't beg. Don't grovel. Don't use "Thank you for your consideration" as your entire closing, it reads like filler.</p>
@@ -495,7 +504,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>Hard Skills vs Soft Skills, and Why the Balance Matters</h2>
 <p><strong>Hard skills</strong> are specific, teachable, and usually tool- or process-based. They're the ones ATS parsers love because they're concrete and searchable. Examples: Python, SQL, Figma, Salesforce, French (B2), SEO, Agile/Scrum, financial modeling, CAD, video editing in Premiere Pro.</p>
 <p><strong>Soft skills</strong> are harder to measure but often the thing that actually gets you hired once you're in the room. ATS parsers rarely trigger on soft skills, but human readers weight them heavily. Examples: stakeholder management, cross-functional collaboration, executive communication, mentoring, conflict resolution.</p>
-<p><strong>The right ratio for 2026:</strong> About 70% hard skills, 30% soft skills in your skills section. List 8–12 skills total, more looks like padding, less looks like you're hiding something.</p>
+<p><strong>A good balance for 2026:</strong> mostly hard skills, supported by a few soft skills, in your skills section. List 8–12 skills total, more looks like padding, less looks like you're hiding something.</p>
 
 <h2>What to Cut from Your Skills Section (Immediately)</h2>
 <ul>
@@ -601,7 +610,7 @@ Python • SQL • Tableau • dbt • Snowflake • Airflow • A/B testing •
   {
     slug: "ats-resume-checker-2026",
     title: "ATS Resume Checker 2026: What Actually Works",
-    description: "Over 90% of Fortune 500 companies screen resumes with ATS software. Here's how to check yours, and the 30-point rubric most tools don't tell you about.",
+    description: "Many large employers screen resumes with ATS software. Here's how to check yours, and what a thorough ATS check should cover.",
     date: "2026-04-18",
     readTime: "9 min read",
     category: "ATS",
@@ -714,6 +723,13 @@ Python • SQL • Tableau • dbt • Snowflake • Airflow • A/B testing •
     `,
   },
 ];
+
+export const BLOG_POSTS: BlogPost[] = [
+  ...BASE_POSTS,
+  ...INTERVIEW_POSTS,
+  ...JOB_SEARCH_POSTS,
+  ...RESUME_POSTS,
+].map((p) => ({ ...p, ...(BACKFILL[p.slug] ?? {}) }));
 
 export function getPostBySlug(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((p) => p.slug === slug);

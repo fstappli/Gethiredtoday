@@ -3,7 +3,7 @@ import LegalPage from "@/components/legal-page";
 
 export const metadata = {
   title: "Terms of Service",
-  description: "Terms and conditions governing the use of GetHiredToday.",
+  description: "The terms and conditions that apply when you use GetHiredToday, including accounts, subscriptions, acceptable use and cancellation.",
 };
 
 export default function TermsPage() {

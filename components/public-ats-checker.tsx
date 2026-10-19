@@ -217,9 +217,6 @@ export default function PublicAtsChecker() {
               <span className="grid h-[22px] w-[22px] place-items-center rounded-full bg-white text-[13px] font-extrabold text-ink">G</span>
               Continue with Google
             </button>
-            <button type="button" onClick={() => saveAndGo("/signup?from=ats")} className="min-h-[44px] rounded-xl border-[1.5px] border-line-strong bg-white p-3.5 font-bold text-ink">
-              Continue with LinkedIn
-            </button>
             <button type="button" onClick={() => saveAndGo("/signup?from=ats")} className="min-h-[44px] p-2 font-bold text-brand">
               Use email instead
             </button>

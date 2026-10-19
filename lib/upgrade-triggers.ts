@@ -11,6 +11,11 @@ export const UPGRADE_TRIGGERS = [
   'nav',
   'billing',
   'pricing',
+  'email_feature_reveal',
+  'email_upgrade_offer',
+  'email_day10',
+  'email_day14',
+  'email_subscription_ending',
 ] as const;
 
 export type UpgradeTrigger = (typeof UPGRADE_TRIGGERS)[number];
@@ -34,8 +39,13 @@ export const UPGRADE_COPY: Record<UpgradeTrigger, { title: string; body: string 
   cover_letter_download: { title: 'Download unlimited cover letters', body: 'You can write and preview cover letters for free. Pro unlocks downloads.' },
   full_ats_report: { title: 'Open the full ATS report', body: 'You already have your score and top 3 fixes. Pro adds the full 30-point report and job ad matching.' },
   ai_limit: { title: 'You used your 5 free AI rewrites today', body: 'Pro gives you unlimited AI bullet rewrites.' },
-  templates: { title: 'This template is on Pro', body: 'Pro unlocks all 60+ templates.' },
+  templates: { title: 'This template is on Pro', body: 'Pro unlocks all 30+ templates.' },
   nav: { title: 'Go Pro', body: 'Unlimited resumes, all templates, Word export and Auto-Apply.' },
   billing: { title: 'Go Pro', body: 'Unlimited resumes, all templates, Word export and Auto-Apply.' },
   pricing: { title: 'Go Pro', body: 'Unlimited resumes, all templates, Word export and Auto-Apply.' },
+  email_feature_reveal: { title: 'Go Pro', body: 'Unlimited AI rewrites, unlimited resumes, all templates and Word export.' },
+  email_upgrade_offer: { title: 'Go Pro', body: 'Unlimited resumes, all templates, Word export and Auto-Apply.' },
+  email_day10: { title: 'Go Pro', body: 'Unlimited AI rewrites, the full ATS report and Auto-Apply.' },
+  email_day14: { title: 'Go Pro', body: 'Unlimited resumes, all templates, Word export and Auto-Apply.' },
+  email_subscription_ending: { title: 'Keep Pro', body: 'Resubscribe to keep unlimited resumes, all templates and Word export.' },
 };

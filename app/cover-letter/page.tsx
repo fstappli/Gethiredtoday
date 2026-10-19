@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   title: "Cover Letter Builder: a letter that sounds like you",
   description:
     "Paste the job ad. We pull the best parts of your resume into a warm, specific letter you can edit line by line.",
-  alternates: { canonical: "https://hiredtodayapp.com/cover-letter" },
+  alternates: { canonical: "https://www.hiredtodayapp.com/cover-letter" },
 };
 
 const FEATURES = [
@@ -62,6 +62,22 @@ export default function CoverLetterLandingPage() {
             <h2 className="font-display m-0 text-[32px] font-bold tracking-[-1.1px] min-[761px]:text-[40px]">Write and preview your letter free.</h2>
             <p className="m-0 text-on-dark-muted">Downloading cover letters is part of Pro, along with unlimited resumes.</p>
             <Link href="/signup" className="rounded-[14px] bg-mint-bright px-[26px] py-[17px] font-extrabold text-ink no-underline">Create free account</Link>
+          </div>
+        </section>
+        <section aria-labelledby="cl-examples-heading" className="mx-auto max-w-[1240px] px-5 pb-16">
+          <h2 id="cl-examples-heading" className="font-display m-0 mb-3 text-[28px] font-bold">Cover letter examples by role</h2>
+          <div className="flex flex-wrap gap-2.5">
+            {[
+              ["software-engineer", "Software engineer"],
+              ["marketing-manager", "Marketing manager"],
+              ["registered-nurse", "Registered nurse"],
+              ["product-manager", "Product manager"],
+              ["data-analyst", "Data analyst"],
+              ["high-school-teacher", "Teacher"],
+            ].map(([slug, label]) => (
+              <Link key={slug} href={`/cover-letter-examples/${slug}`} className="flex min-h-[44px] items-center rounded-xl border border-line bg-white px-4 font-bold text-ink no-underline hover:border-ink">{label}</Link>
+            ))}
+            <Link href="/cover-letter-examples" className="flex min-h-[44px] items-center px-2 font-extrabold text-brand no-underline">All examples →</Link>
           </div>
         </section>
       </main>

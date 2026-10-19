@@ -98,8 +98,8 @@ export default function ProUpgradeModal({
     trigger === 'word'
       ? 'Download editable Microsoft Word (.doc) files, included with your Pro subscription at $9.99/month.'
       : templateLabel
-      ? `The ${templateLabel} template is part of our Pro collection. Unlock it, along with all 60+ templates, AI writing, ATS checking, and Auto-Apply for just $9.99/month.`
-      : 'Unlock all 60+ premium templates, AI writing, ATS checking, and Auto-Apply for $9.99/month, less than your morning coffee.';
+      ? `The ${templateLabel} template is part of our Pro collection. Unlock it, along with all 30+ templates, AI writing, ATS checking, and Auto-Apply for just $9.99/month.`
+      : 'Unlock all 30+ premium templates, AI writing, ATS checking, and Auto-Apply for $9.99/month, less than your morning coffee.';
 
   return (
     <div

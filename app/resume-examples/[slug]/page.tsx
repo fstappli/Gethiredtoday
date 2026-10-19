@@ -6,11 +6,19 @@ import Footer from '@/components/footer';
 import ResumeThumb from '@/components/resume-thumb';
 import { RESUME_EXAMPLES, getExampleBySlug } from '@/lib/resume-examples-data';
 import { layoutForIndustry, previewForExample } from '@/lib/example-thumb';
+import { exampleFaqs, exampleQuickAnswer } from '@/lib/example-seo';
+import { COVER_LETTER_EXAMPLES } from '@/lib/cover-letter-examples';
+import { absoluteUrl } from '@/lib/site-config';
+import { breadcrumbSchema, faqSchema , ogImages } from '@/lib/seo/jsonld';
+import JsonLd from '@/components/seo/json-ld';
+import { InlineSignupCta } from '@/components/seo/inline-cta';
 
 interface Props { params: Promise<{ slug: string }> }
 
 /** No em dashes in user-facing copy. */
 const clean = (s: string) => s.replace(/\s*—\s*/g, ', ');
+
+export const dynamicParams = false;
 
 export async function generateStaticParams() {
   return RESUME_EXAMPLES.map((e) => ({ slug: e.slug }));
@@ -20,13 +28,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const ex = getExampleBySlug(slug);
   if (!ex) return {};
-  const title = clean(ex.metaTitle);
+  const title = `${ex.title} Resume Example and Template`;
   const description = clean(ex.metaDescription);
   return {
     title,
     description,
-    alternates: { canonical: `https://hiredtodayapp.com/resume-examples/${ex.slug}` },
-    openGraph: { title, description, url: `https://hiredtodayapp.com/resume-examples/${ex.slug}`, type: 'article' },
+    alternates: { canonical: absoluteUrl(`/resume-examples/${ex.slug}`) },
+    openGraph: { title, description, url: absoluteUrl(`/resume-examples/${ex.slug}`), type: 'article', images: ogImages(title, 'Resume example') },
+    twitter: { card: 'summary_large_image', title, description, images: ogImages(title, 'Resume example') },
   };
 }
 
@@ -35,14 +44,19 @@ export default async function ExamplePage({ params }: Props) {
   const ex = getExampleBySlug(slug);
   if (!ex) notFound();
 
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'Article',
-    headline: clean(ex.metaTitle),
-    description: clean(ex.metaDescription),
-    url: `https://hiredtodayapp.com/resume-examples/${ex.slug}`,
-    publisher: { '@type': 'Organization', name: 'GetHiredToday', url: 'https://hiredtodayapp.com' },
-  };
+  const path = `/resume-examples/${ex.slug}`;
+  const faqs = exampleFaqs(ex);
+  const quickAnswer = clean(exampleQuickAnswer(ex));
+  const letter = COVER_LETTER_EXAMPLES.find((c) => c.resumeSlug === ex.slug);
+  const schemas = [
+    { '@context': 'https://schema.org', '@type': 'WebPage', name: clean(ex.metaTitle), description: clean(ex.metaDescription), url: absoluteUrl(path) },
+    breadcrumbSchema([
+      { name: 'Home', path: '/' },
+      { name: 'Resume examples', path: '/resume-examples' },
+      { name: `${ex.title} resume example`, path },
+    ]),
+    faqSchema(faqs.map((f) => ({ q: clean(f.q), a: clean(f.a) }))),
+  ];
 
   const related = RESUME_EXAMPLES.filter((e) => e.slug !== ex.slug && e.industry === ex.industry)
     .concat(RESUME_EXAMPLES.filter((e) => e.slug !== ex.slug && e.industry !== ex.industry))
@@ -52,7 +66,7 @@ export default async function ExamplePage({ params }: Props) {
 
   return (
     <div className="bg-ground-site text-ink">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      <JsonLd data={schemas} />
       <Navbar />
       <main>
         <div className="mx-auto max-w-[1240px] px-5 pt-7">
@@ -65,6 +79,10 @@ export default async function ExamplePage({ params }: Props) {
           </nav>
           <h1 className="font-display mb-1.5 mt-3.5 text-[36px] font-bold leading-[1.04] tracking-[-1.6px] min-[761px]:text-[52px]">{ex.title} resume example</h1>
           <p className="m-0 max-w-[720px] text-lg leading-normal text-text-muted">{clean(ex.intro)}</p>
+          <section aria-label="Quick answer" className="mt-5 max-w-[820px] rounded-2xl border-l-4 border-brand bg-mint-soft p-5">
+            <div className="text-xs font-extrabold tracking-[1px] text-brand-dark">QUICK ANSWER</div>
+            <p className="m-0 mt-1.5 text-lg font-semibold leading-[1.55]">{quickAnswer}</p>
+          </section>
         </div>
 
         <section className="mx-auto flex max-w-[1240px] flex-wrap items-start gap-8 px-5 pb-14 pt-7">
@@ -134,13 +152,29 @@ export default async function ExamplePage({ params }: Props) {
           </div>
         </section>
 
-        <section className="mx-auto flex max-w-[1240px] flex-col gap-4 px-5 pb-[72px] pt-14">
-          <h2 className="font-display m-0 text-[28px] font-bold">Related examples</h2>
+        <section aria-labelledby="faq-heading" className="mx-auto max-w-[820px] px-5 pb-4 pt-14">
+          <h2 id="faq-heading" className="font-display m-0 mb-2 text-[30px] font-bold">{ex.title} resume FAQs</h2>
+          {faqs.map((f, i) => (
+            <details key={f.q} open={i === 0} className="border-b border-line py-4">
+              <summary className="flex min-h-[44px] cursor-pointer items-center text-[17px] font-bold">{clean(f.q)}</summary>
+              <p className="mb-0 mt-1.5 text-[17px] leading-[1.65] text-text-muted">{clean(f.a)}</p>
+            </details>
+          ))}
+          <InlineSignupCta source="example" />
+        </section>
+
+        <section className="mx-auto flex max-w-[1240px] flex-col gap-4 px-5 pb-[72px] pt-10">
+          <h2 className="font-display m-0 text-[28px] font-bold">Related roles</h2>
           <div className="flex flex-wrap gap-2.5">
             {related.map((r) => (
               <Link key={r.slug} href={`/resume-examples/${r.slug}`} className="flex min-h-[44px] items-center rounded-xl border border-line bg-white px-4 font-bold text-ink no-underline hover:border-ink">{r.title}</Link>
             ))}
           </div>
+          {letter && (
+            <p className="m-0 text-[15px] text-text-muted">
+              Applying for this role? See the <Link href={`/cover-letter-examples/${letter.slug}`} className="font-semibold text-brand">{ex.title.toLowerCase()} cover letter example</Link>.
+            </p>
+          )}
         </section>
       </main>
       <Footer />

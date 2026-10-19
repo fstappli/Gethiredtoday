@@ -5,8 +5,9 @@ const FROM = process.env.EMAIL_FROM ?? 'HiredTodayApp <hello@hiredtodayapp.com>'
 
 export async function POST(request: NextRequest) {
   try {
-    const secret = process.env.INTERNAL_API_SECRET;
-    if (secret && request.headers.get('x-internal-secret') !== secret) {
+    // Internal only: fail closed. Without this anyone could send mail from our domain.
+    const secret = process.env.INTERNAL_API_SECRET || process.env.CRON_SECRET;
+    if (!secret || request.headers.get('x-internal-secret') !== secret) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest) {
     const { Resend } = await import('resend');
     const resend = new Resend(process.env.RESEND_API_KEY);
 
-    const { subject, html } = welcomeEmail(firstName ?? email.split('@')[0]);
+    const { subject, html } = welcomeEmail(firstName ?? email.split("@")[0], { email });
 
     const { error } = await resend.emails.send({
       from: FROM,

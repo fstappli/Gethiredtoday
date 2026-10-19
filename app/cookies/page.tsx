@@ -2,7 +2,7 @@ import LegalPage from "@/components/legal-page";
 
 export const metadata = {
   title: "Cookie policy",
-  description: "Which cookies GetHiredToday uses and how to opt out.",
+  description: "Which cookies GetHiredToday uses, why we use only essential cookies for sign-in and sessions, and how to control cookies in your browser.",
 };
 
 export default function CookiesPage() {

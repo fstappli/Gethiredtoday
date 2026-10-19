@@ -83,6 +83,14 @@ export default async function ResourcesPage({ searchParams }: { searchParams: Pr
             <WeeklyTipsForm />
           </div>
         </section>
+        <section aria-labelledby="more-heading" className="mx-auto max-w-[1100px] px-5 pb-14">
+          <h2 id="more-heading" className="font-display m-0 mb-3 text-[26px] font-bold">More to explore</h2>
+          <div className="flex flex-wrap gap-2.5">
+            <Link href="/cover-letter-examples" className="flex min-h-[44px] items-center rounded-xl border border-line bg-white px-4 font-bold text-ink no-underline hover:border-ink">Cover letter examples by role</Link>
+            <Link href="/resume-examples" className="flex min-h-[44px] items-center rounded-xl border border-line bg-white px-4 font-bold text-ink no-underline hover:border-ink">Resume examples</Link>
+            <Link href="/ats-checker" className="flex min-h-[44px] items-center rounded-xl border border-line bg-white px-4 font-bold text-ink no-underline hover:border-ink">Free ATS checker</Link>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

@@ -32,7 +32,7 @@ type EmailType =
 
 const TEMPLATES: Record<
   EmailType,
-  { render: (firstName: string) => { subject: string; html: string }; upsell: boolean }
+  { render: (firstName: string, ctx?: { userId?: string; email?: string }) => { subject: string; html: string }; upsell: boolean }
 > = {
   welcome:           { render: welcomeEmail,         upsell: false },
   ats_education:     { render: atsEducationEmail,    upsell: false },
@@ -155,7 +155,7 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      const { subject, html } = tmpl.render(firstNameFromProfile(profile));
+      const { subject, html } = tmpl.render(firstNameFromProfile(profile), { userId: row.user_id, email: profile.email });
 
       const { error: sendErr } = await resend.emails.send({
         from: FROM,

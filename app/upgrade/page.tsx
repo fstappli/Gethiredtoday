@@ -12,7 +12,7 @@ const BENEFITS = [
   'All job matches, scored daily',
   'Auto-Apply with review mode',
   'Unlimited resumes and cover letter downloads',
-  'Word export and all 60+ templates',
+  'Word export and all 30+ templates',
   'Full 30-point ATS report',
   'Unlimited AI bullet rewrites',
 ];

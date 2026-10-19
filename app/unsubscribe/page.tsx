@@ -23,6 +23,10 @@ async function markUnsubscribed(params: { email?: string; uid?: string }): Promi
     ? await query.eq('id', uid)
     : await query.eq('email', email ?? '');
 
+  if (email) {
+    // Also stop the lead checklist list; the table may not exist yet, so ignore errors.
+    await supabase.from('leads').update({ unsubscribed_at: new Date().toISOString() }).eq('email', email.toLowerCase()).then(() => undefined, () => undefined);
+  }
   return error ? 'error' : 'success';
 }
 

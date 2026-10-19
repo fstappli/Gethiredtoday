@@ -1,31 +1,51 @@
+import { SITE, SITE_URL, PRICING } from '@/lib/site-config';
+
 const brand = {
-  color: '#4AB7A6',
-  name: 'HiredTodayApp',
-  url: 'https://hiredtodayapp.com',
-  logo: 'https://hiredtodayapp.com/og-image.png',
-  from: 'hello@hiredtodayapp.com',
-  unsubscribe: 'https://hiredtodayapp.com/unsubscribe',
+  color: '#0B6E5F',
+  name: SITE.name,
+  url: SITE_URL,
+  from: SITE.email,
 };
 
-function base(body: string): string {
+/** Optional per-recipient context so every email can carry a working unsubscribe link. */
+export interface EmailCtx {
+  userId?: string;
+  email?: string;
+}
+
+function unsubscribeUrl(ctx?: EmailCtx): string {
+  if (ctx?.userId) return `${brand.url}/unsubscribe?uid=${encodeURIComponent(ctx.userId)}`;
+  if (ctx?.email) return `${brand.url}/unsubscribe?email=${encodeURIComponent(ctx.email)}`;
+  return `${brand.url}/unsubscribe`;
+}
+
+/** Link back to the site with UTM params so email conversions can be measured. */
+export function emailLink(path: string, campaign: string): string {
+  const u = new URL(path, brand.url);
+  u.searchParams.set('utm_source', 'email');
+  u.searchParams.set('utm_medium', 'lifecycle');
+  u.searchParams.set('utm_campaign', campaign);
+  return u.toString();
+}
+
+const PRICE = `$${PRICING.proMonthly}`;
+
+function base(body: string, ctx?: EmailCtx): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${brand.name}</title></head>
-<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 16px;">
+<body style="margin:0;padding:0;background:#f6f5f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f6f5f0;padding:32px 16px;">
     <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e2e8f0;">
-        <!-- Header -->
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #e6e3da;">
         <tr><td style="background:${brand.color};padding:24px 32px;">
           <a href="${brand.url}" style="color:#ffffff;font-size:20px;font-weight:800;text-decoration:none;letter-spacing:-0.5px;">${brand.name}</a>
         </td></tr>
-        <!-- Body -->
         <tr><td style="padding:32px;">${body}</td></tr>
-        <!-- Footer -->
-        <tr><td style="padding:20px 32px;border-top:1px solid #f1f5f9;background:#f8fafc;">
-          <p style="margin:0;font-size:12px;color:#94a3b8;text-align:center;">
-            © ${new Date().getFullYear()} ${brand.name} ·
-            <a href="${brand.unsubscribe}" style="color:#94a3b8;">Unsubscribe</a>
+        <tr><td style="padding:20px 32px;border-top:1px solid #f1f5f9;background:#fbfaf6;">
+          <p style="margin:0;font-size:12px;color:#5a6662;text-align:center;line-height:1.6;">
+            © ${new Date().getFullYear()} ${brand.name}. You are receiving this because you signed up at ${brand.url}.<br>
+            <a href="${unsubscribeUrl(ctx)}" style="color:#5a6662;">Unsubscribe</a>
           </p>
         </td></tr>
       </table>
@@ -36,184 +56,203 @@ function base(body: string): string {
 }
 
 function h1(text: string) {
-  return `<h1 style="margin:0 0 12px;font-size:28px;font-weight:800;color:#0f172a;line-height:1.2;">${text}</h1>`;
+  return `<h1 style="margin:0 0 12px;font-size:28px;font-weight:800;color:#0d1b19;line-height:1.2;">${text}</h1>`;
 }
 
 function p(text: string) {
-  return `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#475569;">${text}</p>`;
+  return `<p style="margin:0 0 16px;font-size:15px;line-height:1.7;color:#3f4d49;">${text}</p>`;
 }
 
 function btn(text: string, href: string) {
-  return `<div style="margin:24px 0;"><a href="${href}" style="display:inline-block;background:${brand.color};color:#ffffff;font-weight:700;font-size:15px;padding:14px 28px;border-radius:50px;text-decoration:none;">${text}</a></div>`;
+  return `<div style="margin:24px 0;"><a href="${href}" style="display:inline-block;background:${brand.color};color:#ffffff;font-weight:700;font-size:15px;padding:14px 28px;border-radius:12px;text-decoration:none;">${text}</a></div>`;
 }
 
 function divider() {
-  return `<hr style="border:none;border-top:1px solid #e2e8f0;margin:24px 0;">`;
+  return `<hr style="border:none;border-top:1px solid #e6e3da;margin:24px 0;">`;
+}
+
+function list(items: string[]) {
+  return `<ul style="margin:0 0 16px;padding-left:20px;color:#3f4d49;font-size:15px;line-height:2;">${items.map((i) => `<li>${i}</li>`).join('')}</ul>`;
 }
 
 // ─── Email 1: Welcome ──────────────────────────────────────────────────────
-export function welcomeEmail(firstName: string): { subject: string; html: string } {
+export function welcomeEmail(firstName: string, ctx?: EmailCtx): { subject: string; html: string } {
   return {
     subject: "Your resume is waiting, let's make it interview-ready",
     html: base(`
-      ${h1(`Welcome to ${brand.name}, ${firstName || 'friend'}! 👋`)}
-      ${p("You're one step away from having a resume that actually gets you interviews.")}
-      ${p("Here's what you can do right now:")}
-      <ul style="margin:0 0 16px;padding-left:20px;color:#475569;font-size:15px;line-height:2;">
-        <li><strong>Build your resume</strong>, AI writes tailored bullet points in seconds</li>
-        <li><strong>Check your ATS score</strong>, see if your resume passes automated screening</li>
-        <li><strong>Browse templates</strong>, 60+ designs for every industry</li>
-      </ul>
-      ${btn("Build My Resume →", `${brand.url}/builder/resume`)}
+      ${h1(`Welcome to ${brand.name}, ${firstName || 'there'}!`)}
+      ${p("You are one step away from a resume that is easy for both people and applicant tracking systems to read.")}
+      ${p("Here is what you can do right now, free:")}
+      ${list([
+        '<strong>Build your resume</strong> with AI help for your bullet points',
+        '<strong>Check your ATS score</strong> and see your top 3 fixes',
+        '<strong>Download your resume as a PDF</strong>, always free',
+        '<strong>Search jobs</strong> and save the ones you like',
+      ])}
+      ${btn('Build my resume', emailLink('/builder/resume', 'welcome'))}
       ${divider()}
-      ${p("Questions? Just reply to this email, I read every one.")}
-      <p style="margin:0;font-size:15px;color:#475569;">Haroon, Founder of ${brand.name}</p>
-    `),
+      ${p('Questions? Just reply to this email. A real person reads it.')}
+      <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
   };
 }
 
-// ─── Email 2: Day 1, ATS Mistakes ────────────────────────────────────────
-export function atsEducationEmail(firstName: string): { subject: string; html: string } {
+// ─── Email 2: Day 1, ATS basics ────────────────────────────────────────────
+export function atsEducationEmail(firstName: string, ctx?: EmailCtx): { subject: string; html: string } {
   return {
-    subject: "The #1 reason your resume isn't getting callbacks",
+    subject: 'The most common reasons resumes get filtered out',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, here's why most resumes fail.`)}
-      ${p("75% of resumes are rejected by ATS software before a human ever reads them.")}
-      ${p("The most common reasons:")}
-      <ul style="margin:0 0 16px;padding-left:20px;color:#475569;font-size:15px;line-height:2;">
-        <li>Missing keywords from the job description</li>
-        <li>Tables, columns, or graphics that ATS can't parse</li>
-        <li>Non-standard section headings (e.g., "Career Journey" instead of "Experience")</li>
-        <li>Wrong file format (some ATS systems can't read PDFs from certain editors)</li>
-      </ul>
-      ${p("Our ATS Checker scans your resume against 30+ criteria and tells you exactly what to fix.")}
-      ${btn("Check My ATS Score →", `${brand.url}/ats-checker`)}
+      ${h1(`${firstName || 'Hey'}, here is why good resumes get skipped.`)}
+      ${p('Many employers use applicant tracking systems (ATS) to sort applications before a person reads them. A resume can be strong and still be hard for that software to read.')}
+      ${p('The most common problems:')}
+      ${list([
+        'Missing keywords from the job description',
+        'Tables, text boxes or graphics that the software cannot read',
+        'Unusual section headings, such as "Career Journey" instead of "Experience"',
+        'A PDF made from an image or a design tool, so the text cannot be selected',
+      ])}
+      ${p('The ATS checker scores your resume and shows your top 3 fixes for free. Pro unlocks the full 30-point report and matching against a job ad.')}
+      ${btn('Check my ATS score', emailLink('/dashboard/ats-checker', 'ats_education'))}
       ${divider()}
-      ${p("See you tomorrow with more tips.")}
-      <p style="margin:0;font-size:15px;color:#475569;">Haroon</p>
-    `),
+      <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
   };
 }
 
-// ─── Email 3: Day 3, Feature reveal ──────────────────────────────────────
-export function featureRevealEmail(firstName: string): { subject: string; html: string } {
+// ─── Email 3: Day 3, AI bullets ────────────────────────────────────────────
+export function featureRevealEmail(firstName: string, ctx?: EmailCtx): { subject: string; html: string } {
   return {
-    subject: "The AI feature most job seekers don't know about",
+    subject: 'Turn your duties into results with the AI bullet writer',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, did you try this yet?`)}
-      ${p("Most people use HiredTodayApp to format their resume. Smart. But the users who get the most callbacks use our <strong>AI Bullet Point Writer</strong>.")}
-      ${p("Here's how it works:")}
-      <ol style="margin:0 0 16px;padding-left:20px;color:#475569;font-size:15px;line-height:2;">
-        <li>Enter your job title and a few notes about what you did</li>
-        <li>Click "AI Enhance"</li>
-        <li>Get 3 impact-driven bullet points with metrics and action verbs</li>
+      ${h1(`${firstName || 'Hey'}, have you tried this yet?`)}
+      ${p('Recruiters skim. Bullets that start with a strong verb and show a result get read. The AI bullet writer helps you get there.')}
+      ${p('How it works:')}
+      <ol style="margin:0 0 16px;padding-left:20px;color:#3f4d49;font-size:15px;line-height:2;">
+        <li>Open a resume and pick an experience</li>
+        <li>Add a few notes about what you did</li>
+        <li>Ask the AI for stronger bullets, then edit them so they stay true</li>
       </ol>
-      ${p("Example output for a project manager:")}
-      <div style="background:#f0fdf9;border:1px solid #ccfbef;border-radius:12px;padding:16px;margin:0 0 16px;">
-        <p style="margin:0 0 8px;font-size:14px;color:#0f172a;">✅ Led cross-functional team of 12 to deliver $2.4M product redesign 3 weeks ahead of schedule</p>
-        <p style="margin:0 0 8px;font-size:14px;color:#0f172a;">✅ Reduced project delivery time by 35% through agile sprint implementation</p>
-        <p style="margin:0;font-size:14px;color:#0f172a;">✅ Managed stakeholder communications across 4 departments, achieving 98% satisfaction score</p>
+      ${p('An example of the style (made-up numbers, only to show the format):')}
+      <div style="background:#e3f4ee;border-radius:12px;padding:16px;margin:0 0 16px;">
+        <p style="margin:0 0 8px;font-size:14px;color:#0d1b19;">Before: Responsible for managing project timelines</p>
+        <p style="margin:0;font-size:14px;color:#0d1b19;">After: Led a team of 6 to deliver the project 3 weeks early by introducing weekly sprint reviews</p>
       </div>
-      ${btn("Try AI Bullet Writer →", `${brand.url}/builder/resume`)}
-    `),
+      ${p('Free accounts get 5 AI rewrites a day. Pro gives you unlimited rewrites.')}
+      ${btn('Try the bullet writer', emailLink('/dashboard/resumes', 'feature_reveal'))}
+      ${p(`Need more than 5 a day? <a href="${emailLink('/upgrade?from=email_feature_reveal', 'feature_reveal')}" style="color:${brand.color};font-weight:700;">See what Pro adds</a>.`)}
+    `, ctx),
   };
 }
 
-// ─── Email 4: Day 7, Upgrade offer ───────────────────────────────────────
-export function upgradeOfferEmail(firstName: string): { subject: string; html: string } {
+// ─── Email 4: Day 7, Upgrade offer ─────────────────────────────────────────
+export function upgradeOfferEmail(firstName: string, ctx?: EmailCtx): { subject: string; html: string } {
   return {
-    subject: "Your resume isn't done yet, here's what's missing",
+    subject: 'What Pro adds when you are ready to apply',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, one last thing.`)}
-      ${p("You've started building. Now let's finish strong.")}
-      ${p("Pro gives you everything you need to land interviews:")}
-      <ul style="margin:0 0 16px;padding-left:20px;color:#475569;font-size:15px;line-height:2;">
-        <li><strong>Unlimited resumes</strong>, apply to different roles with tailored versions</li>
-        <li><strong>PDF download</strong>, the format recruiters actually want</li>
-        <li><strong>Full AI writing</strong>, unlimited bullet points, summaries, and suggestions</li>
-        <li><strong>All 60+ templates</strong>, including executive and creative designs</li>
-        <li><strong>Full ATS checker</strong>, 30-point analysis with actionable fixes</li>
-      </ul>
-      ${btn("Upgrade to Pro, $9.99/mo →", `${brand.url}/pricing`)}
+      ${h1(`${firstName || 'Hey'}, ready to apply more widely?`)}
+      ${p('Your free plan already includes one resume, PDF download, your ATS score with the top 3 fixes, job search and 5 AI rewrites a day. Pro is for when you start applying to several roles.')}
+      ${list([
+        '<strong>Unlimited resumes</strong>, so you can tailor one to each kind of role',
+        '<strong>All templates</strong> and <strong>Word (.docx) export</strong>',
+        '<strong>Unlimited AI rewrites</strong>',
+        '<strong>Full 30-point ATS report</strong> with job ad matching',
+        '<strong>Match % on every job</strong> and <strong>Auto-Apply</strong> with review mode, up to 50 a day',
+      ])}
+      ${btn(`See Pro, ${PRICE}/month`, emailLink('/upgrade?from=email_upgrade_offer', 'upgrade_offer'))}
       ${divider()}
-      ${p("Cancel anytime. No questions.")}
-      <p style="margin:0;font-size:15px;color:#475569;">Haroon</p>
-    `),
+      ${p('You can cancel from Plan &amp; billing in two clicks.')}
+      <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
   };
 }
 
-// ─── Email 5: Day 10, Last chance (value-based nudge) ────────────────────
-export function day10LastChanceEmail(firstName: string): { subject: string; html: string } {
+// ─── Email 5: Day 10, Value nudge ──────────────────────────────────────────
+export function day10LastChanceEmail(firstName: string, ctx?: EmailCtx): { subject: string; html: string } {
   return {
-    subject: "Your resume is built. The interviews aren't coming yet.",
+    subject: 'Tailoring your resume to each job',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, 10 days in. Time for real talk.`)}
-      ${p("You built a resume on GetHiredToday. Nicely done. But I can see you haven't subscribed yet, and I want to be straight with you about what that's probably costing you.")}
-      ${p("Without Pro, AI suggestions are limited. If you're actively job hunting, you need unlimited rewrites tailored to each job description. After that, you're applying with a static resume against jobs that each want different keywords, and getting filtered out before a human reads them.")}
-      ${p("Pro fixes that. Unlimited AI rewrites, unlimited ATS checks, clean downloads, for less than the cost of a coffee.")}
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#f8fafc;border-radius:12px;padding:20px;text-align:center;">
-        <div style="font-size:12px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin-bottom:8px;">Pro pricing</div>
-        <div style="font-size:36px;font-weight:800;color:${brand.color};line-height:1;margin-bottom:4px;">$9.99<span style="font-size:18px;color:#94a3b8;font-weight:500;">/month</span></div>
-        <div style="font-size:13px;color:#475569;margin-top:12px;">Flat $9.99/month. Cancel any time.</div>
+      ${h1(`${firstName || 'Hey'}, a quick tip for your job search.`)}
+      ${p('Each job ad asks for slightly different skills and keywords. A resume tailored to each ad is easier for ATS software to match and easier for a recruiter to scan.')}
+      ${p('On the free plan you have one resume and 5 AI rewrites a day. If you are applying to several jobs, Pro lets you keep a tailored version for each, with unlimited AI rewrites and the full ATS report to check each one against its job ad.')}
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#fbfaf6;border-radius:12px;padding:20px;text-align:center;">
+        <div style="font-size:12px;color:#5a6662;text-transform:uppercase;letter-spacing:0.05em;font-weight:700;margin-bottom:8px;">Pro</div>
+        <div style="font-size:36px;font-weight:800;color:${brand.color};line-height:1;margin-bottom:4px;">${PRICE}<span style="font-size:18px;color:#5a6662;font-weight:500;">/month</span></div>
+        <div style="font-size:13px;color:#3f4d49;margin-top:12px;">Cancel any time from Plan &amp; billing.</div>
       </td></tr></table>
-      ${btn("Upgrade to Pro →", `${brand.url}/pricing`)}
-      ${p("If $9.99 is still the blocker, and honestly, if it is, the job market is probably what's squeezing you, which is exactly why I made this affordable, hit reply and tell me. I read every email.")}
-      <p style="margin:0;font-size:15px;color:#475569;">Haroon</p>
-    `),
+      ${btn('Compare Free and Pro', emailLink('/upgrade?from=email_day10', 'day10'))}
+      ${p('If something about the product is getting in your way, just reply and tell us.')}
+      <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
   };
 }
 
-// ─── Subscription ending notice (sent when we cancel auto-renew for all users)
+// ─── Subscription ending notice ────────────────────────────────────────────
 export function subscriptionEndingEmail(
   firstName: string,
-  endsAt: string
+  endsAt: string,
+  ctx?: EmailCtx
 ): { subject: string; html: string } {
   return {
-    subject: 'Important: your HiredTodayApp Pro subscription',
+    subject: `Important: your ${brand.name} Pro subscription`,
     html: base(`
       ${h1(`Hi ${firstName || 'there'}, a quick update on your Pro plan.`)}
-      ${p("We're making a change to how subscriptions work on HiredTodayApp. <strong>We are removing automatic billing</strong>, your subscription will <strong>not</strong> auto-renew going forward.")}
-      ${p(`Your Pro access is active until <strong>${endsAt}</strong>. After that date, your account will move to the free plan and Pro features will no longer be available.`)}
-      <div style="background:#f0fdf9;border:1px solid #99f6e4;border-radius:12px;padding:20px;margin:0 0 16px;">
-        <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#0f172a;">What stays the same until ${endsAt}:</p>
-        <ul style="margin:0;padding-left:20px;color:#475569;font-size:14px;line-height:2;">
-          <li>Unlimited resumes &amp; cover letters</li>
-          <li>AI writing &amp; bullet point generation</li>
-          <li>Full ATS analysis</li>
-          <li>All premium templates &amp; PDF downloads</li>
+      ${p("We are making a change to how subscriptions work. <strong>Automatic billing is being removed</strong>, so your subscription will <strong>not</strong> auto-renew.")}
+      ${p(`Your Pro access is active until <strong>${endsAt}</strong>. After that date your account moves to the free plan.`)}
+      <div style="background:#e3f4ee;border-radius:12px;padding:20px;margin:0 0 16px;">
+        <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#0d1b19;">Until ${endsAt} you keep:</p>
+        <ul style="margin:0;padding-left:20px;color:#3f4d49;font-size:14px;line-height:2;">
+          <li>Unlimited resumes and all templates</li>
+          <li>Unlimited AI rewrites</li>
+          <li>The full ATS report and Word export</li>
+          <li>Auto-Apply</li>
         </ul>
       </div>
-      ${p("To keep uninterrupted Pro access after that date, simply resubscribe, it takes under a minute.")}
-      ${btn("Resubscribe to Pro, $9.99/mo →", `${brand.url}/upgrade`)}
+      ${p('After that, your resumes stay in your account and PDF download stays free. To keep Pro, resubscribe any time.')}
+      ${btn(`Resubscribe to Pro, ${PRICE}/month`, emailLink('/upgrade?from=email_subscription_ending', 'subscription_ending'))}
       ${divider()}
-      ${p("Questions? Just reply to this email, we read and respond to every one.")}
-      <p style="margin:0;font-size:15px;color:#475569;">Haroon, Founder of ${brand.name}</p>
-    `),
+      ${p('Questions? Reply to this email.')}
+      <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
   };
 }
 
-// ─── Email 6: Day 14, Win-back ───────────────────────────────────────────
-export function day14WinbackEmail(firstName: string): { subject: string; html: string } {
+// ─── Email 6: Day 14, Win-back ─────────────────────────────────────────────
+export function day14WinbackEmail(firstName: string, ctx?: EmailCtx): { subject: string; html: string } {
   return {
-    subject: "Before you go, one quick ask",
+    subject: 'One quick question',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, before you go`)}
-      ${p("You've been with us for two weeks, and it looks like HiredTodayApp didn't quite click for you. That's okay, not every tool is right for every person. Before I stop emailing you, I'd love to know one thing.")}
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#fffbeb;border-left:4px solid #f59e0b;padding:20px;border-radius:4px;">
-        <div style="font-size:17px;font-weight:700;color:#0f172a;line-height:1.5;">What stopped you from upgrading?</div>
-        <div style="font-size:14px;color:#94a3b8;margin-top:8px;line-height:1.6;">Hit reply with one sentence. Just the honest answer.</div>
+      ${h1(`${firstName || 'Hey'}, one quick question`)}
+      ${p(`It has been two weeks since you joined ${brand.name}. Before we stop emailing you, we would like to know one thing.`)}
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#fff1cc;border-left:4px solid #ffd166;padding:20px;border-radius:4px;">
+        <div style="font-size:17px;font-weight:700;color:#0d1b19;line-height:1.5;">What would make ${brand.name} more useful for your job search?</div>
+        <div style="font-size:14px;color:#3f4d49;margin-top:8px;line-height:1.6;">Reply with one sentence. Every reply is read.</div>
       </td></tr></table>
-      ${p(`It helps me more than you'd think. A one-liner like <em>"too expensive,"</em> <em>"I already found a job,"</em> <em>"the ATS checker didn't work the way I expected,"</em> or <em>"I forgot about it"</em>, whatever it is, tells me exactly what to fix.`)}
-      ${p("And if you've since landed a job: <strong>congratulations.</strong> That's the whole point. I'd still love to hear what helped, so I can make it better for the next person.")}
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#f8fafc;border-radius:12px;padding:20px;">
-        <div style="font-size:14px;font-weight:700;color:#0f172a;margin-bottom:8px;">In case it helps:</div>
-        <div style="font-size:15px;line-height:1.6;color:#475569;margin-bottom:12px;">Pro is $9.99/mo. Less than a coffee. No autorenew trap, cancel any time, no questions. If $9.99 is the wall, hit reply instead and tell me why.</div>
-        <a href="${brand.url}/pricing" style="display:inline-block;background:${brand.color};color:#ffffff;font-weight:700;font-size:14px;padding:10px 20px;border-radius:50px;text-decoration:none;">Upgrade to Pro →</a>
-      </td></tr></table>
-      ${p("After this email, I'll stop bugging you unless you come back. Your account stays active, you can subscribe anytime. Thanks for giving it a try. Really.")}
-      <p style="margin:0;font-size:15px;color:#475569;">Haroon</p>
+      ${p('If you have already found a job, congratulations. That is the whole point.')}
+      ${p(`Your account stays active and your resume stays free to download. If you want more than one resume, all templates or Auto-Apply, Pro is ${PRICE}/month and you can cancel from Plan &amp; billing.`)}
+      ${btn('See Free vs Pro', emailLink('/upgrade?from=email_day14', 'day14'))}
+      <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
+  };
+}
+
+// ─── Lead magnet: ATS resume checklist (logged-out email capture) ──────────
+export function leadChecklistEmail(ctx?: EmailCtx): { subject: string; html: string } {
+  return {
+    subject: 'Your 5-point ATS resume checklist',
+    html: base(`
+      ${h1('Your 5-point ATS resume checklist')}
+      ${p('Run through these before you send your resume anywhere:')}
+      <ol style="margin:0 0 16px;padding-left:20px;color:#3f4d49;font-size:15px;line-height:1.8;">
+        <li><strong>Use a simple layout.</strong> One main column, no tables, text boxes, icons or graphics that hold important text.</li>
+        <li><strong>Use standard headings.</strong> "Experience", "Education" and "Skills" are read correctly by almost every system.</li>
+        <li><strong>Mirror the job ad.</strong> Use the same names for skills and tools that the ad uses, as long as they are true for you.</li>
+        <li><strong>Show results.</strong> Start bullets with a verb and add a number, scale or outcome where you honestly can.</li>
+        <li><strong>Export a text-based file.</strong> Make sure you can select and copy the text in your PDF. If you cannot, software cannot read it either.</li>
+      </ol>
+      ${p('Want to see how your own resume scores? The checker is free and shows your top 3 fixes.')}
+      ${btn('Check my resume free', emailLink('/ats-checker', 'lead_checklist'))}
       ${divider()}
-      <p style="margin:0;font-size:13px;line-height:1.6;color:#94a3b8;font-style:italic;">P.S. If you did land a job, I'd love a one-sentence story for our reader wins page. Total opt-in. But those stories are the whole reason I built this.</p>
-    `),
+      <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
   };
 }

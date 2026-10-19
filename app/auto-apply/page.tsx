@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: "Auto-Apply: apply to great-fit jobs, approve every one",
   description:
     "Tell us what you're looking for once. Each morning we line up matching jobs, tailor your resume to each, and send them when you say go.",
-  alternates: { canonical: "https://hiredtodayapp.com/auto-apply" },
+  alternates: { canonical: "https://www.hiredtodayapp.com/auto-apply" },
 };
 
 const CONTROLS = [

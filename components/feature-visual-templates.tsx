@@ -127,7 +127,7 @@ export default function FeatureVisualTemplates() {
         boxShadow: "0 4px 16px rgba(15,23,42,0.10)", zIndex: 6,
         animation: "heroFloat 5s ease-in-out infinite", animationDelay: "0.8s",
       }}>
-        <span className="text-lg font-bold" style={{ color: "#4AB7A6" }}>60+</span>
+        <span className="text-lg font-bold" style={{ color: "#4AB7A6" }}>30+</span>
         <span className="text-xs font-semibold text-slate-500">Templates</span>
       </div>
     </div>

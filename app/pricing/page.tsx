@@ -2,24 +2,28 @@ import type { Metadata } from "next";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import PricingToggle from "@/components/pricing-toggle";
-import PricingFAQ from "@/components/pricing-faq";
+import PricingFAQ, { FAQS as PRICING_FAQS } from "@/components/pricing-faq";
+import JsonLd from "@/components/seo/json-ld";
+import { faqSchema, breadcrumbSchema, ogImages } from "@/lib/seo/jsonld";
 import TrackOnMount from "@/components/seo/track-on-mount";
 
 export const metadata: Metadata = {
   title: "Pricing: Free to Build, Pro at $9.99/month",
   description:
-    "Build and download your resume as a PDF for free. GetHiredToday Pro adds unlimited resumes, all templates, Word export, the full ATS report and Auto-Apply. Cancel in two clicks.",
-  alternates: { canonical: "https://hiredtodayapp.com/pricing" },
+    "Build and download your resume as a PDF for free. Pro adds unlimited resumes, all templates, Word export, the full ATS report and Auto-Apply.",
+  alternates: { canonical: "https://www.hiredtodayapp.com/pricing" },
   openGraph: {
     title: "Pricing | GetHiredToday",
     description: "Free while you build. Pro when you apply. PDF download is always free.",
-    url: "https://hiredtodayapp.com/pricing",
+    url: "https://www.hiredtodayapp.com/pricing",
+    images: ogImages("Pricing | GetHiredToday", "Free while you build. Pro when you apply."),
   },
+  twitter: { card: "summary_large_image", images: ogImages("Pricing | GetHiredToday", "Free while you build. Pro when you apply.") },
 };
 
 const ROWS: [string, string, string][] = [
   ["Resumes", "1", "Unlimited"],
-  ["Templates", "Free set", "All 60+"],
+  ["Templates", "Free set", "All templates"],
   ["PDF download", "Yes", "Yes"],
   ["Word (.docx) export", "Not included", "Yes"],
   ["AI bullet writer", "5 per day", "Unlimited"],
@@ -87,6 +91,7 @@ export default function PricingPage() {
           </div>
         </section>
 
+        <JsonLd data={[faqSchema(PRICING_FAQS), breadcrumbSchema([{ name: "Home", path: "/" }, { name: "Pricing", path: "/pricing" }])]} />
         <PricingFAQ />
       </main>
       <Footer />

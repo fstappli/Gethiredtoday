@@ -22,7 +22,7 @@ const FEATURES = [
   { icon: Sparkles,  label: 'AI Bullet Point Writer',      desc: 'Role-specific bullets with quantified achievements' },
   { icon: Target,    label: 'Full 30-Point ATS Checker',   desc: 'Score your resume and fix every gap before applying' },
   { icon: Zap,       label: 'Auto-Apply (50 jobs/day)',    desc: 'Submit applications automatically while you sleep' },
-  { icon: Layout,    label: 'All 60+ Templates',           desc: 'Modern, Executive, Creative and more' },
+  { icon: Layout,    label: 'All 30+ Templates',           desc: 'Modern, Executive, Creative and more' },
   { icon: Download,  label: 'PDF + Word Download',         desc: 'Export pixel-perfect files for any application' },
   { icon: Briefcase, label: 'Job Search & Matching',       desc: 'Find and match jobs to your resume automatically' },
 ];
