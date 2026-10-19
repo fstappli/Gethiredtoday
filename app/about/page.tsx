@@ -19,7 +19,6 @@ export default function AboutPage() {
     { v: "50K+", l: "resumes built" },
     { v: "60+", l: "templates" },
     { v: String(RESUME_EXAMPLES.length), l: "resume examples" },
-    { v: "[Year]", l: "founded" },
   ];
   return (
     <div className="flex min-h-screen flex-col bg-ground-site text-ink">
@@ -29,7 +28,7 @@ export default function AboutPage() {
           <span className="text-sm font-extrabold tracking-[1px] text-brand">ABOUT US</span>
           <h1 className="font-display m-0 text-[42px] font-bold leading-none tracking-[-2px] min-[761px]:text-[62px]">Job hunting is hard enough. Your tools shouldn&apos;t be.</h1>
           <p className="m-0 max-w-[760px] text-xl leading-[1.6] text-text-muted">
-            We build friendly, honest tools that help people present their best work and spend less time on applications. [Add your founding story in 2 or 3 sentences.]
+            We build friendly, honest tools that help people present their best work and spend less time on applications.
           </p>
         </section>
         <section className="mx-auto grid max-w-[1240px] gap-[18px] px-5 pb-16 pt-6 [grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))]">

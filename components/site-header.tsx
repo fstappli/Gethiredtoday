@@ -49,15 +49,15 @@ export default function SiteHeader() {
         </div>
         <div className="ml-auto flex items-center gap-1">
           {authed ? (
-            <Link href="/dashboard" className="rounded-xl bg-brand px-[18px] py-3 text-[15px] font-bold text-white no-underline hover:bg-brand-dark">
+            <Link href="/dashboard" className="inline-flex min-h-[44px] items-center rounded-xl bg-brand px-[18px] text-[15px] font-bold text-white no-underline hover:bg-brand-dark">
               Dashboard
             </Link>
           ) : (
             <>
-              <Link href="/login" className="px-2 py-3 text-[15px] font-bold text-ink no-underline min-[821px]:px-3.5">
+              <Link href="/login" className="inline-flex min-h-[44px] items-center px-2 text-[15px] font-bold text-ink no-underline min-[821px]:px-3.5">
                 Log in
               </Link>
-              <Link href="/signup" className="rounded-xl bg-brand px-3 py-3 text-[15px] font-bold text-white no-underline hover:bg-brand-dark min-[821px]:px-[18px]">
+              <Link href="/signup" className="inline-flex min-h-[44px] items-center rounded-xl bg-brand px-3 text-[15px] font-bold text-white no-underline hover:bg-brand-dark min-[821px]:px-[18px]">
                 Start free
               </Link>
             </>

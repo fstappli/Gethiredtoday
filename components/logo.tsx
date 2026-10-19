@@ -118,7 +118,7 @@ export default function Logo({
   return (
     <Link
       href={href}
-      className="inline-flex items-center"
+      className="inline-flex min-h-[44px] items-center"
       aria-label="GetHiredToday home"
       style={{ lineHeight: 1 }}
     >

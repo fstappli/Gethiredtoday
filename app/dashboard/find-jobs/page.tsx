@@ -68,6 +68,23 @@ function FindJobsContent() {
         setHasResume(list.length > 0);
         setMatches((m.matches ?? []).filter((x: MatchRow) => x.job));
         setSaved(ids);
+        // No matches yet: show real jobs for the user's most recent role instead of an empty page.
+        const firstTitle = chosen?.data ? extractResumeProfile(chosen.data).job_titles?.[0] : undefined;
+        if (!(m.matches ?? []).length && firstTitle && !sp.get('query')) {
+          try {
+            const r = await fetch(`/api/jobs/search?query=${encodeURIComponent(firstTitle)}`);
+            if (r.ok) {
+              const d = await r.json();
+              if ((d.jobs ?? []).length) {
+                setQ(firstTitle);
+                setTotal(d.total ?? d.jobs.length);
+                setResults(d.jobs);
+                setSearched(true);
+                setTab('all');
+              }
+            }
+          } catch { /* fall through to the empty state */ }
+        }
         const meta = (await createClient().auth.getUser()).data.user?.user_metadata as { job_alert?: { enabled?: boolean } } | undefined;
         setAlertOn(Boolean(meta?.job_alert?.enabled));
       } finally {

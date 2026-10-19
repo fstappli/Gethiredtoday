@@ -43,7 +43,7 @@ export default async function ArticlePage({ params }: Props) {
 
   const { html, toc } = withAnchors(clean(post.content));
   const topic = TOPICS.find((t) => t.id === topicOf(post))!;
-  const date = post.date ? formatDate(post.date) : "[Publish date]";
+  const date = post.date ? formatDate(post.date) : "";
 
   const schema = {
     "@context": "https://schema.org",

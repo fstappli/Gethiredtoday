@@ -90,14 +90,6 @@ function UpgradeContent() {
               <span className="flex-1"><b className="text-[17px]">Monthly</b><br /><span className="text-sm text-text-muted">Cancel any time in two clicks</span></span>
               <b className="font-display text-2xl">$9.99<span className="text-sm font-medium">/mo</span></b>
             </label>
-            <label className={`${planCls(false)} opacity-80`}>
-              <input type="radio" name="plan" disabled className="m-0 h-[22px] w-[22px]" />
-              <span className="flex-1">
-                <b className="text-[17px]">Every 3 months</b> <span className="rounded-md bg-sun px-1.5 py-0.5 text-[11px] font-extrabold">SAVE [X]%</span><br />
-                <span className="text-sm text-text-muted">[$ total] billed every 3 months</span>
-              </span>
-              <b className="font-display text-2xl">[$]<span className="text-sm font-medium">/mo</span></b>
-            </label>
           </fieldset>
           <ul className="m-0 grid list-none gap-2.5 p-0 [grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))]">
             {BENEFITS.map((b) => <li key={b} className="flex gap-2.5"><Check />{b}</li>)}
@@ -111,7 +103,7 @@ function UpgradeContent() {
           <button type="button" onClick={checkout} disabled={loading} className="min-h-[54px] rounded-[14px] bg-brand p-4 text-[17px] font-extrabold text-white hover:bg-brand-dark disabled:opacity-70">
             {loading ? 'Taking you to secure payment...' : 'Continue to secure payment'}
           </button>
-          <span className="text-center text-[13px] leading-normal text-text-muted">Payment methods: [confirm with your payment provider]. Renews monthly until you cancel.</span>
+          <span className="text-center text-[13px] leading-normal text-text-muted">Renews monthly until you cancel.</span>
           <p className="m-0 rounded-[14px] bg-ground-site p-3.5 text-sm leading-normal"><b>Cancel anytime.</b> Cancel from Plan &amp; billing in two clicks. Your resumes stay yours.</p>
           <p className="m-0 text-center text-xs text-text-subtle">By continuing you agree to our <Link href="/terms" className="underline">Terms</Link> and <Link href="/privacy" className="underline">Privacy Policy</Link>.</p>
         </aside>

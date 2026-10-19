@@ -152,7 +152,7 @@ export default function HomePage() {
                 <div className={`${eyebrow} text-mint-bright`}>JOB SEARCH, BUILT IN</div>
                 <h2 className={`${h2} mt-1.5 text-[30px] leading-[1.08] tracking-[-1px] min-[761px]:text-[38px]`}>Search jobs right here. See your match before you apply.</h2>
               </div>
-              <Link href="/jobs" className="font-extrabold text-mint-bright">Browse all jobs →</Link>
+              <Link href="/jobs" className="inline-flex min-h-[44px] items-center font-extrabold text-mint-bright">Browse all jobs →</Link>
             </div>
             <HomeJobSearch />
             <HomeJobStrip />
@@ -200,7 +200,7 @@ export default function HomePage() {
                 <div className={`${eyebrow} text-brand`}>AI WRITER</div>
                 <h2 className={`${h2} text-[32px] leading-[1.08] tracking-[-1px] min-[761px]:text-[40px]`}>Turn &quot;responsible for&quot; into results.</h2>
                 <p className="m-0 text-lg leading-[1.55] text-text-muted">Tell us your role. We suggest clear, measurable bullet points you can accept, edit or regenerate with one tap.</p>
-                <Link href="/signup" className="font-extrabold text-brand">Try the AI writer free →</Link>
+                <Link href="/signup" className="inline-flex min-h-[44px] items-center font-extrabold text-brand">Try the AI writer free →</Link>
               </div>
               <div className="flex flex-col gap-3 rounded-3xl bg-ground-site p-6">
                 <div className="rounded-[14px] border border-line bg-white p-4">
@@ -233,7 +233,7 @@ export default function HomePage() {
                 <div className={`${eyebrow} text-brand`}>ATS SCORE</div>
                 <h2 className={`${h2} text-[32px] leading-[1.08] tracking-[-1px] min-[761px]:text-[40px]`}>Know exactly what to fix before you hit send.</h2>
                 <p className="m-0 text-lg leading-[1.55] text-text-muted">30+ checks across keywords, structure and contact details, each with a one-click fix. Paste a job ad to match it line by line.</p>
-                <Link href="/ats-checker" className="font-extrabold text-brand">Check my resume free, no sign-up →</Link>
+                <Link href="/ats-checker" className="inline-flex min-h-[44px] items-center font-extrabold text-brand">Check my resume free, no sign-up →</Link>
               </div>
             </div>
 
@@ -242,7 +242,7 @@ export default function HomePage() {
                 <div className={`${eyebrow} text-brand`}>AUTO-APPLY · PRO</div>
                 <h2 className={`${h2} text-[32px] leading-[1.08] tracking-[-1px] min-[761px]:text-[40px]`}>Wake up to applications already sent.</h2>
                 <p className="m-0 text-lg leading-[1.55] text-text-muted">Choose your role, location and minimum match. We tailor your resume for each job and send up to 50 a day. You approve every one, or let it run. Pause any time.</p>
-                <Link href="/auto-apply" className="font-extrabold text-brand">See how Auto-Apply works →</Link>
+                <Link href="/auto-apply" className="inline-flex min-h-[44px] items-center font-extrabold text-brand">See how Auto-Apply works →</Link>
               </div>
               <div className="flex flex-col gap-2.5 rounded-3xl bg-ground-site p-[22px]" role="img" aria-label="Example Auto-Apply queue">
                 <div className="flex items-center justify-between px-1 pb-1.5 pt-0.5"><b>Today&apos;s queue</b><span className="rounded-full bg-mint-soft px-2.5 py-1 text-[13px] font-extrabold text-brand-dark">Example</span></div>
@@ -265,7 +265,7 @@ export default function HomePage() {
               <div className={`${eyebrow} text-brand`}>TEMPLATES</div>
               <h2 className={`${h2} text-[34px] tracking-[-1.3px] min-[761px]:text-[46px]`}>Designs recruiters actually like.</h2>
             </div>
-            <Link href="/resume-templates" className="font-extrabold text-brand">Browse all 60+ →</Link>
+            <Link href="/resume-templates" className="inline-flex min-h-[44px] items-center font-extrabold text-brand">Browse all 60+ →</Link>
           </div>
           <div className="grid gap-[22px] [grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))]">
             {TEMPLATES.map((t) => (
@@ -277,28 +277,6 @@ export default function HomePage() {
                 <div className="flex justify-between gap-2"><b className="text-[17px]">{t.title}</b><span className="text-sm text-text-muted">{t.kind}</span></div>
               </Link>
             ))}
-          </div>
-        </section>
-
-        {/* TESTIMONIALS */}
-        <section className="bg-ink text-white">
-          <div className="mx-auto flex max-w-[1240px] flex-col gap-9 px-5 py-[88px]">
-            <h2 className={`${h2} text-[34px] tracking-[-1.3px] min-[761px]:text-[46px]`}>People who got hired.</h2>
-            <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]">
-              {[
-                ["MT", "#5FD3B3", "Marcus T.", "Software Engineer · Hired at Stripe", "[Marcus's testimonial, under 30 words]"],
-                ["LK", "#FFD166", "Linda K.", "Nurse Coordinator · Hired at Mass General", "[Linda's testimonial, under 30 words]"],
-                ["PS", "#E8E3FF", "Priya S.", "Product Manager · Hired at Shopify", "[Priya's testimonial, under 30 words]"],
-              ].map(([i, bg, n, r, q]) => (
-                <figure key={n} className="m-0 flex flex-col gap-[18px] rounded-[20px] bg-ink-soft p-[26px]">
-                  <blockquote className="m-0 text-lg leading-normal">{q}</blockquote>
-                  <figcaption className="flex items-center gap-3">
-                    <span className="grid h-11 w-11 place-items-center rounded-full font-extrabold text-ink" style={{ background: bg }} aria-hidden="true">{i}</span>
-                    <span><b>{n}</b><br /><span className="text-sm text-on-dark-muted">{r}</span></span>
-                  </figcaption>
-                </figure>
-              ))}
-            </div>
           </div>
         </section>
 

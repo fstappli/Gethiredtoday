@@ -32,7 +32,7 @@ const ROWS: [string, string, string][] = [
 const TRUST = [
   {
     t: "Secure checkout",
-    d: "[Confirm payment methods, e.g. card, Apple Pay, PayPal]",
+    d: "Handled by our payment provider, never stored by us",
     icon: (<><rect x="4" y="10" width="16" height="10" rx="2" /><path d="M8 10V7a4 4 0 018 0v3" /></>),
   },
   { t: "Cancel in two clicks", d: "From Plan & billing, any time", icon: <path d="M6 6l12 12M18 6L6 18" /> },

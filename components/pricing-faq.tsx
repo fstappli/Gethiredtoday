@@ -7,14 +7,6 @@ const FAQS: { q: string; a: string }[] = [
     q: "Will I be charged automatically?",
     a: "Pro renews at the end of each billing period until you cancel. You keep Pro access through the end of the period you paid for.",
   },
-  {
-    q: "Which payment methods do you accept?",
-    a: "[Confirm payment methods supported by the payment provider]",
-  },
-  {
-    q: "Can I switch between monthly and 3-month billing?",
-    a: "[Confirm whether plan switching is supported]",
-  },
 ];
 
 export default function PricingFAQ() {

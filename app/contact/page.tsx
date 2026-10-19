@@ -42,7 +42,7 @@ export default function ContactPage() {
         <section className="mx-auto flex max-w-[1240px] flex-wrap items-start gap-10 px-5 pb-[72px] pt-14">
           <div className="flex min-w-0 flex-[1_1_360px] flex-col gap-[18px]">
             <h1 className="font-display m-0 text-[40px] font-bold leading-[1.02] tracking-[-1.7px] min-[761px]:text-[54px]">Hi there. How can we help?</h1>
-            <p className="m-0 text-lg leading-[1.55] text-text-muted">A real person reads every message. We usually reply within [response time].</p>
+            <p className="m-0 text-lg leading-[1.55] text-text-muted">A real person reads every message.</p>
             <div className="flex flex-col gap-2.5">
               {HELP.map((h) => (
                 <Link key={h.href} href={h.href} className="flex items-center justify-between rounded-2xl border border-line bg-white px-[18px] py-4 text-ink no-underline">
@@ -79,7 +79,7 @@ export default function ContactPage() {
               <button type="submit" disabled={status === "loading"} className="min-h-[54px] rounded-[14px] bg-brand text-base font-extrabold text-white hover:bg-brand-dark disabled:opacity-60">
                 {status === "loading" ? "Sending..." : "Send message"}
               </button>
-              <span className="text-[13px] text-text-muted">Or email us at [support email]</span>
+              <span className="text-[13px] text-text-muted">Or email us at <a href="mailto:hello@hiredtodayapp.com" className="font-semibold text-brand underline">hello@hiredtodayapp.com</a></span>
             </form>
           )}
         </section>

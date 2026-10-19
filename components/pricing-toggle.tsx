@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { upgradeHref } from "@/lib/upgrade-triggers";
 
@@ -30,10 +29,7 @@ function Tick({ color }: { color: string }) {
 }
 
 export default function PricingToggle() {
-  const [period, setPeriod] = useState<"monthly" | "quarterly">("monthly");
-  const m = period === "monthly";
-  const base = "min-h-[44px] rounded-[10px] px-[18px] py-3 text-[15px]";
-
+  
   return (
     <>
       <section className="mx-auto flex max-w-[1140px] flex-col items-center gap-5 px-6 pb-10 pt-[72px] text-center">
@@ -43,15 +39,6 @@ export default function PricingToggle() {
         <p className="m-0 max-w-[620px] text-[19px] leading-normal text-text-muted">
           No trial traps. Your free resume and PDF stay free forever. Cancel Pro in two clicks.
         </p>
-        <div role="group" aria-label="Billing period" className="flex gap-1 rounded-[14px] border border-line bg-white p-1">
-          <button type="button" aria-pressed={m} onClick={() => setPeriod("monthly")} className={`${base} ${m ? "bg-ink font-bold text-white" : "bg-transparent font-semibold text-ink"}`}>
-            Monthly
-          </button>
-          <button type="button" aria-pressed={!m} onClick={() => setPeriod("quarterly")} className={`${base} ${!m ? "bg-ink font-bold text-white" : "bg-transparent font-semibold text-ink"}`}>
-            Every 3 months{" "}
-            <span className="ml-1 rounded-full bg-sun px-2 py-0.5 text-xs font-extrabold text-ink">Save [X]%</span>
-          </button>
-        </div>
       </section>
 
       <section className="mx-auto grid max-w-[1140px] items-stretch gap-5 px-6 pb-16 [grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr))]">
@@ -79,12 +66,12 @@ export default function PricingToggle() {
             <div className="mt-1 text-on-dark-muted">Everything to land interviews faster</div>
           </div>
           <div>
-            <span className="font-display text-[52px] font-extrabold">{m ? "$9.99" : "[$/mo]"}</span>
+            <span className="font-display text-[52px] font-extrabold">$9.99</span>
             <span className="text-on-dark-muted"> /month</span>
-            <div className="mt-1 text-sm text-on-dark-muted">{m ? "Billed monthly. Cancel any time." : "Billed [$ total] every 3 months."}</div>
+            <div className="mt-1 text-sm text-on-dark-muted">Billed monthly. Cancel any time.</div>
           </div>
           <Link
-            href={upgradeHref("pricing", m ? "monthly" : "quarterly")}
+            href={upgradeHref("pricing", "monthly")}
             className="flex min-h-[44px] items-center justify-center rounded-[14px] bg-mint-bright p-4 text-center font-extrabold text-ink no-underline"
           >
             Get Pro

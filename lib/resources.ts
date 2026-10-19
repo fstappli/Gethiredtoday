@@ -48,6 +48,6 @@ export function sortedPosts(): BlogPost[] {
 
 export function formatDate(d: string): string {
   const t = new Date(d);
-  if (isNaN(t.getTime())) return "[Publish date]";
+  if (isNaN(t.getTime())) return "";
   return t.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 }
