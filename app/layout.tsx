@@ -67,7 +67,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const ga4Id = process.env.NEXT_PUBLIC_GA4_ID;
+  const ga4Id = process.env.NEXT_PUBLIC_GA4_ID?.trim();
 
   return (
     <html lang="en" className={`${figtree.variable} ${bricolage.variable} h-full antialiased`}>
