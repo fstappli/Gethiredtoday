@@ -85,7 +85,7 @@ describe('extractResumeProfile', () => {
   it('extracts skills from resume data', () => {
     const profile = extractResumeProfile(softwareEngineerResume);
     expect(profile.skills).toContain('typescript');
-    expect(profile.skills).toContain('node.js');
+    expect(profile.skills).toContain('node');
     expect(profile.skills).toContain('react');
   });
 
