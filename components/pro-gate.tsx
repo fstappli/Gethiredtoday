@@ -46,7 +46,7 @@ export default function ProGate() {
             Unlock Your Full Job Search Suite
           </h1>
           <p className="text-slate-500 text-lg max-w-md mx-auto">
-            Everything you need to build a great resume, pass ATS, and land interviews — all in one place.
+            Everything you need to build a great resume, pass ATS, and land interviews, all in one place.
           </p>
         </div>
 

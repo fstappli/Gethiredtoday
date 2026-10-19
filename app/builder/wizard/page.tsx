@@ -18,6 +18,10 @@ import {
 } from 'lucide-react';
 import { TemplatePreview, type TemplateLayout } from '@/components/template-preview';
 import Logo from '@/components/logo';
+import UpgradePrompt from '@/components/upgrade-prompt';
+import { createClient } from '@/lib/supabase';
+import { isProActive } from '@/lib/subscription';
+import type { UpgradeTrigger } from '@/lib/upgrade-triggers';
 
 type ExperienceLevel = 'no-experience' | 'less-3' | '3-5' | '5-10' | '10-plus';
 type StartType = 'fresh' | 'upload';
@@ -77,7 +81,7 @@ function WizardInner() {
   const searchParams = useSearchParams();
 
   // If entered via /builder/wizard?upload=1, jump straight to step 3 (start)
-  // so the user can pick a file immediately — read from searchParams at mount
+  // so the user can pick a file immediately, read from searchParams at mount
   // using the lazy initial-state pattern (avoids setState-in-effect).
   const wantsUpload = searchParams.get('upload') === '1';
 
@@ -92,6 +96,18 @@ function WizardInner() {
   const [filterHeadshot, setFilterHeadshot] = useState<'all' | 'with' | 'without'>('all');
   const [filterColumns, setFilterColumns] = useState<'all' | 1 | 2>('all');
   const [creating, setCreating] = useState(false);
+  const [isPro, setIsPro] = useState(false);
+  const [upgradeTrigger, setUpgradeTrigger] = useState<UpgradeTrigger | null>(null);
+  const setShowUpgrade = (v: boolean) => setUpgradeTrigger(v ? 'second_resume' : null);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data: profile } = await supabase.from('profiles').select('subscription_status, subscription_ends_at').eq('id', user.id).single();
+      setIsPro(isProActive(profile));
+    });
+  }, []);
 
   // Upload flow state
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -125,7 +141,7 @@ function WizardInner() {
           <div className="space-y-6">
             {[
               'Whatever your job title or industry, pick a template to match your experience and style.',
-              'Generate and add expertly written descriptions — tailored to your background.',
+              'Generate and add expertly written descriptions, tailored to your background.',
               'Customize the details and wrap it up. You\u2019re ready to send!',
             ].map((text, i) => (
               <div key={i} className="flex gap-4 items-start">
@@ -141,7 +157,7 @@ function WizardInner() {
           </div>
         </div>
 
-        {/* Right — stat + next */}
+        {/* Right, stat + next */}
         <div className="flex flex-col items-center justify-center gap-8">
           <div className="relative w-full max-w-[320px] aspect-[4/5] bg-gradient-to-br from-violet-100 to-teal-50 rounded-3xl p-6 overflow-hidden shadow-sm">
             <div className="absolute inset-4 bg-white/70 rounded-2xl backdrop-blur-sm border border-white/80 flex items-center justify-center">
@@ -246,7 +262,7 @@ function WizardInner() {
 
             {/* Filters are one-of-many picks, so they render as radios (not
                 checkboxes). Clicking the currently-selected option clears it
-                back to "Any". Each group is independent — selecting Headshot
+                back to "Any". Each group is independent. Selecting Headshot
                 does not disable Columns. */}
             <div>
               <div className="text-sm font-semibold text-slate-900 mb-2 flex items-center gap-1.5">
@@ -299,7 +315,7 @@ function WizardInner() {
                 return (
                   <button
                     key={t.templateId}
-                    onClick={() => setChosenTemplate(t.templateId)}
+                    onClick={() => (t.pro && !isPro ? setUpgradeTrigger('templates') : setChosenTemplate(t.templateId))}
                     className={`group relative text-left rounded-2xl overflow-hidden border-2 transition-all ${
                       selected ? 'border-[#2563eb] shadow-xl ring-4 ring-blue-100' : 'border-transparent hover:shadow-lg'
                     }`}
@@ -431,7 +447,7 @@ function WizardInner() {
             )}
 
             <div className="mt-4 text-[11px] text-slate-400">
-              PDF, DOCX or TXT — up to 8 MB
+              PDF, DOCX or TXT, up to 8 MB
             </div>
           </button>
 
@@ -515,7 +531,7 @@ function WizardInner() {
   const handleFinish = async () => {
     const templateId = chosenTemplate ?? 'classic';
 
-    // ── Upload path — user chose to import an existing resume ──
+    // ── Upload path, user chose to import an existing resume ──
     if (uploadFile) {
       setUploading(true);
       setUploadError(null);
@@ -531,6 +547,11 @@ function WizardInner() {
 
         if (res.status === 401) {
           router.push('/login?redirect=/builder/wizard');
+          return;
+        }
+        if (res.status === 403) {
+          setUpgradeTrigger('second_resume');
+          setUploading(false);
           return;
         }
 
@@ -584,6 +605,11 @@ function WizardInner() {
         router.push('/login?redirect=/builder/wizard');
         return;
       }
+      if (res.status === 403) {
+        setShowUpgrade(true);
+        setCreating(false);
+        return;
+      }
       if (res.ok) {
         const { resume } = await res.json();
         router.push(`/builder/resume/${resume.id}?wizard=1&template=${templateId}`);
@@ -600,6 +626,7 @@ function WizardInner() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      <UpgradePrompt trigger={upgradeTrigger ?? 'second_resume'} open={upgradeTrigger !== null} onClose={() => setUpgradeTrigger(null)} />
       {/* Top bar */}
       <header className="border-b border-slate-100 bg-white sticky top-0 z-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">

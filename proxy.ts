@@ -11,8 +11,8 @@ export async function proxy(request: NextRequest) {
   // Without Supabase config we can't check auth. Block protected paths,
   // let everything else through so public pages still render.
   if (!supabaseUrl || !supabaseKey) {
-    const protectedPaths = ['/dashboard', '/builder'];
-    const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p));
+    const protectedPaths = ['/dashboard', '/builder', '/onboarding'];
+    const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p)) && request.nextUrl.pathname !== '/builder/resume/new';
     if (isProtected) {
       const url = request.nextUrl.clone();
       url.pathname = '/login';
@@ -43,8 +43,8 @@ export async function proxy(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser();
 
-  const protectedPaths = ['/dashboard', '/builder'];
-  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p));
+  const protectedPaths = ['/dashboard', '/builder', '/onboarding'];
+  const isProtected = protectedPaths.some(p => request.nextUrl.pathname.startsWith(p)) && request.nextUrl.pathname !== '/builder/resume/new';
 
   if (isProtected && !user) {
     const url = request.nextUrl.clone();

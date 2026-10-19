@@ -4,7 +4,7 @@ import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import { runAutoApplyForUser } from '@/lib/jobs/auto-apply-runner';
 import { isProActive } from '@/lib/subscription';
 
-// POST /api/jobs/auto-apply/queue — queue matching jobs for the authenticated user
+// POST /api/jobs/auto-apply/queue, queue matching jobs for the authenticated user
 export async function POST() {
   try {
     const supabase = await createServerSupabaseClient();
@@ -17,7 +17,7 @@ export async function POST() {
       .eq('id', user.id)
       .single();
     if (!isProActive(profile)) {
-      return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
+      return NextResponse.json({ error: 'Auto-Apply is a Pro feature.', code: 'upgrade_required', trigger: 'auto_apply' }, { status: 402 });
     }
 
     const result = await runAutoApplyForUser(user.id);
@@ -28,7 +28,7 @@ export async function POST() {
   }
 }
 
-// GET /api/jobs/auto-apply/queue — get queued (redirected from auto-apply) jobs
+// GET /api/jobs/auto-apply/queue, get queued (redirected from auto-apply) jobs
 export async function GET() {
   try {
     const supabase = await createServerSupabaseClient();

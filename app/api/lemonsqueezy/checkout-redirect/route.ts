@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createClient } from '@supabase/supabase-js';
+import { isUpgradeTrigger } from '@/lib/upgrade-triggers';
 
 const CHECKOUT_URL = 'https://kreativecasa.gumroad.com/l/kxtcbs';
 
@@ -31,7 +32,13 @@ export async function GET(req: NextRequest) {
     // back at checkout after authenticating.
     const loginUrl = new URL('/login', req.url);
     const from = req.nextUrl.searchParams.get('from');
-    const redirectTarget = `/api/lemonsqueezy/checkout-redirect${from ? `?from=${encodeURIComponent(from)}` : ''}`;
+    const qs = new URLSearchParams();
+    if (from) qs.set('from', from);
+    const t = req.nextUrl.searchParams.get('trigger');
+    if (t) qs.set('trigger', t);
+    const pl = req.nextUrl.searchParams.get('plan');
+    if (pl) qs.set('plan', pl);
+    const redirectTarget = `/api/lemonsqueezy/checkout-redirect${qs.toString() ? `?${qs.toString()}` : ''}`;
     loginUrl.searchParams.set('redirect', redirectTarget);
     return NextResponse.redirect(loginUrl);
   }
@@ -42,19 +49,27 @@ export async function GET(req: NextRequest) {
   const appOrigin = req.nextUrl.origin;
   const returnUrl = `${appOrigin}/api/purchase/return?to=${encodeURIComponent(from)}`;
 
-  // Log the checkout attempt so we can measure drop-off
+  // Which upgrade moment started this checkout (e.g. word_export), and which plan.
+  const rawTrigger = req.nextUrl.searchParams.get('trigger');
+  const trigger = isUpgradeTrigger(rawTrigger) ? rawTrigger : null;
+  const rawPlan = req.nextUrl.searchParams.get('plan');
+  const plan = rawPlan === 'quarterly' ? 'quarterly' : 'monthly';
+
+  // Log the checkout attempt so we can measure drop-off and conversion by trigger
   try {
-    await getAdminClient()
-      .from('checkout_attempts')
-      .insert({ user_id: user.id, email: user.email, from_path: from });
+    const admin = getAdminClient();
+    const base = { user_id: user.id, email: user.email, from_path: from };
+    const { error } = await admin.from('checkout_attempts').insert({ ...base, trigger, plan });
+    if (error) await admin.from('checkout_attempts').insert(base); // migration not applied yet
   } catch {
-    // Table may not exist yet — silent fail, never block the checkout
+    // Table may not exist yet, silent fail, never block the checkout
   }
 
   const url = new URL(CHECKOUT_URL);
   url.searchParams.set('email', user.email!);
   url.searchParams.set('wanted', 'true'); // skip landing page, go straight to checkout
-  // Gumroad honors `redirect_url` — after a successful purchase, the user is
+  if (trigger) url.searchParams.set('utm_content', trigger);
+  // Gumroad honors `redirect_url`, after a successful purchase, the user is
   // bounced here instead of staying on Gumroad's thank-you page.
   url.searchParams.set('redirect_url', returnUrl);
 

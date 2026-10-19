@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { isProActive } from '@/lib/subscription';
+import { clampAutoApplyCap } from '@/lib/plan-guard';
 
 // GET /api/jobs/auto-apply/settings
 export async function GET() {
@@ -35,7 +36,7 @@ export async function PUT(req: NextRequest) {
       .eq('id', user.id)
       .single();
     if (!isProActive(profile)) {
-      return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
+      return NextResponse.json({ error: 'Auto-Apply is a Pro feature.', code: 'upgrade_required', trigger: 'auto_apply' }, { status: 402 });
     }
 
     const body = await req.json();
@@ -50,7 +51,7 @@ export async function PUT(req: NextRequest) {
     const upsertData: Record<string, unknown> = { user_id: user.id };
     if (enabled !== undefined) upsertData.enabled = Boolean(enabled);
     if (min_match_score !== undefined) upsertData.min_match_score = Math.max(0, Math.min(100, Number(min_match_score)));
-    if (daily_cap !== undefined) upsertData.daily_cap = Math.max(1, Math.min(50, Number(daily_cap)));
+    if (daily_cap !== undefined) upsertData.daily_cap = clampAutoApplyCap(Number(daily_cap));
     if (filters !== undefined) upsertData.filters = filters;
     if (paused_at !== undefined) upsertData.paused_at = paused_at;
 

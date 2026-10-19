@@ -31,9 +31,9 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.RESEND_API_KEY) {
-      // Don't 500 the form if email is not configured — log and pretend success so
+      // Don't 500 the form if email is not configured, log and pretend success so
       // user isn't blocked. Real deployments should have RESEND_API_KEY set.
-      console.warn('[contact] RESEND_API_KEY not set — skipping email send');
+      console.warn('[contact] RESEND_API_KEY not set, skipping email send');
       return NextResponse.json({ success: true, skipped: true });
     }
 

@@ -1,25 +1,25 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
-import AtsCheckerView from "@/components/ats-checker-view";
+import PublicAtsChecker from "@/components/public-ats-checker";
 
 export const metadata: Metadata = {
-  title: "ATS Resume Checker — Score Your Resume Instantly",
-  description: "Paste your resume and get an instant ATS compatibility score. Find missing keywords, formatting issues, and get actionable fixes in seconds.",
+  title: "Free ATS Resume Checker: Score Your Resume Instantly",
+  description: "Upload or paste your resume and get an instant ATS compatibility score, plus the top fixes that matter most. Free, no sign-up.",
   alternates: { canonical: "https://hiredtodayapp.com/ats-checker" },
   openGraph: {
-    title: "ATS Resume Checker — Score Your Resume Instantly",
-    description: "Get an instant ATS score, keyword gap analysis, and actionable fixes.",
+    title: "Free ATS Resume Checker: Score Your Resume Instantly",
+    description: "Get an instant ATS score and the top 3 fixes.",
     url: "https://hiredtodayapp.com/ats-checker",
   },
 };
 
 export default function ATSCheckerPage() {
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="flex min-h-screen flex-col bg-ground-site">
       <Navbar />
       <main className="flex-1">
-        <AtsCheckerView />
+        <PublicAtsChecker />
       </main>
       <Footer />
     </div>

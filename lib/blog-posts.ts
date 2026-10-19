@@ -21,22 +21,22 @@ export const BLOG_POSTS: BlogPost[] = [
     content: `
 <h2>What Is an ATS and Why Does It Matter?</h2>
 <p>An Applicant Tracking System (ATS) is software used by 99% of Fortune 500 companies and most mid-size businesses to automatically screen, rank, and filter resumes before a recruiter ever sees them. Industry research suggests <strong>roughly 75% of resumes are rejected by ATS before reaching a human</strong>.</p>
-<p>The system scans your resume for keywords, formatting compatibility, and relevance to the job description. If your resume fails these checks, you're invisible — regardless of how qualified you are.</p>
+<p>The system scans your resume for keywords, formatting compatibility, and relevance to the job description. If your resume fails these checks, you're invisible, regardless of how qualified you are.</p>
 
 <h2>The 7 Rules for ATS-Friendly Resumes</h2>
 
 <h3>1. Use a Clean, Single-Column Layout</h3>
-<p>ATS systems parse text linearly. Multi-column layouts, tables, and text boxes confuse the parser — your content ends up scrambled or skipped. Stick to a single-column format, or a two-column layout where the sidebar only contains supplementary info (skills, contact details).</p>
+<p>ATS systems parse text linearly. Multi-column layouts, tables, and text boxes confuse the parser, your content ends up scrambled or skipped. Stick to a single-column format, or a two-column layout where the sidebar only contains supplementary info (skills, contact details).</p>
 <p><strong>Safe to use:</strong> Simple headers, bullet points, bold text, standard section titles.</p>
 <p><strong>Avoid:</strong> Tables, text boxes, headers/footers (ATS often can't read them), images, graphics.</p>
 
 <h3>2. Match Keywords From the Job Description Exactly</h3>
-<p>ATS systems perform literal keyword matching. If the job says "project management" and your resume says "project coordination," you may not match — even though they mean the same thing.</p>
+<p>ATS systems perform literal keyword matching. If the job says "project management" and your resume says "project coordination," you may not match, even though they mean the same thing.</p>
 <p>How to do this right:</p>
 <ul>
   <li>Copy the exact phrases from the job description</li>
   <li>Include both spelled-out and abbreviated forms: "Search Engine Optimization (SEO)"</li>
-  <li>Don't keyword stuff — mention each key skill 2–3 times naturally</li>
+  <li>Don't keyword stuff, mention each key skill 2–3 times naturally</li>
 </ul>
 
 <h3>3. Use Standard Section Headings</h3>
@@ -49,14 +49,14 @@ export const BLOG_POSTS: BlogPost[] = [
 </ul>
 
 <h3>4. Use Standard File Formats</h3>
-<p>Submit your resume as a <strong>.docx or PDF</strong> — but only if the application instructions allow PDF. When in doubt, .docx is more universally parseable. Never submit as an image file (JPG, PNG) or a scanned document.</p>
+<p>Submit your resume as a <strong>.docx or PDF</strong>, but only if the application instructions allow PDF. When in doubt, .docx is more universally parseable. Never submit as an image file (JPG, PNG) or a scanned document.</p>
 
 <h3>5. Include a Skills Section With Exact Keywords</h3>
-<p>Your skills section is prime real estate for ATS keywords. List every relevant tool, language, certification, and methodology explicitly. Don't rely on burying them in bullet points alone — dedicate a section to them.</p>
+<p>Your skills section is prime real estate for ATS keywords. List every relevant tool, language, certification, and methodology explicitly. Don't rely on burying them in bullet points alone, dedicate a section to them.</p>
 <p>Example: Python, SQL, Tableau, Salesforce, HubSpot, Agile, Scrum, JIRA, Google Analytics, SEO/SEM</p>
 
 <h3>6. Avoid Headers and Footers for Contact Info</h3>
-<p>Many ATS systems cannot parse text that lives in Word headers or footers. Put your name, email, phone, and LinkedIn URL in the main body of the document — not in a formatted header section.</p>
+<p>Many ATS systems cannot parse text that lives in Word headers or footers. Put your name, email, phone, and LinkedIn URL in the main body of the document, not in a formatted header section.</p>
 
 <h3>7. Spell Out Acronyms (At Least Once)</h3>
 <p>Always include both the acronym and the full term: "Search Engine Optimization (SEO)", "Customer Relationship Management (CRM)". This catches both exact-match and expanded-term searches.</p>
@@ -87,7 +87,7 @@ export const BLOG_POSTS: BlogPost[] = [
     gradient: "from-violet-500 to-purple-600",
     content: `
 <h2>Why Your Resume Summary Matters More Than You Think</h2>
-<p>Recruiters spend an average of 7 seconds on a first resume scan. The professional summary — that 2–4 sentence block at the top — is usually the first thing they read. If it doesn't immediately communicate your value, they move on.</p>
+<p>Recruiters spend an average of 7 seconds on a first resume scan. The professional summary, that 2–4 sentence block at the top, is usually the first thing they read. If it doesn't immediately communicate your value, they move on.</p>
 <p>A great summary answers three questions in 3–4 sentences:</p>
 <ol>
   <li><strong>Who are you?</strong> (role + years of experience)</li>
@@ -133,17 +133,17 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>What Makes These Work</h2>
 <p>Every summary above does three things:</p>
 <ul>
-  <li><strong>Specific number</strong> — not "improved performance" but "reduced costs by $2.1M"</li>
-  <li><strong>Company context</strong> — even a fake one adds credibility ("at FinCo", "at TechCo")</li>
-  <li><strong>Clear specialty</strong> — the reader knows exactly what you're good at</li>
+  <li><strong>Specific number</strong>, not "improved performance" but "reduced costs by $2.1M"</li>
+  <li><strong>Company context</strong>, even a fake one adds credibility ("at FinCo", "at TechCo")</li>
+  <li><strong>Clear specialty</strong>, the reader knows exactly what you're good at</li>
 </ul>
 
 <h2>Common Summary Mistakes to Avoid</h2>
 <ul>
-  <li>❌ "Hardworking team player with a passion for excellence" — meaningless, every resume says this</li>
-  <li>❌ Longer than 4 sentences — summaries are scannable, not essays</li>
-  <li>❌ Written in third person ("John is a software engineer...") — always write in first person without using "I"</li>
-  <li>❌ Objective statements ("Seeking a challenging role...") — these went out in 2005</li>
+  <li>❌ "Hardworking team player with a passion for excellence", meaningless, every resume says this</li>
+  <li>❌ Longer than 4 sentences, summaries are scannable, not essays</li>
+  <li>❌ Written in third person ("John is a software engineer..."), always write in first person without using "I"</li>
+  <li>❌ Objective statements ("Seeking a challenging role..."), these went out in 2005</li>
 </ul>
 <p>Use our <a href="/builder/resume/new">AI-powered builder</a> to generate a tailored summary for your specific role in seconds.</p>
     `,
@@ -158,8 +158,8 @@ export const BLOG_POSTS: BlogPost[] = [
     gradient: "from-rose-500 to-orange-500",
     content: `
 <h2>Why Good Candidates Get Ignored</h2>
-<p>It's not always about being underqualified. Many excellent candidates get filtered out before a recruiter ever reads their resume — not because of their experience, but because of easily fixable mistakes in how their resume is written, formatted, or structured.</p>
-<p>Here are the 7 most common resume mistakes — and how to fix each one today.</p>
+<p>It's not always about being underqualified. Many excellent candidates get filtered out before a recruiter ever reads their resume, not because of their experience, but because of easily fixable mistakes in how their resume is written, formatted, or structured.</p>
+<p>Here are the 7 most common resume mistakes, and how to fix each one today.</p>
 
 <h2>Mistake 1: Writing Responsibilities Instead of Achievements</h2>
 <p>The most common mistake on resumes is listing what you were supposed to do instead of what you actually accomplished.</p>
@@ -168,7 +168,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Every bullet point should answer: <em>what happened because you were there?</em> If the bullet sounds like it could have been on anyone's job description, rewrite it with a metric.</p>
 
 <h2>Mistake 2: Not Tailoring for Each Application</h2>
-<p>Sending the same resume to every job is one of the biggest silent killers. ATS systems score your resume against the job description — a generic resume typically scores 30–50% lower than a tailored one.</p>
+<p>Sending the same resume to every job is one of the biggest silent killers. ATS systems score your resume against the job description, a generic resume typically scores 30–50% lower than a tailored one.</p>
 <p>You don't need to rewrite your entire resume for every job. Make these targeted changes:</p>
 <ul>
   <li>Adjust your professional summary to reflect the role</li>
@@ -182,19 +182,19 @@ export const BLOG_POSTS: BlogPost[] = [
 <ul>
   <li>Email addresses like "partyguy1998@gmail.com" or "hotmail" domains</li>
   <li>Missing LinkedIn URL (especially for professional roles)</li>
-  <li>No location (remote or city/country — some roles require specific locations)</li>
+  <li>No location (remote or city/country, some roles require specific locations)</li>
   <li>Phone number only (missing email)</li>
 </ul>
 <p>Use a professional email (firstname.lastname@gmail.com), include your LinkedIn, and list your city/country or "Remote, Open to Relocation" if applicable.</p>
 
 <h2>Mistake 4: Formatting That Breaks ATS Parsing</h2>
-<p>Design elements that look beautiful to humans are invisible — or actively harmful — to ATS systems:</p>
+<p>Design elements that look beautiful to humans are invisible, or actively harmful, to ATS systems:</p>
 <ul>
-  <li><strong>Tables and columns</strong> — ATS reads these out of order or skips them</li>
-  <li><strong>Text boxes</strong> — not read at all by most parsers</li>
-  <li><strong>Headers and footers</strong> — many systems skip these entirely</li>
-  <li><strong>Images and icons</strong> — ATS can't read images</li>
-  <li><strong>Fancy fonts</strong> — parsers struggle with non-standard fonts</li>
+  <li><strong>Tables and columns</strong>, ATS reads these out of order or skips them</li>
+  <li><strong>Text boxes</strong>, not read at all by most parsers</li>
+  <li><strong>Headers and footers</strong>, many systems skip these entirely</li>
+  <li><strong>Images and icons</strong>, ATS can't read images</li>
+  <li><strong>Fancy fonts</strong>, parsers struggle with non-standard fonts</li>
 </ul>
 <p>Use clean templates with standard formatting. Our <a href="/builder/resume/new">builder uses ATS-safe templates</a> by default.</p>
 
@@ -216,11 +216,11 @@ export const BLOG_POSTS: BlogPost[] = [
 </ol>
 
 <h2>Mistake 7: Typos, Inconsistent Formatting, and Grammar Errors</h2>
-<p>Surveys consistently show that 60–70% of hiring managers will reject a resume with a single typo. In competitive hiring environments, a typo signals carelessness — exactly the wrong message.</p>
+<p>Surveys consistently show that 60–70% of hiring managers will reject a resume with a single typo. In competitive hiring environments, a typo signals carelessness, exactly the wrong message.</p>
 <p>How to catch them:</p>
 <ul>
   <li>Read your resume backwards (bottom to top) to catch spelling errors your brain autocorrects</li>
-  <li>Read it out loud — awkward phrasing stands out</li>
+  <li>Read it out loud, awkward phrasing stands out</li>
   <li>Ask one other person to proofread it</li>
   <li>Check formatting consistency: are all dates in the same format? Same bullet style? Same font throughout?</li>
 </ul>
@@ -241,7 +241,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: `
 <h2>What is an ATS and Why Should You Care?</h2>
 <p>An Applicant Tracking System is software that companies use to manage job applications at scale. When you submit your resume online, it's immediately parsed by this software, which extracts information like your contact details, work experience, skills, and education. The ATS then scores your resume based on keywords and formatting, deciding whether you move forward or get automatically rejected.</p>
-<p>Here's the reality: <strong>most candidates never know why they were rejected</strong>. They're likely not rejected for lacking skills—they're rejected because their resume couldn't be properly parsed by the ATS. According to industry research, <strong>75% of resumes never reach a human recruiter</strong>. The ATS is the gatekeeper, and you need to speak its language.</p>
+<p>Here's the reality: <strong>most candidates never know why they were rejected</strong>. They're likely not rejected for lacking skills, they're rejected because their resume couldn't be properly parsed by the ATS. According to industry research, <strong>75% of resumes never reach a human recruiter</strong>. The ATS is the gatekeeper, and you need to speak its language.</p>
 
 <h2>10 Tips for Creating an ATS-Friendly Resume</h2>
 
@@ -250,11 +250,11 @@ export const BLOG_POSTS: BlogPost[] = [
 <p><strong>The Solution:</strong> Use a straightforward, single-column layout with standard fonts like Arial, Calibri, or Times New Roman. Think of your resume as a plain text document, even if you save it as a PDF.</p>
 
 <h3>2. Keyword Optimization is Non-Negotiable</h3>
-<p>The ATS compares your resume to the job description. If you use different words for the same skills, the ATS thinks you don't have them. Mirror the <em>exact</em> language from the job posting — if they ask for "project management experience," don't just mention "managed projects."</p>
+<p>The ATS compares your resume to the job description. If you use different words for the same skills, the ATS thinks you don't have them. Mirror the <em>exact</em> language from the job posting, if they ask for "project management experience," don't just mention "managed projects."</p>
 <p>Spend 15 minutes reading the job description and highlighting every technical term, skill, and software mentioned. Ensure these exact terms appear in your resume.</p>
 
 <h3>3. Avoid Fancy Graphics, Icons, and Images</h3>
-<p>That sleek resume with icons next to section headers and a professional headshot? The ATS sees symbols it can't parse and skips right over them. Stick to text-based formatting — no infographics, no charts, no icons, no photos.</p>
+<p>That sleek resume with icons next to section headers and a professional headshot? The ATS sees symbols it can't parse and skips right over them. Stick to text-based formatting, no infographics, no charts, no icons, no photos.</p>
 
 <h3>4. Save as PDF (When You Can)</h3>
 <p>PDFs are more stable across systems and preserve formatting better. Save as PDF unless explicitly told otherwise. PDFs render consistently across different computers, preventing parsing problems.</p>
@@ -282,7 +282,7 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Put your full contact information at the very top of your resume: full name, city/state, phone, professional email, and LinkedIn URL. Many ATS systems can't read text placed in Word headers or footers.</p>
 
 <h3>10. Proofread Ruthlessly for Typos and Formatting</h3>
-<p>Typos don't just hurt your credibility with humans — they can cause ATS parsing errors. A misspelled word might break how the software reads an entire section. Read your resume out loud, and paste it into a plain text editor to catch formatting issues.</p>
+<p>Typos don't just hurt your credibility with humans, they can cause ATS parsing errors. A misspelled word might break how the software reads an entire section. Read your resume out loud, and paste it into a plain text editor to catch formatting issues.</p>
 
 <h2>Quick Checklist Before You Apply</h2>
 <ul>
@@ -321,7 +321,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
 <h3>Format #3: Combination Resume (Hybrid)</h3>
 <p>The best of both worlds. You lead with your relevant skills, then provide a reverse-chronological work history with accomplishments. <strong>This is the format gaining ground in 2026.</strong></p>
-<p><strong>Best for:</strong> Most job seekers — career changers with transferable skills, senior candidates with diverse experience, and anyone targeting a specific competency set.</p>
+<p><strong>Best for:</strong> Most job seekers, career changers with transferable skills, senior candidates with diverse experience, and anyone targeting a specific competency set.</p>
 <p><strong>Why it's winning in 2026:</strong> Companies want assurance. The combination format says "here's what I'm good at, and here's where I earned that expertise."</p>
 
 <h2>Choosing Your Format: A Decision Framework</h2>
@@ -342,19 +342,19 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>The Format Trend in 2026</h2>
 <p>Here's what we're seeing across the job market:</p>
 <ul>
-  <li><strong>Chronological is still dominant</strong> — about 60% of resumes follow this format.</li>
-  <li><strong>Combination is on the rise</strong> — up from ~15% three years ago to ~30% now.</li>
-  <li><strong>Functional is declining</strong> — only about 10% of submissions now, and trending lower.</li>
+  <li><strong>Chronological is still dominant</strong>, about 60% of resumes follow this format.</li>
+  <li><strong>Combination is on the rise</strong>, up from ~15% three years ago to ~30% now.</li>
+  <li><strong>Functional is declining</strong>, only about 10% of submissions now, and trending lower.</li>
 </ul>
 <p>The trend is clear: <strong>hiring managers want to know both what you can do AND where you proved it.</strong> The combination format delivers both.</p>
 
 <h2>Quick Reference: Format Comparison</h2>
 <ul>
-  <li>✅ <strong>Chronological</strong> — ATS excellent, most trusted, best for stable career paths</li>
-  <li>✅ <strong>Combination</strong> — ATS excellent, growing preference, best for career changers</li>
-  <li>⚠️ <strong>Functional</strong> — ATS fair, declining preference, use only for major pivots</li>
+  <li>✅ <strong>Chronological</strong>, ATS excellent, most trusted, best for stable career paths</li>
+  <li>✅ <strong>Combination</strong>, ATS excellent, growing preference, best for career changers</li>
+  <li>⚠️ <strong>Functional</strong>, ATS fair, declining preference, use only for major pivots</li>
 </ul>
-<p>Use our <a href="/builder/resume/new">AI-powered builder</a> to build your resume in the format that matches your background — and get it ATS-ready in minutes.</p>
+<p>Use our <a href="/builder/resume/new">AI-powered builder</a> to build your resume in the format that matches your background, and get it ATS-ready in minutes.</p>
     `,
   },
   {
@@ -367,7 +367,7 @@ export const BLOG_POSTS: BlogPost[] = [
     gradient: "from-amber-500 to-orange-500",
     content: `
 <p>Most cover letters get three things wrong: they repeat the resume, they open with "I am writing to apply for," and they run too long. Recruiters spend under 30 seconds on a cover letter. If you haven't earned their attention by line three, you've lost it.</p>
-<p>This guide fixes that. You'll learn the three-paragraph structure that works, see a real example you can steal, and know exactly when to skip the cover letter entirely (yes — sometimes that's the right move).</p>
+<p>This guide fixes that. You'll learn the three-paragraph structure that works, see a real example you can steal, and know exactly when to skip the cover letter entirely (yes, sometimes that's the right move).</p>
 
 <h2>Do You Even Need a Cover Letter in 2026?</h2>
 <p>Short answer: sometimes. Here's when each applies.</p>
@@ -381,8 +381,8 @@ export const BLOG_POSTS: BlogPost[] = [
 
 <h3>Write a cover letter when:</h3>
 <ul>
-  <li>The application form asks for one (even if it says "optional" — treat that as required).</li>
-  <li>You're applying to a startup, nonprofit, government, or academic role — all of which still read them.</li>
+  <li>The application form asks for one (even if it says "optional", treat that as required).</li>
+  <li>You're applying to a startup, nonprofit, government, or academic role, all of which still read them.</li>
   <li>You're a career switcher and your resume doesn't obviously fit. The cover letter explains the connection.</li>
   <li>There's a specific reason you want this specific company. That reason deserves 200 words.</li>
   <li>The role has under 50 applicants and the hiring manager is likely to read each one.</li>
@@ -392,35 +392,35 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Forget the five-paragraph essay you were taught in school. Recruiters want three paragraphs, roughly 250–350 words total.</p>
 
 <h3>Paragraph 1: Hook (2–3 sentences)</h3>
-<p>Open with one specific, concrete sentence about why you want this role at this company. Not "I am writing to express my interest in the Marketing Manager position" — that's the default opener every recruiter sees 200 times a week. Start somewhere the reader wouldn't expect.</p>
+<p>Open with one specific, concrete sentence about why you want this role at this company. Not "I am writing to express my interest in the Marketing Manager position", that's the default opener every recruiter sees 200 times a week. Start somewhere the reader wouldn't expect.</p>
 <p><strong>Weak:</strong> "I am writing to express my interest in the Marketing Manager position at Acme Corp."</p>
 <p><strong>Strong:</strong> "When Acme launched the rewards program rebuild last quarter, the post-mortem your VP of Marketing shared on LinkedIn was the first time I'd seen a growth team publicly admit what didn't work. That kind of thinking is why I'm applying."</p>
-<p>The second version proves you did research, mentions something specific and recent, and opens with a thought — not a formality.</p>
+<p>The second version proves you did research, mentions something specific and recent, and opens with a thought, not a formality.</p>
 
 <h3>Paragraph 2: Proof (4–6 sentences)</h3>
-<p>Pick two or three accomplishments from your resume and expand them with context the resume couldn't hold. This is NOT a resume repeat — it's the story behind the bullets.</p>
+<p>Pick two or three accomplishments from your resume and expand them with context the resume couldn't hold. This is NOT a resume repeat, it's the story behind the bullets.</p>
 <p>The formula: <em>[situation] → [what you did] → [measurable outcome] → [why it matters for this role].</em></p>
 <p><strong>Example:</strong></p>
 <p>"At my previous role, our email open rates had flatlined at 14% for over a year. I rebuilt the segmentation model using purchase behavior instead of demographics, ran a four-week A/B test against the existing approach, and pushed open rates to 31% while growing revenue per send by 47%. I'd bring that same diagnostic approach to Acme's lifecycle marketing, especially given what I've read about the upcoming loyalty program expansion."</p>
 <p>Notice how it ties back to the company at the end. That's the part 90% of cover letters skip.</p>
 
 <h3>Paragraph 3: Close (2–3 sentences)</h3>
-<p>End with a confident, specific call to action. Don't beg. Don't grovel. Don't use "Thank you for your consideration" as your entire closing — it reads like filler.</p>
+<p>End with a confident, specific call to action. Don't beg. Don't grovel. Don't use "Thank you for your consideration" as your entire closing, it reads like filler.</p>
 <p><strong>Weak:</strong> "Thank you for your time and consideration. I look forward to hearing from you."</p>
-<p><strong>Strong:</strong> "I'd welcome the chance to walk through how I'd approach the first 90 days in this role — especially the loyalty migration. I'll be in the Bay Area the week of May 5 if an in-person conversation works, and happy to do video any week before that."</p>
+<p><strong>Strong:</strong> "I'd welcome the chance to walk through how I'd approach the first 90 days in this role, especially the loyalty migration. I'll be in the Bay Area the week of May 5 if an in-person conversation works, and happy to do video any week before that."</p>
 
 <h2>A Full Cover Letter Example You Can Steal</h2>
 <p>Change the details to match your situation.</p>
 <p>Dear Hiring Team,</p>
 <p>When Acme launched the rewards program rebuild last quarter, the post-mortem your VP of Marketing shared on LinkedIn was the first time I'd seen a growth team publicly admit what didn't work. That kind of thinking is why I'm applying for the Senior Marketing Manager role.</p>
-<p>I've spent the last four years running lifecycle marketing at a mid-sized B2C SaaS company. Two pieces of that work are directly relevant: when our email open rates flatlined at 14%, I rebuilt the segmentation model using purchase behavior and pushed open rates to 31% with a 47% lift in revenue per send; and when our referral program underperformed against industry benchmarks, I rebuilt the incentive structure from flat-rate credits to tiered milestones, which tripled referrals in six months. Both projects required me to challenge assumptions the team had inherited — which is how I'd approach the loyalty program migration you're planning.</p>
+<p>I've spent the last four years running lifecycle marketing at a mid-sized B2C SaaS company. Two pieces of that work are directly relevant: when our email open rates flatlined at 14%, I rebuilt the segmentation model using purchase behavior and pushed open rates to 31% with a 47% lift in revenue per send; and when our referral program underperformed against industry benchmarks, I rebuilt the incentive structure from flat-rate credits to tiered milestones, which tripled referrals in six months. Both projects required me to challenge assumptions the team had inherited, which is how I'd approach the loyalty program migration you're planning.</p>
 <p>I'd welcome the chance to walk through how I'd approach the first 90 days, especially around the loyalty migration and what I'd want to learn before changing anything. I'll be in the Bay Area the week of May 5 if an in-person conversation works; happy to do video any week before that.</p>
 <p>Best,<br/>[Your Name]</p>
 
 <h2>Common Cover Letter Mistakes to Avoid</h2>
 <ol>
-  <li><strong>Repeating your resume verbatim.</strong> The recruiter has the resume right next to the cover letter. Tell them something the resume can't — context, reasoning, or a specific motivation.</li>
-  <li><strong>Opening with "I am writing to apply for…"</strong> Dead on arrival. Start with something specific, unexpected, or about the company — not about you.</li>
+  <li><strong>Repeating your resume verbatim.</strong> The recruiter has the resume right next to the cover letter. Tell them something the resume can't, context, reasoning, or a specific motivation.</li>
+  <li><strong>Opening with "I am writing to apply for…"</strong> Dead on arrival. Start with something specific, unexpected, or about the company, not about you.</li>
   <li><strong>Using the same cover letter for every job.</strong> Recruiters spot templated cover letters in three seconds. If you're not going to customize, don't send one.</li>
   <li><strong>Making it about what YOU want.</strong> "I'm looking for an opportunity to grow" is about you. "I want to help Acme solve X because Y" is about them. Always flip to their perspective.</li>
   <li><strong>Overusing adjectives.</strong> "Dynamic, results-oriented, detail-oriented, self-starter." Every recruiter has a filter for this. Cut every adjective you can't back with a specific example.</li>
@@ -431,8 +431,8 @@ export const BLOG_POSTS: BlogPost[] = [
 <h2>Cover Letter Templates for Specific Situations</h2>
 
 <h3>Career Changer Template</h3>
-<p><em>[Company] is rebuilding [specific function] — I've been following [specific detail] since [specific moment]. My background is in [old field], but what I've done there is much closer to [new field] than the job title suggests: [one example of transferable work].</em></p>
-<p><em>In my current role, I [specific accomplishment with numbers that sounds like the new field, not the old one]. I also [second accomplishment]. Both projects are, functionally, [new field] work — even though they happened inside a [old field] org.</em></p>
+<p><em>[Company] is rebuilding [specific function], I've been following [specific detail] since [specific moment]. My background is in [old field], but what I've done there is much closer to [new field] than the job title suggests: [one example of transferable work].</em></p>
+<p><em>In my current role, I [specific accomplishment with numbers that sounds like the new field, not the old one]. I also [second accomplishment]. Both projects are, functionally, [new field] work, even though they happened inside a [old field] org.</em></p>
 <p><em>I'd love to walk you through the connection. I've also built [portfolio project / cert / side work] specifically because I wanted to show I'm serious about the switch, not just exploring.</em></p>
 
 <h3>Recent Graduate Template</h3>
@@ -447,18 +447,18 @@ export const BLOG_POSTS: BlogPost[] = [
 
 <h2>Make Sure Your Cover Letter Matches Your Resume</h2>
 <p>The cover letter and resume need to tell the same story. If your resume buries "led a team of 8" in the third bullet of a 2019 role, but your cover letter opens with leadership as your strongest skill, something's misaligned.</p>
-<p>Before sending, do this: read the cover letter first, then the resume. Do they reinforce each other? Or do they feel like two different candidates? If they don't match, the resume usually needs the fix — pull forward whatever the cover letter is highlighting.</p>
+<p>Before sending, do this: read the cover letter first, then the resume. Do they reinforce each other? Or do they feel like two different candidates? If they don't match, the resume usually needs the fix, pull forward whatever the cover letter is highlighting.</p>
 <p>Our <a href="/builder/resume/new">AI bullet rewriter</a> helps you do this in minutes. Drop in your current resume plus the job description you're targeting, and it rewrites your bullets to reinforce the same themes your cover letter leads with.</p>
 
 <h2>Final Checklist Before You Hit Send</h2>
 <ul>
   <li>✅ Under 400 words</li>
   <li>✅ Three paragraphs (Hook, Proof, Close)</li>
-  <li>✅ Addresses a specific person or team — never "To Whom It May Concern"</li>
+  <li>✅ Addresses a specific person or team, never "To Whom It May Concern"</li>
   <li>✅ Mentions something specific about this company (not generic praise)</li>
   <li>✅ Includes 2–3 accomplishments with measurable outcomes</li>
   <li>✅ Closes with a specific, confident call to action</li>
-  <li>✅ Customized — not a copy-paste from a template</li>
+  <li>✅ Customized, not a copy-paste from a template</li>
   <li>✅ Free of typos (read it aloud; you'll catch half of them that way)</li>
   <li>✅ Saved as <code>FirstName_LastName_Cover_Letter.pdf</code> (never <code>cover_letter_v4_final.docx</code>)</li>
   <li>✅ Cover letter and resume tell the same story about who you are</li>
@@ -472,7 +472,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     slug: "skills-to-put-on-a-resume",
     title: "Skills to Put on a Resume in 2026 (100+ Examples by Role)",
-    description: "The right skills to put on your resume in 2026 — with role-specific examples, hard vs soft skill guidance, and how to match skills to ATS keywords.",
+    description: "The right skills to put on your resume in 2026, with role-specific examples, hard vs soft skill guidance, and how to match skills to ATS keywords.",
     date: "2026-04-17",
     readTime: "10 min read",
     category: "Resume Skills",
@@ -490,12 +490,12 @@ export const BLOG_POSTS: BlogPost[] = [
   <li>Cross-reference against your actual experience. Which ones can you honestly claim?</li>
   <li>List those on your resume, exactly as worded in the JD.</li>
 </ol>
-<p>That's it. The skills section isn't about listing everything you've ever touched — it's about signaling "I have exactly what you asked for" to both the ATS and the human reader.</p>
+<p>That's it. The skills section isn't about listing everything you've ever touched, it's about signaling "I have exactly what you asked for" to both the ATS and the human reader.</p>
 
-<h2>Hard Skills vs Soft Skills — and Why the Balance Matters</h2>
+<h2>Hard Skills vs Soft Skills, and Why the Balance Matters</h2>
 <p><strong>Hard skills</strong> are specific, teachable, and usually tool- or process-based. They're the ones ATS parsers love because they're concrete and searchable. Examples: Python, SQL, Figma, Salesforce, French (B2), SEO, Agile/Scrum, financial modeling, CAD, video editing in Premiere Pro.</p>
 <p><strong>Soft skills</strong> are harder to measure but often the thing that actually gets you hired once you're in the room. ATS parsers rarely trigger on soft skills, but human readers weight them heavily. Examples: stakeholder management, cross-functional collaboration, executive communication, mentoring, conflict resolution.</p>
-<p><strong>The right ratio for 2026:</strong> About 70% hard skills, 30% soft skills in your skills section. List 8–12 skills total — more looks like padding, less looks like you're hiding something.</p>
+<p><strong>The right ratio for 2026:</strong> About 70% hard skills, 30% soft skills in your skills section. List 8–12 skills total, more looks like padding, less looks like you're hiding something.</p>
 
 <h2>What to Cut from Your Skills Section (Immediately)</h2>
 <ul>
@@ -540,14 +540,14 @@ export const BLOG_POSTS: BlogPost[] = [
 <p>Executive communication, Written communication, Public speaking, Cross-functional collaboration, Stakeholder management, Mentoring and coaching, Conflict resolution, Decision-making under uncertainty, Prioritization, Adaptability, Analytical thinking, Systems thinking, Customer empathy, Strategic thinking</p>
 
 <h2>How to Match Your Skills to ATS Keywords</h2>
-<p>This is the part most job seekers skip — and it's the single biggest lever on whether your resume gets through.</p>
-<p><strong>Step 1: Scrape the exact keywords from the job description.</strong> Look at the "Requirements" and "Qualifications" sections. Every skill listed there is a keyword the ATS will scan for. If they wrote "Salesforce CRM," use "Salesforce CRM" on your resume — not "SFDC," not "CRM systems."</p>
+<p>This is the part most job seekers skip, and it's the single biggest lever on whether your resume gets through.</p>
+<p><strong>Step 1: Scrape the exact keywords from the job description.</strong> Look at the "Requirements" and "Qualifications" sections. Every skill listed there is a keyword the ATS will scan for. If they wrote "Salesforce CRM," use "Salesforce CRM" on your resume, not "SFDC," not "CRM systems."</p>
 <p><strong>Step 2: Check which of those keywords already appear on your resume.</strong> Go through your resume and highlight every instance. Missing a key term? Add it (if you can honestly claim it).</p>
 <p><strong>Step 3: Prioritize keywords that appear multiple times in the JD.</strong> If a JD mentions "Python" once and "SQL" five times, SQL is clearly higher-weighted. Make sure SQL shows up in your skills section AND at least one bullet point.</p>
 <p><strong>Step 4: Don't stuff keywords where they don't belong.</strong> ATS systems are reasonably good at detecting keyword stuffing.</p>
 
 <h2>The Fastest Way to Do This</h2>
-<p>Matching keywords manually is tedious. That's why we built our <a href="/ats-checker">ATS Checker</a> — paste your resume and any job description, and it tells you your match percentage, which required keywords are missing, which skills are underweighted, and where exactly to add each keyword in your resume.</p>
+<p>Matching keywords manually is tedious. That's why we built our <a href="/ats-checker">ATS Checker</a>, paste your resume and any job description, and it tells you your match percentage, which required keywords are missing, which skills are underweighted, and where exactly to add each keyword in your resume.</p>
 
 <h2>The Three Skills Section Formats That Work</h2>
 
@@ -591,50 +591,50 @@ Python • SQL • Tableau • dbt • Snowflake • Airflow • A/B testing •
   <li>✅ No skills you can't honestly defend in an interview</li>
   <li>✅ Spelling and capitalization match industry conventions</li>
   <li>✅ Your skills reinforce, not contradict, your experience bullets</li>
-  <li>✅ Customized to this specific role — not the same list for every application</li>
+  <li>✅ Customized to this specific role, not the same list for every application</li>
 </ul>
 
 <h2>The TL;DR</h2>
-<p>The skills section isn't a dumping ground. It's a precision tool for signaling to both ATS parsers and human readers that you match the role. Pull exact keywords from the job description, list 8–12 skills you can defend, skip the buzzwords, and update the section for every application. Do that, and your callback rate will jump — often dramatically.</p>
+<p>The skills section isn't a dumping ground. It's a precision tool for signaling to both ATS parsers and human readers that you match the role. Pull exact keywords from the job description, list 8–12 skills you can defend, skip the buzzwords, and update the section for every application. Do that, and your callback rate will jump, often dramatically.</p>
     `,
   },
   {
     slug: "ats-resume-checker-2026",
     title: "ATS Resume Checker 2026: What Actually Works",
-    description: "Over 90% of Fortune 500 companies screen resumes with ATS software. Here's how to check yours — and the 30-point rubric most tools don't tell you about.",
+    description: "Over 90% of Fortune 500 companies screen resumes with ATS software. Here's how to check yours, and the 30-point rubric most tools don't tell you about.",
     date: "2026-04-18",
     readTime: "9 min read",
     category: "ATS",
     gradient: "from-emerald-500 to-teal-600",
     content: `
-<p>If you're applying to any job at a company with more than about 50 employees, your resume is almost certainly being read by software before a human ever sees it. That software — an Applicant Tracking System, or ATS — decides whether you make it to the recruiter's inbox or vanish into the "we'll keep your resume on file" void.</p>
+<p>If you're applying to any job at a company with more than about 50 employees, your resume is almost certainly being read by software before a human ever sees it. That software, an Applicant Tracking System, or ATS, decides whether you make it to the recruiter's inbox or vanish into the "we'll keep your resume on file" void.</p>
 <p>An ATS resume checker tells you whether your resume will actually pass that screen. This guide covers what ATS software actually checks, the top tools worth using in 2026, and the 30-point rubric we use internally at <a href="/">HiredTodayApp</a> to score resumes.</p>
 
 <h2>What Does an ATS Actually Check?</h2>
-<p>ATS systems are less sophisticated than most people think. They don't "understand" your resume — they parse it into structured fields, match it against the job description's keywords, and rank you on a handful of heuristics. Here's what they look for, in rough order of importance:</p>
+<p>ATS systems are less sophisticated than most people think. They don't "understand" your resume, they parse it into structured fields, match it against the job description's keywords, and rank you on a handful of heuristics. Here's what they look for, in rough order of importance:</p>
 
 <h3>1. Keyword match</h3>
-<p>The ATS tokenises both the job posting and your resume, then compares word-for-word. "Project management" in the job description doesn't automatically match "project coordination" on your resume — even though they mean similar things. The rule: use the <em>exact</em> phrases from the job posting, somewhere on your resume, at least once each.</p>
+<p>The ATS tokenises both the job posting and your resume, then compares word-for-word. "Project management" in the job description doesn't automatically match "project coordination" on your resume, even though they mean similar things. The rule: use the <em>exact</em> phrases from the job posting, somewhere on your resume, at least once each.</p>
 
 <h3>2. Parseable formatting</h3>
-<p>ATS parsers convert your document to plain text before analysis. Tables, text boxes, headers/footers (especially in .docx), multi-column layouts, and graphics often break this conversion. Text that rendered beautifully in Word can come out scrambled — or missing entirely — inside the ATS.</p>
+<p>ATS parsers convert your document to plain text before analysis. Tables, text boxes, headers/footers (especially in .docx), multi-column layouts, and graphics often break this conversion. Text that rendered beautifully in Word can come out scrambled, or missing entirely, inside the ATS.</p>
 
 <h3>3. Section structure</h3>
-<p>The parser looks for standard section headings — "Work Experience", "Education", "Skills", "Certifications" — to categorise your content. Creative labels like "What I've Done" or "My Toolkit" often fail to map to the expected fields, and your experience ends up in the wrong bucket (or no bucket).</p>
+<p>The parser looks for standard section headings, "Work Experience", "Education", "Skills", "Certifications", to categorise your content. Creative labels like "What I've Done" or "My Toolkit" often fail to map to the expected fields, and your experience ends up in the wrong bucket (or no bucket).</p>
 
 <h3>4. Contact information completeness</h3>
-<p>Most ATS systems require name, email, and phone at minimum. Missing any of these flags your resume for manual review — or rejection. LinkedIn URL, city/state, and personal website are optional bonuses.</p>
+<p>Most ATS systems require name, email, and phone at minimum. Missing any of these flags your resume for manual review, or rejection. LinkedIn URL, city/state, and personal website are optional bonuses.</p>
 
 <h3>5. Length and content density</h3>
 <p>ATS scoring often down-weights resumes that are too short (under ~300 words) or too long (over ~1,000 words for most roles). The sweet spot is 400–800 words on one to two pages, depending on your experience level.</p>
 
 <h2>Try the HiredTodayApp ATS Checker</h2>
 <p><a href="/ats-checker">Paste your resume text</a>, optionally paste the job description for keyword gap analysis, and get a 30-point breakdown across keywords, formatting, structure, contact info, and experience presentation. Each low-scoring category includes the specific issues and how to fix them.</p>
-<p>Strengths: fastest to use, most detailed breakdown, highlights missing keywords from the job description specifically. Limitation: analyses plain text only — you have to paste the text, not upload a PDF.</p>
+<p>Strengths: fastest to use, most detailed breakdown, highlights missing keywords from the job description specifically. Limitation: analyses plain text only, you have to paste the text, not upload a PDF.</p>
 <p>Most ATS checkers either cap scans aggressively, focus on generic writing feedback rather than ATS-specific issues, or give vague scores without actionable fixes. HiredTodayApp's checker gives you the full 30-point rubric with specific improvement steps.</p>
 
 <h2>The 30-Point ATS Rubric (The One We Actually Use)</h2>
-<p>Our <a href="/ats-checker">ATS checker</a> scores your resume on 30 individual criteria grouped into five categories. Here they are — if you score yourself on each, you'll know exactly where you're losing points.</p>
+<p>Our <a href="/ats-checker">ATS checker</a> scores your resume on 30 individual criteria grouped into five categories. Here they are, if you score yourself on each, you'll know exactly where you're losing points.</p>
 
 <h3>Keywords (5 criteria, up to 20 points)</h3>
 <ul>
@@ -691,10 +691,10 @@ Python • SQL • Tableau • dbt • Snowflake • Airflow • A/B testing •
 <ul>
   <li><strong>90–100:</strong> Excellent. You'll pass virtually every ATS you submit to. Focus on the human-read polish next.</li>
   <li><strong>75–89:</strong> Good. You'll pass most ATS filters. Address the top 2–3 flagged issues to push into the 90s.</li>
-  <li><strong>60–74:</strong> Average. You'll clear some systems and fail others. Probably losing interview opportunities you should be getting — fix this before the next application.</li>
+  <li><strong>60–74:</strong> Average. You'll clear some systems and fail others. Probably losing interview opportunities you should be getting, fix this before the next application.</li>
   <li><strong>Below 60:</strong> At risk. Likely being filtered out before humans see your resume. Rebuild from a plain-text foundation before applying further.</li>
 </ul>
-<p>A 90+ score isn't a guarantee you'll land the interview — but a score below 60 is a near-guarantee you'll be filtered out of roles you're otherwise qualified for. That's the asymmetry that makes ATS checking worth the 30 seconds.</p>
+<p>A 90+ score isn't a guarantee you'll land the interview, but a score below 60 is a near-guarantee you'll be filtered out of roles you're otherwise qualified for. That's the asymmetry that makes ATS checking worth the 30 seconds.</p>
 
 <h2>The Fastest Path to a High Score</h2>
 <p>If you want to raise your ATS score in under 20 minutes:</p>
@@ -703,13 +703,13 @@ Python • SQL • Tableau • dbt • Snowflake • Airflow • A/B testing •
   <li>Make sure each one appears at least once on your resume, using the exact wording.</li>
   <li>Add or beef up a dedicated <strong>Skills</strong> section with a comma- or bullet-separated list of those keywords.</li>
   <li>Replace any tables, text boxes, or two-column layouts with a single-column flow.</li>
-  <li>Make sure your contact info (name, email, phone, LinkedIn, city) is at the top of the document body — not in a Word header.</li>
+  <li>Make sure your contact info (name, email, phone, LinkedIn, city) is at the top of the document body, not in a Word header.</li>
   <li>Save as .docx or PDF (whichever the posting allows), then <a href="/ats-checker">rescore</a>.</li>
 </ol>
-<p>Most resumes that started below 70 land in the 85+ range after these six steps. From there, the remaining gains come from tightening bullets — but that's a human-read problem, not an ATS problem.</p>
+<p>Most resumes that started below 70 land in the 85+ range after these six steps. From there, the remaining gains come from tightening bullets, but that's a human-read problem, not an ATS problem.</p>
 
 <h2>The Real Point</h2>
-<p>An ATS checker isn't going to make your resume <em>good</em> — it's going to make sure your resume is <em>readable</em>. Those are different problems. Pass the ATS first; then worry about whether the content actually sells you.</p>
+<p>An ATS checker isn't going to make your resume <em>good</em>, it's going to make sure your resume is <em>readable</em>. Those are different problems. Pass the ATS first; then worry about whether the content actually sells you.</p>
 <p>If you're applying to anything above entry-level, running your resume through an <a href="/ats-checker">ATS checker</a> before submitting is the single highest-ROI 30 seconds you can spend on your job search.</p>
     `,
   },

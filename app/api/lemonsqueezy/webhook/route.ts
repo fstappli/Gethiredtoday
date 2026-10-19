@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const secret = process.env.LEMONSQUEEZY_WEBHOOK_SECRET;
 
   if (!secret) {
-    console.error('LEMONSQUEEZY_WEBHOOK_SECRET is not set — rejecting webhook');
+    console.error('LEMONSQUEEZY_WEBHOOK_SECRET is not set, rejecting webhook');
     return NextResponse.json({ error: 'Webhook secret not configured' }, { status: 500 });
   }
 
@@ -67,7 +67,7 @@ export async function POST(req: Request) {
   try {
     if (resourceName === 'sale' && !refunded && !disputed) {
       // Check if this user previously cancelled inside the app. If so, the
-      // Gumroad-side cancel must have failed — they were charged again.
+      // Gumroad-side cancel must have failed, they were charged again.
       // Log it so it can be investigated and refunded if needed.
       const { data: existing } = await getSupabaseAdmin()
         .from('profiles')

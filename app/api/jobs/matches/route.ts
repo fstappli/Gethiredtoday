@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { getCaller, applyMatchLimit } from '@/lib/plan-guard';
 
-// GET /api/jobs/matches — fetch current matches for authenticated user's finalized resume
+// GET /api/jobs/matches, fetch current matches for authenticated user's finalized resume
 export async function GET() {
   try {
     const supabase = await createServerSupabaseClient();
@@ -68,8 +69,15 @@ export async function GET() {
       };
     });
 
+    const { plan } = await getCaller();
+    const limited = applyMatchLimit(plan, enriched).map((m) =>
+      m.locked ? { ...m, matched_reasons: [] } : m
+    );
     return NextResponse.json({
-      matches: enriched,
+      matches: limited,
+      plan,
+      locked_count: limited.filter((m) => m.locked).length,
+      locked_trigger: 'locked_matches',
       resume: { id: resume.id, title: resume.title, finalized_at: resume.finalized_at },
       has_finalized_resume: true,
     });

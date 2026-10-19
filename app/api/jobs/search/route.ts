@@ -5,12 +5,10 @@ import { searchJobsJSearch, isJSearchConfigured } from '@/lib/jobs/jsearch';
 import { searchJobsRemotive } from '@/lib/jobs/remotive';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { isProActive } from '@/lib/subscription';
 import type { Job, JobSearchFilters, EmploymentType } from '@/types/jobs';
 
-const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
 
-// Countries NOT supported by Adzuna — routed to JSearch/Jobicy/Remotive instead
+// Countries NOT supported by Adzuna, routed to JSearch/Jobicy/Remotive instead
 const NON_ADZUNA_COUNTRIES = new Set(['ae', 'pk']);
 
 export const dynamic = 'force-dynamic';
@@ -38,21 +36,10 @@ function mergeAndDeduplicate(...sources: Job[][]): Job[] {
 
 export async function GET(req: NextRequest) {
   try {
-    // Pro gate — job search fires paid API calls; free users cannot access it
+    // Job search is available on Free and Pro (signed-in users only).
     const supabase = await createServerSupabaseClient();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-
-    if (user.email !== ADMIN_EMAIL) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('subscription_status, subscription_ends_at')
-        .eq('id', user.id)
-        .single();
-      if (!isProActive(profile)) {
-        return NextResponse.json({ error: 'Pro subscription required' }, { status: 403 });
-      }
-    }
 
     const { searchParams } = req.nextUrl;
     const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10));

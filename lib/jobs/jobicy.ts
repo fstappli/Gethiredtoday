@@ -103,7 +103,7 @@ export async function searchJobsJobicy(
       jobs = jobs.filter((j) => j.contract_type && types.includes(j.contract_type as never));
     }
 
-    // Jobicy has no pagination — cap total to jobs.length so "Load more" never appears
+    // Jobicy has no pagination, cap total to jobs.length so "Load more" never appears
     return { jobs, total: jobs.length, page: 1, page_size: jobs.length || PAGE_SIZE };
   } catch (err) {
     console.error('Jobicy fetch error:', err);

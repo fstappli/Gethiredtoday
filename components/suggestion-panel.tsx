@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * "Expert Recommended" suggestion panel — reusable UI for AI-generated
+ * "Expert Recommended" suggestion panel, reusable UI for AI-generated
  * bullets, skills, or summaries. Shows a searchable list of cards, each with
  * a (+) button that invokes onAdd(text). Pattern mirrors the category-standard builder UI.
  */
@@ -29,17 +29,17 @@ const DEFAULTS: Record<SuggestionType, { heading: string; subheading: string; em
   bullets: {
     heading: 'Expert-written examples',
     subheading: 'Pick bullets that match your experience, then edit them.',
-    emptyJobTitle: 'Start typing a job title below — or pick a popular role to see expert bullet examples.',
+    emptyJobTitle: 'Start typing a job title below, or pick a popular role to see expert bullet examples.',
   },
   skills: {
     heading: 'Top skills for this role',
     subheading: 'Add the skills that match your background.',
-    emptyJobTitle: 'Start typing a job title below — or pick a popular role to see recommended skills.',
+    emptyJobTitle: 'Start typing a job title below, or pick a popular role to see recommended skills.',
   },
   summary: {
     heading: 'Pre-written summary examples',
     subheading: 'Pick one and edit to make it yours.',
-    emptyJobTitle: 'Start typing a job title below — or pick a popular role to see summary examples.',
+    emptyJobTitle: 'Start typing a job title below, or pick a popular role to see summary examples.',
   },
 };
 
@@ -112,7 +112,7 @@ export function SuggestionPanel({
       });
       if (res.ok) {
         const { suggestions } = await res.json();
-        // Keep every related title the API returned — previously we capped
+        // Keep every related title the API returned, previously we capped
         // at 6 here and then further capped at 4 in render, which hid
         // suggestions the user's screen had room for.
         setRelatedTitles(Array.isArray(suggestions) ? suggestions : []);
@@ -186,7 +186,7 @@ export function SuggestionPanel({
         </button>
       </div>
 
-      {/* Related titles — show all returned, wrapped onto multiple lines */}
+      {/* Related titles, show all returned, wrapped onto multiple lines */}
       {relatedTitles.length > 0 && (
         <div className="flex items-center gap-x-3 gap-y-1 flex-wrap">
           <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wide">Related:</span>
@@ -245,7 +245,7 @@ export function SuggestionPanel({
         </div>
       )}
 
-      {/* Suggestion cards — scrollable column */}
+      {/* Suggestion cards, scrollable column */}
       <div
         className="flex flex-col gap-2 overflow-y-auto pr-1"
         style={maxHeight ? { maxHeight } : undefined}

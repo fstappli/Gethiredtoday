@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
-import { isProActive } from '@/lib/subscription';
 import type { Job } from '@/types/jobs';
 
 export async function POST(req: NextRequest) {
@@ -10,21 +9,7 @@ export async function POST(req: NextRequest) {
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('subscription_status, subscription_ends_at')
-      .eq('id', user.id)
-      .single();
-
-    const isPro = isProActive(profile);
-
-    if (!isPro) {
-      return NextResponse.json(
-        { error: 'pro_required', message: 'Upgrade to Pro to apply to jobs.' },
-        { status: 403 }
-      );
-    }
-
+    // Manual apply is free. Auto-Apply is Pro and runs through its own routes.
     const body = await req.json();
     const { job_id, redirect_url, job_data, resume_id, source } = body as {
       job_id: string;
@@ -40,7 +25,7 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminSupabaseClient();
 
-    // Ensure job exists in DB — insert only if not cached; never overwrite
+    // Ensure job exists in DB, insert only if not cached; never overwrite
     // a well-populated row with potentially incomplete frontend data.
     if (job_data) {
       await admin.from('jobs').upsert({
@@ -117,7 +102,7 @@ export async function POST(req: NextRequest) {
 
     if (insertError) {
       console.error('Failed to create application:', insertError);
-      // URL was already opened — return success without tracking
+      // URL was already opened, return success without tracking
       return NextResponse.json({ redirect_url: finalRedirectUrl, tracking: false });
     }
 

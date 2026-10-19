@@ -13,6 +13,7 @@ import {
   Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import UpgradePrompt from "@/components/upgrade-prompt";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -87,6 +88,13 @@ export default function CoverLetterBuilderPage() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [mobileTab, setMobileTab] = useState<'edit' | 'preview'>('edit');
+  const [isPro, setIsPro] = useState(false);
+  const [showUpgrade, setShowUpgrade] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/user/subscription-status').then((r) => r.json()).then((d) => setIsPro(Boolean(d.isPro))).catch(() => {});
+  }, []);
 
   const previewRef = useRef<HTMLDivElement>(null);
 
@@ -224,6 +232,15 @@ export default function CoverLetterBuilderPage() {
 
   const handleDownloadPDF = async () => {
     if (!previewRef.current) return;
+    // Writing and previewing are free; downloading is Pro. The server decides.
+    try {
+      const gate = await fetch('/api/export/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kind: 'cover_letter_pdf' }),
+      });
+      if (gate.status === 402 || gate.status === 403) { setShowUpgrade(true); return; }
+    } catch { /* fall through; the gate is also enforced for paid features server side */ }
     setDownloadingPdf(true);
     try {
       // Switched to PNG for the same reason the resume PDF did: at the
@@ -257,11 +274,11 @@ export default function CoverLetterBuilderPage() {
       const imgHeightMm = (img.height * pageWidth) / img.width;
 
       if (imgHeightMm <= pageHeight + 1) {
-        // Render at natural size — no stretching.
+        // Render at natural size, no stretching.
         pdf.addImage(dataUrl, "PNG", 0, 0, pageWidth, imgHeightMm, undefined, "FAST");
       } else {
         // Cover letter overflowed a single page (long signature, large
-        // letterhead, etc.) — slice into A4 pages with the same aspect-
+        // letterhead, etc.), slice into A4 pages with the same aspect-
         // preserving approach the resume PDF uses.
         const pageHeightPx = (pageHeight * img.width) / pageWidth;
         let y = 0;
@@ -293,6 +310,15 @@ export default function CoverLetterBuilderPage() {
     }
   };
 
+  const handleCopyText = async () => {
+    const text = previewRef.current?.innerText ?? form.body;
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { setError('Could not copy. Select the text in the preview and copy it.'); }
+  };
+
   const previewRecipient = form.recipient_name || "Hiring Manager";
   const previewName = form.full_name || "Your Name";
   const previewEmail = form.email || "your@email.com";
@@ -302,9 +328,10 @@ export default function CoverLetterBuilderPage() {
   const previewJobTitle = form.job_title || "Position";
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden bg-gray-100">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-ground-portal text-ink">
+      <UpgradePrompt trigger="cover_letter_download" open={showUpgrade} onClose={() => setShowUpgrade(false)} />
 
-      {/* Capture target for PDF — rendered off-screen so html-to-image can read it */}
+      {/* Capture target for PDF, rendered off-screen so html-to-image can read it */}
       <div
         style={{
           position: "absolute",
@@ -344,99 +371,66 @@ export default function CoverLetterBuilderPage() {
       </div>
 
       {/* ======================== TOP HEADER ======================== */}
-      <header className="sticky top-0 z-30 bg-white border-b border-gray-200 shadow-sm flex items-center gap-2 px-4 h-14 flex-shrink-0">
-        <Link
-          href="/dashboard"
-          className="flex items-center gap-1.5 text-gray-500 hover:text-gray-800 transition-colors flex-shrink-0"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          <span className="text-sm hidden sm:inline font-medium">Dashboard</span>
+      <header className="relative z-30 flex flex-none flex-wrap items-center gap-2 border-b border-line bg-white px-3 py-2 sm:px-5">
+        <Link href="/dashboard/cover-letters" aria-label="Back to cover letters" className="grid h-11 w-11 flex-none place-items-center rounded-xl border border-line bg-white text-ink hover:bg-ground-portal">
+          <ArrowLeft className="h-5 w-5" aria-hidden="true" />
         </Link>
-
-        <div className="w-px h-5 bg-gray-200 flex-shrink-0" />
-
-        {/* Title */}
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="text-sm font-semibold text-gray-800 bg-transparent border-0 outline-none focus:border-b-2 focus:border-teal-500 px-1 min-w-0 max-w-[160px]"
-          aria-label="Cover letter title"
-        />
-
-        <div className="flex-1" />
-
-        {/* Template selector */}
-        <div className="hidden sm:flex items-center gap-2 border border-gray-200 rounded-xl px-3 py-1.5 bg-gray-50">
-          <span className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide">Template</span>
-          <div className="flex gap-0.5">
-            {TEMPLATE_OPTIONS.slice(0, 4).map((t) => (
-              <button
-                key={t}
-                onClick={() => setSelectedTemplate(t)}
-                className={`px-2 py-0.5 rounded-md text-xs font-medium transition-all ${
-                  selectedTemplate === t
-                    ? "bg-teal-600 text-white shadow-sm"
-                    : "text-gray-500 hover:text-gray-800 hover:bg-white"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
-          </div>
+        <div className="min-w-0 flex-1 sm:flex-none">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="font-display w-full min-w-0 max-w-[280px] rounded-md border-0 bg-transparent px-1 text-lg font-bold outline-none focus:ring-2 focus:ring-brand"
+            aria-label="Cover letter title"
+          />
+          <div role="status" className="px-1 text-[13px] text-text-muted">{saving ? 'Saving...' : saved ? 'Saved' : 'Save to keep your changes'}</div>
         </div>
 
-        <div className="w-px h-5 bg-gray-200 flex-shrink-0 hidden sm:block" />
+        <div className="hidden flex-1 sm:block" />
 
-        {/* Save */}
+        <div className="hidden items-center gap-1 rounded-xl border border-line bg-ground-portal p-1 lg:flex" role="group" aria-label="Template">
+          {TEMPLATE_OPTIONS.slice(0, 4).map((t) => (
+            <button
+              key={t}
+              type="button"
+              aria-pressed={selectedTemplate === t}
+              onClick={() => setSelectedTemplate(t)}
+              className={`min-h-[40px] rounded-lg px-3 text-sm font-semibold ${selectedTemplate === t ? 'bg-ink text-white' : 'text-text-muted hover:bg-white'}`}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
         <button
+          type="button"
           onClick={handleSave}
           disabled={saving}
-          className={`flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg border transition-all flex-shrink-0 ${
-            saved
-              ? "bg-green-50 text-green-700 border-green-200"
-              : "bg-white text-gray-700 border-gray-200 hover:border-teal-400 hover:text-teal-700"
-          } disabled:opacity-60`}
+          className="flex min-h-[44px] items-center gap-1.5 rounded-xl border-[1.5px] border-line-strong bg-white px-4 text-sm font-bold disabled:opacity-60"
         >
-          {saving ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : saved ? (
-            <Check className="w-3.5 h-3.5" />
-          ) : (
-            <Save className="w-3.5 h-3.5" />
-          )}
-          {saved ? "Saved!" : saving ? "Saving…" : "Save"}
+          {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : saved ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : <Save className="h-3.5 w-3.5" aria-hidden="true" />}
+          {saved ? 'Saved' : saving ? 'Saving...' : 'Save'}
+        </button>
+        <button type="button" onClick={handleCopyText} className="hidden min-h-[44px] rounded-xl border-[1.5px] border-line-strong bg-white px-4 text-sm font-bold sm:block">
+          {copied ? 'Copied' : 'Copy text'}
         </button>
 
-        {/* Mobile tab toggle */}
-        <div className="flex md:hidden rounded-full border border-gray-200 p-0.5 flex-shrink-0">
-          <button
-            onClick={() => setMobileTab('edit')}
-            className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${mobileTab === 'edit' ? 'bg-teal-600 text-white' : 'text-gray-500'}`}
-          >
-            Edit
-          </button>
-          <button
-            onClick={() => setMobileTab('preview')}
-            className={`text-xs font-medium px-2.5 py-1 rounded-full transition-colors ${mobileTab === 'preview' ? 'bg-teal-600 text-white' : 'text-gray-500'}`}
-          >
-            Preview
-          </button>
+        <div role="tablist" aria-label="View" className="flex rounded-xl bg-[#EEF1EE] p-[3px] md:hidden">
+          {(['edit', 'preview'] as const).map((tab) => (
+            <button key={tab} type="button" role="tab" aria-selected={mobileTab === tab} onClick={() => setMobileTab(tab)} className={`min-h-[40px] rounded-[9px] px-3 text-sm ${mobileTab === tab ? 'bg-white font-bold' : 'font-semibold text-text-muted'}`}>
+              {tab === 'edit' ? 'Edit' : 'Preview'}
+            </button>
+          ))}
         </div>
 
-        {/* Download PDF */}
         <button
+          type="button"
           onClick={handleDownloadPDF}
           disabled={downloadingPdf}
-          className="flex items-center gap-1.5 text-sm font-medium px-3 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 disabled:opacity-60 disabled:cursor-not-allowed text-white transition-colors flex-shrink-0"
+          className="flex min-h-[44px] items-center gap-1.5 rounded-xl bg-brand px-4 text-sm font-extrabold text-white hover:bg-brand-dark disabled:opacity-60"
         >
-          {downloadingPdf ? (
-            <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          ) : (
-            <Download className="w-3.5 h-3.5" />
-          )}
-          <span className="hidden sm:inline">{downloadingPdf ? "Generating…" : "Download PDF"}</span>
-          <span className="sm:hidden">{downloadingPdf ? "…" : "PDF"}</span>
+          {downloadingPdf ? <Loader2 className="h-3.5 w-3.5 animate-spin" aria-hidden="true" /> : <Download className="h-3.5 w-3.5" aria-hidden="true" />}
+          {downloadingPdf ? 'Generating...' : isPro ? 'Download PDF' : 'Download · Pro'}
         </button>
       </header>
 
@@ -451,7 +445,7 @@ export default function CoverLetterBuilderPage() {
       <div className="flex flex-1 overflow-hidden">
 
         {/* -------- LEFT PANEL: Editor -------- */}
-        <aside className={`md:w-[400px] lg:w-[440px] flex-shrink-0 overflow-y-auto bg-white border-r border-gray-200 p-4 sm:p-6 space-y-7 ${mobileTab === 'preview' ? 'hidden md:flex md:flex-col' : 'flex flex-col flex-1 md:flex-none'}`}>
+        <aside className={`[&_input]:min-h-[44px] [&_input]:!text-base [&_textarea]:!text-base md:w-[400px] lg:w-[440px] flex-shrink-0 overflow-y-auto bg-white border-r border-gray-200 p-4 sm:p-6 space-y-7 ${mobileTab === 'preview' ? 'hidden md:flex md:flex-col' : 'flex flex-col flex-1 md:flex-none'}`}>
 
           {/* Contact Info */}
           <section>
@@ -621,7 +615,7 @@ function CoverLetterContent({
 }) {
   return (
     <>
-      {/* Sender block — top right */}
+      {/* Sender block, top right */}
       <div style={{ textAlign: "right", marginBottom: "32px" }}>
         <p style={{ fontWeight: 700, fontSize: "14pt" }}>{previewName}</p>
         {previewEmail && <p style={{ fontSize: "11pt" }}>{previewEmail}</p>}

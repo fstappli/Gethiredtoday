@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
-// POST /api/resume/finalize — mark a resume as the user's active job-search resume
+// POST /api/resume/finalize, mark a resume as the user's active job-search resume
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// DELETE /api/resume/finalize — un-finalize the active resume
+// DELETE /api/resume/finalize, un-finalize the active resume
 export async function DELETE() {
   try {
     const supabase = await createServerSupabaseClient();

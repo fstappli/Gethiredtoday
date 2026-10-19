@@ -1,16 +1,16 @@
 /**
- * Resume import — user uploads a PDF / DOCX / TXT of their existing resume,
+ * Resume import, user uploads a PDF / DOCX / TXT of their existing resume,
  * we extract the text, ask Claude to structure it into the ResumeData schema,
  * then create a fresh resume row and return its id so the client can jump
  * straight into the builder with everything pre-filled.
  *
  * Supported inputs:
- *   - PDF  (native Claude document input — no extra parser needed)
+ *   - PDF  (native Claude document input, no extra parser needed)
  *   - DOCX (extracted via mammoth)
  *   - TXT  (passed straight through)
  *
  * Vercel function runtime: nodejs (Anthropic SDK + mammoth need Node).
- * Max file size: 8 MB — more than enough for any resume.
+ * Max file size: 8 MB, more than enough for any resume.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -80,7 +80,7 @@ Rules:
 - Use "" for unknown text fields; use [] for unknown arrays.
 - Normalise dates to "YYYY-MM". Common inputs: "Jan 2020" → "2020-01", "2020" → "2020-01", "Present"/"Current" → leave end_date "" and set is_current: true.
 - Split work_experience bullet points into the "achievements" array. The "description" should be a short 1-2 sentence summary of the role, not bullets.
-- For skills, "level" must be one of: "Beginner", "Intermediate", "Advanced", "Expert" — use "Intermediate" if unclear. "category" is optional ("Technical", "Soft", "Language", etc.).
+- For skills, "level" must be one of: "Beginner", "Intermediate", "Advanced", "Expert", use "Intermediate" if unclear. "category" is optional ("Technical", "Soft", "Language", etc.).
 - Use stable short ids like w1, w2, e1, e2, s1, s2.
 - Extract linkedin/github/website only if present; otherwise leave as "".`;
 
@@ -138,7 +138,7 @@ async function extractFromFile(file: File): Promise<ResumeData> {
       },
     ];
   } else {
-    // Plain text / .txt / unknown — best-effort.
+    // Plain text / .txt / unknown, best-effort.
     const text = buf.toString('utf8');
     contentBlocks = [
       {

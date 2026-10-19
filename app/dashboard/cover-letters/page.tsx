@@ -2,12 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Mail, Plus, Edit, Trash2, Copy, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { truncate } from '@/lib/utils';
-import { ProFeatureGate } from '@/components/pro-feature-gate';
+import { btnClass } from '@/components/gh-ui';
+import { upgradeHref } from '@/lib/upgrade-triggers';
 
 interface CoverLetterRow {
   id: string;
@@ -16,195 +13,134 @@ interface CoverLetterRow {
   template_id: string;
 }
 
-function formatEdited(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
+interface Excerpt { body: string }
+
+function editedLabel(dateStr: string): string {
+  const days = Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+  if (days <= 0) return 'edited today';
+  if (days === 1) return 'edited yesterday';
+  if (days < 7) return `${days} days ago`;
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 export default function CoverLettersPage() {
   const router = useRouter();
-  const [coverLetters, setCoverLetters] = useState<CoverLetterRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [letters, setLetters] = useState<CoverLetterRow[]>([]);
+  const [excerpts, setExcerpts] = useState<Record<string, Excerpt>>({});
+  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [isPro, setIsPro] = useState(false);
   const [creating, setCreating] = useState(false);
-  const [isPro, setIsPro] = useState<boolean | null>(null);
 
   useEffect(() => {
-    fetch('/api/user/subscription-status')
-      .then((r) => r.json())
-      .then((d) => setIsPro(d.isPro ?? false))
-      .catch(() => setIsPro(false));
+    fetch('/api/user/subscription-status').then((r) => r.json()).then((d) => setIsPro(Boolean(d.isPro))).catch(() => {});
   }, []);
 
-  const handleNewCoverLetter = async () => {
+  const load = useCallback(async () => {
+    try {
+      const res = await fetch('/api/cover-letter');
+      if (res.status === 401) { router.push('/login'); return; }
+      if (!res.ok) throw new Error('bad status');
+      const json = await res.json();
+      const rows: CoverLetterRow[] = json.coverLetters ?? [];
+      setLetters(rows);
+      setState('ready');
+      // The list endpoint omits the body, so fetch a short excerpt for the first few cards.
+      rows.slice(0, 9).forEach((r) => {
+        fetch(`/api/cover-letter/${r.id}`)
+          .then((x) => (x.ok ? x.json() : null))
+          .then((d) => {
+            const body: string = d?.coverLetter?.data?.body ?? '';
+            setExcerpts((p) => ({ ...p, [r.id]: { body } }));
+          })
+          .catch(() => {});
+      });
+    } catch {
+      setState('error');
+    }
+  }, [router]);
+
+  useEffect(() => { load(); }, [load]);
+
+  const handleNew = async () => {
     setCreating(true);
     try {
       const res = await fetch('/api/cover-letter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title: 'Untitled Cover Letter', template_id: 'professional', data: {}, contact: {} }),
+        body: JSON.stringify({ title: 'Untitled cover letter', template_id: 'professional', data: {}, contact: {} }),
       });
       if (res.ok) {
         const { coverLetter } = await res.json();
         router.push(`/builder/cover-letter/${coverLetter.id}`);
-      }
-    } catch {
-      setCreating(false);
-    }
-  };
-
-  const fetchCoverLetters = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('/api/cover-letter');
-      if (res.status === 401) {
-        router.push('/login');
         return;
       }
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setCoverLetters(data.coverLetters ?? []);
-    } catch {
-      setError('Failed to load your cover letters. Please refresh.');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    fetchCoverLetters();
-  }, [fetchCoverLetters]);
+    } catch { /* fall through */ }
+    setCreating(false);
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this cover letter?')) return;
-    setCoverLetters((prev) => prev.filter((c) => c.id !== id));
-    try {
-      await fetch(`/api/cover-letter/${id}`, { method: 'DELETE' });
-    } catch {
-      fetchCoverLetters();
-    }
+    setLetters((p) => p.filter((c) => c.id !== id));
+    try { await fetch(`/api/cover-letter/${id}`, { method: 'DELETE' }); } catch { load(); }
   };
-
-  const handleDuplicate = async (cl: CoverLetterRow) => {
-    try {
-      const res = await fetch(`/api/cover-letter/${cl.id}`);
-      if (!res.ok) return;
-      const { coverLetter: full } = await res.json();
-      const createRes = await fetch('/api/cover-letter', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: `${cl.title} (Copy)`,
-          template_id: cl.template_id,
-          data: full.data ?? {},
-        }),
-      });
-      if (createRes.ok) fetchCoverLetters();
-    } catch {}
-  };
-
-  if (isPro === null) {
-    return (
-      <div className="flex-1 flex items-center justify-center min-h-[400px]">
-        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-      </div>
-    );
-  }
-
-  if (!isPro) {
-    return (
-      <ProFeatureGate
-        title="AI Cover Letter Builder"
-        description="Generate tailored cover letters in seconds. Match your cover letter to your resume template automatically."
-        features={[
-          'AI-powered cover letters in seconds',
-          'Auto-matches your resume template & colors',
-          'Customise tone, length, and style',
-          'Export as PDF or Word',
-        ]}
-        from="/dashboard/cover-letters"
-      />
-    );
-  }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className="flex items-center justify-between mb-6 sm:mb-8">
+    <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-5 px-5 pb-14 pt-7">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Cover Letters</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage your AI-generated cover letters</p>
+          <h1 className="font-display m-0 text-[34px] tracking-[-0.8px]">Cover letters</h1>
+          <p className="mt-1 text-text-muted">Paste a job ad and get a letter that matches your resume.</p>
         </div>
-        <Button onClick={handleNewCoverLetter} disabled={creating} className="rounded-full font-medium text-white text-sm" style={{ backgroundColor: '#4AB7A6' }}>
-          {creating ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Plus className="w-4 h-4 mr-1.5" />}
-          <span className="hidden sm:inline">New </span>Cover Letter
-        </Button>
+        <button type="button" onClick={handleNew} disabled={creating} className={btnClass('primary', 'font-extrabold')}>
+          {creating ? 'Creating...' : '+ New cover letter'}
+        </button>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      {!isPro && (
+        <div className="flex flex-wrap items-center gap-3.5 rounded-[18px] bg-sun-soft px-[18px] py-4">
+          <span className="min-w-[240px] flex-1 leading-normal"><b>Write and preview as many as you like.</b> Downloading cover letters is part of Pro.</span>
+          <Link href={upgradeHref('cover_letter_download')} className="grid min-h-[44px] place-items-center rounded-[10px] bg-ink px-3.5 font-extrabold text-white no-underline">Go Pro</Link>
         </div>
-      ) : error ? (
-        <Card className="border-red-100 shadow-none">
-          <CardContent className="py-10 text-center text-sm text-red-500">{error}</CardContent>
-        </Card>
-      ) : coverLetters.length === 0 ? (
-        <Card className="border-2 border-dashed border-gray-200 shadow-none">
-          <CardContent className="py-14 flex flex-col items-center text-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
-              <Mail className="w-6 h-6 text-purple-400" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-700">No cover letters yet</p>
-              <p className="text-sm text-gray-400 mt-0.5">Generate AI-powered cover letters tailored to each job</p>
-            </div>
-            <Button onClick={handleNewCoverLetter} disabled={creating} className="mt-1 rounded-full font-medium text-white" style={{ backgroundColor: '#4AB7A6' }}>
-              {creating ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Plus className="w-4 h-4 mr-1.5" />}
-              Create Cover Letter
-            </Button>
-          </CardContent>
-        </Card>
+      )}
+
+      {state === 'loading' ? (
+        <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]" aria-busy="true">
+          {[0, 1, 2].map((i) => <div key={i} className="h-[220px] animate-pulse rounded-[20px] bg-[#ECE9E0]" />)}
+        </div>
+      ) : state === 'error' ? (
+        <div className="flex items-center justify-between gap-3 rounded-[20px] border border-line bg-white p-6">
+          <span className="text-text-muted">We could not load your cover letters.</span>
+          <button type="button" onClick={() => { setState('loading'); load(); }} className={btnClass('outline')}>Try again</button>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4">
-          {coverLetters.map((cl) => (
-            <Card key={cl.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-5 flex flex-col gap-3">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-9 h-9 rounded-lg bg-purple-50 flex items-center justify-center shrink-0">
-                    <Mail className="w-4 h-4 text-purple-400" />
+        <div className="grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]">
+          {letters.map((c) => {
+            const body = excerpts[c.id]?.body;
+            const ready = Boolean(body && body.trim().length > 0);
+            return (
+              <article key={c.id} className="flex flex-col gap-3 rounded-[20px] border border-line bg-white p-5">
+                <Link href={`/builder/cover-letter/${c.id}`} className="flex flex-col gap-3 text-ink no-underline">
+                  <div className="h-[120px] overflow-hidden rounded-xl bg-ground-site p-4 text-[13px] leading-[1.55] text-text-muted">
+                    {body === undefined ? '' : ready ? body : 'No text yet. Open it to write your letter.'}
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-gray-900 text-sm leading-tight truncate">
-                      {truncate(cl.title, 32)}
-                    </p>
-                    <p className="text-xs text-gray-400 mt-0.5 capitalize">{cl.template_id} template</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="min-w-0">
+                      <b className="block truncate">{c.title}</b>
+                      <span className="text-[13px] text-text-muted">{editedLabel(c.updated_at)}</span>
+                    </span>
+                    {body !== undefined && (
+                      <span className={`rounded-full px-2.5 py-1 text-xs font-extrabold ${ready ? 'bg-mint-soft text-brand-dark' : 'bg-warning-soft text-warning-ink'}`}>{ready ? 'Ready' : 'Draft'}</span>
+                    )}
                   </div>
-                </div>
-                <p className="text-xs text-gray-400">Edited {formatEdited(cl.updated_at)}</p>
-                <div className="flex items-center gap-1.5 pt-1 border-t border-gray-100">
-                  <Link href={`/builder/cover-letter/${cl.id}`} className="flex-1">
-                    <Button size="sm" className="w-full h-8 text-xs font-medium rounded-lg text-white" style={{ backgroundColor: '#4AB7A6' }}>
-                      <Edit className="w-3.5 h-3.5 mr-1" />
-                      Edit
-                    </Button>
-                  </Link>
-                  <Button size="sm" variant="outline" className="h-8 w-8 p-0 rounded-lg border-gray-200" title="Duplicate" onClick={() => handleDuplicate(cl)}>
-                    <Copy className="w-3.5 h-3.5 text-gray-500" />
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-8 w-8 p-0 rounded-lg border-gray-200 hover:border-red-200 hover:text-red-500" title="Delete" onClick={() => handleDelete(cl.id)}>
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-          <button onClick={handleNewCoverLetter} disabled={creating} className="h-full min-h-[160px] rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-[#4AB7A6] hover:text-[#4AB7A6] transition-colors disabled:opacity-50">
-            {creating ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus className="w-6 h-6" />}
-            <span className="text-sm font-medium">New Cover Letter</span>
+                </Link>
+                <button type="button" onClick={() => handleDelete(c.id)} className="self-start text-sm font-semibold text-danger-ink min-h-[44px]">Delete</button>
+              </article>
+            );
+          })}
+          <button type="button" onClick={handleNew} disabled={creating} className="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[20px] border-2 border-dashed border-[#C9C4B6] bg-transparent p-5 text-center text-ink">
+            <span aria-hidden="true" className="grid h-[52px] w-[52px] place-items-center rounded-2xl bg-mint-soft text-[26px] font-extrabold text-brand">+</span>
+            <b>Write a new one</b>
+            <span className="text-sm text-text-muted">About 60 seconds</span>
           </button>
         </div>
       )}

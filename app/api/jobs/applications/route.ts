@@ -5,7 +5,7 @@ import type { ApplicationStatus } from '@/types/jobs';
 
 const APPLIED_STATUSES: ApplicationStatus[] = ['applied', 'viewed', 'interview', 'offer', 'rejected'];
 
-// GET /api/jobs/applications — list user's applications with optional status filter
+// GET /api/jobs/applications, list user's applications with optional status filter
 export async function GET(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();

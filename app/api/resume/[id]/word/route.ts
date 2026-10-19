@@ -55,7 +55,7 @@ function renderHtml(title: string, data: ResumeData): string {
   const c = data.contact ?? ({} as ResumeData['contact']);
   const name = c.full_name || title || 'Resume';
 
-  // Contact line — same fields used by the visual templates.
+  // Contact line, same fields used by the visual templates.
   const contactLine = [c.email, c.phone, c.location, c.linkedin, c.website, c.github]
     .filter(Boolean)
     .map((v) => esc(v as string))
@@ -150,7 +150,7 @@ function renderHtml(title: string, data: ResumeData): string {
         .certifications!.map(
           (cert: Certification) => `
 <li style="font-size:12px;margin-bottom:4px;">
-  <strong>${esc(cert.name || '')}</strong>${cert.issuer ? ` — ${esc(cert.issuer)}` : ''}
+  <strong>${esc(cert.name || '')}</strong>${cert.issuer ? `, ${esc(cert.issuer)}` : ''}
   ${cert.date_issued ? ` (${esc(cert.date_issued)}${cert.expiry_date ? ` – ${esc(cert.expiry_date)}` : ''})` : ''}
   ${cert.credential_id ? `<br/><span style="color:#666;">ID: ${esc(cert.credential_id)}</span>` : ''}
   ${cert.url ? ` <a href="${esc(cert.url)}">${esc(cert.url)}</a>` : ''}
@@ -192,7 +192,7 @@ function renderHtml(title: string, data: ResumeData): string {
         .join(' · ')}</p>`
     : '';
 
-  // ── Volunteer work (previously dropped — now rendered) ──
+  // ── Volunteer work (previously dropped, now rendered) ──
   const volunteerHtml = (data.volunteer_work ?? [])
     .map(
       (v: VolunteerWork) => `
@@ -209,7 +209,7 @@ function renderHtml(title: string, data: ResumeData): string {
     )
     .join('');
 
-  // ── Custom sections (previously dropped — now rendered) ──
+  // ── Custom sections (previously dropped, now rendered) ──
   const customHtml = (data.custom_sections ?? [])
     .filter((cs) => cs.items && cs.items.length)
     .map(
@@ -242,7 +242,7 @@ ${renderSection(
       xmlns="http://www.w3.org/TR/REC-html40">
 <head>
   <meta charset="utf-8" />
-  <title>${esc(name)} — Resume</title>
+  <title>${esc(name)}, Resume</title>
   <!--[if gte mso 9]>
   <xml>
     <w:WordDocument>
@@ -310,7 +310,7 @@ export async function GET(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Pro gate — respect the grace period after cancel (otherwise paying
+  // Pro gate, respect the grace period after cancel (otherwise paying
   // users who just cancelled lose Word export mid-cycle).
   const { data: profile } = await supabase
     .from('profiles')
@@ -320,8 +320,8 @@ export async function GET(
 
   if (!isProActive(profile)) {
     return NextResponse.json(
-      { error: 'Word download is a Pro feature. Please upgrade.' },
-      { status: 403 }
+      { error: 'Word download is a Pro feature. Please upgrade.', code: 'upgrade_required', trigger: 'word_export' },
+      { status: 402 }
     );
   }
 

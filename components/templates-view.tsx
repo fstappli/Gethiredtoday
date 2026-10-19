@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Search, ArrowRight, Check, Loader2 } from "lucide-react";
-import { MiniResume } from "@/components/mini-resume-cards";
+import ResumeThumb from "@/components/resume-thumb";
+import { createClient, isSupabaseConfigured } from "@/lib/supabase";
+import { Chip } from "@/components/gh-ui";
 
 type Category = "All" | "Professional" | "Modern" | "Creative" | "Simple" | "Executive" | "Academic" | "Tech";
 type LayoutType =
@@ -26,7 +27,7 @@ interface Template {
   description: string;
 }
 
-const templates: Template[] = [
+export const templates: Template[] = [
   { id: 1,  templateId: "classic",      name: "Classic Professional", category: "Professional", accent: "#4AB7A6", bg: "#f0fdf9", layout: "classic",      pro: false, description: "Clean, ATS-friendly single-column" },
   { id: 2,  templateId: "modern",       name: "Modern Sidebar",       category: "Modern",       accent: "#1e293b", bg: "#f8fafc", layout: "sidebar",      pro: false, description: "Two-column with dark sidebar" },
   { id: 3,  templateId: "executive",    name: "Executive Bold",       category: "Executive",    accent: "#0f172a", bg: "#f8fafc", layout: "executive",    pro: true,  description: "Authoritative dark header" },
@@ -66,29 +67,27 @@ const templates: Template[] = [
 ];
 
 
-function TemplateThumbnail({ layout, accent }: { layout: string; accent: string }) {
-  return (
-    <div style={{ width: "100%", height: "100%", overflow: "hidden" }}>
-      <MiniResume layout={layout} accent={accent} />
-    </div>
-  );
-}
-
 export default function TemplatesView() {
   const router = useRouter();
   const [activeCategory, setActiveCategory] = useState<Category>("All");
-  const [search, setSearch] = useState("");
-  const [showFreeOnly, setShowFreeOnly] = useState(false);
   const [creatingTemplate, setCreatingTemplate] = useState<number | null>(null);
+  const [authed, setAuthed] = useState<boolean | null>(null);
 
-  // "Use Template" — creates a new resume with starter data already filled in,
-  // then routes directly to the full builder at /builder/resume/[id].
+  useEffect(() => {
+    if (!isSupabaseConfigured()) { setAuthed(false); return; }
+    createClient().auth.getUser().then(({ data: { user } }) => setAuthed(!!user));
+  }, []);
+
+  // Logged in: create a resume with this template and open the builder.
+  // Logged out: go to sign-up, which continues to the builder with the template preselected.
   const handleUseTemplate = async (t: Template) => {
+    if (!authed) {
+      router.push(`/signup?template=${encodeURIComponent(t.templateId)}`);
+      return;
+    }
     setCreatingTemplate(t.id);
     try {
-      // Lazy-load the starter data generator (client-only, keeps bundle small).
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
-      const { getTemplateStarterData } = require("@/lib/example-to-resume") as typeof import("@/lib/example-to-resume");
+      const { getTemplateStarterData } = await import("@/lib/example-to-resume");
       const res = await fetch("/api/resume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -99,7 +98,7 @@ export default function TemplatesView() {
         }),
       });
       if (res.status === 401) {
-        router.push(`/login?redirect=/dashboard/templates`);
+        router.push(`/login?redirect=/resume-templates`);
         return;
       }
       if (res.ok) {
@@ -107,218 +106,78 @@ export default function TemplatesView() {
         router.push(`/builder/resume/${resume.id}?template=${t.templateId}`);
         return;
       }
+      if (res.status === 402 || res.status === 403) {
+        router.push(`/upgrade?from=${t.pro ? "templates" : "second_resume"}`);
+        return;
+      }
     } catch {
-      // Fall through to /new?template= as a graceful degradation.
+      // fall through to the builder's own creation flow
     }
     router.push(`/builder/resume/new?template=${t.templateId}`);
     setCreatingTemplate(null);
   };
 
-  const filtered = templates.filter((t) => {
-    const matchesCategory = activeCategory === "All" || t.category === activeCategory;
-    const matchesSearch =
-      t.name.toLowerCase().includes(search.toLowerCase()) ||
-      t.category.toLowerCase().includes(search.toLowerCase()) ||
-      t.description.toLowerCase().includes(search.toLowerCase());
-    const matchesFree = !showFreeOnly || !t.pro;
-    return matchesCategory && matchesSearch && matchesFree;
-  });
+  const filtered = templates.filter((t) => activeCategory === "All" || t.category === activeCategory);
 
   return (
     <>
-      {/* Header */}
-      <section className="relative overflow-hidden py-14 border-b border-slate-100 animate-page-enter" style={{
-        background: 'linear-gradient(180deg, #f0fdf9 0%, #f8fafc 60%, #ffffff 100%)',
-      }}>
-        <div className="absolute inset-0 pointer-events-none" style={{
-          background: 'radial-gradient(ellipse 70% 60% at 50% 0%, rgba(74,183,166,0.08) 0%, transparent 70%)',
-        }} />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <div className="animate-badge-pop inline-flex items-center gap-2 bg-white border border-teal-200 rounded-full px-4 py-1.5 text-sm text-teal-700 mb-5 shadow-sm">
-            <Check className="w-3.5 h-3.5" style={{ color: '#4AB7A6' }} />
-            ATS-Optimized · Recruiter-Approved · Free to Try
-          </div>
-          <h1 className="animate-fade-up text-4xl sm:text-5xl font-bold text-slate-900 mb-4 tracking-tight" style={{ '--stagger-delay': '60ms' } as React.CSSProperties}>
-            Professional Resume Templates
-          </h1>
-          <p className="animate-fade-up text-lg text-slate-500 max-w-2xl mx-auto mb-6 leading-relaxed" style={{ '--stagger-delay': '120ms' } as React.CSSProperties}>
-            60+ templates designed by professional resume writers and tested with Fortune 500 recruiters.
-            Every template passes ATS screening and looks stunning to human eyes.
-          </p>
-          <div className="animate-fade-up flex items-center justify-center gap-6 text-sm font-medium text-slate-500" style={{ '--stagger-delay': '180ms' } as React.CSSProperties}>
-            {['60+ Templates', '127,000+ Downloads', '6 Layout Types', 'Fully Customisable'].map((stat, i) => (
-              <>
-                {i > 0 && <span key={`dot-${i}`} className="w-1 h-1 rounded-full bg-slate-300" />}
-                <span key={stat}>{stat}</span>
-              </>
-            ))}
-          </div>
+      <section className="mx-auto flex max-w-[1240px] flex-col items-center gap-[18px] px-5 pb-6 pt-14 text-center">
+        <span className="rounded-full bg-mint-soft px-3 py-1.5 text-[13px] font-extrabold text-brand-dark">Every template passes ATS checks</span>
+        <h1 className="font-display m-0 max-w-[760px] text-[40px] font-bold leading-[1.02] tracking-[-1.8px] min-[761px]:text-[56px]">
+          Pick a template you love. Switch any time.
+        </h1>
+        <p className="m-0 max-w-[600px] text-lg leading-normal text-text-muted">
+          Your words stay put when you change designs, so there is no wrong choice.
+        </p>
+        <div role="group" aria-label="Filter templates" className="mt-2 flex flex-wrap justify-center gap-2">
+          {categories.map((c) => (
+            <Chip key={c} active={c === activeCategory} onClick={() => setActiveCategory(c)}>{c}</Chip>
+          ))}
         </div>
+        <p className="m-0 text-sm text-text-subtle" aria-live="polite">{filtered.length} template{filtered.length === 1 ? "" : "s"}</p>
       </section>
 
-      {/* Filter bar */}
-      <div className="bg-white border-b border-slate-100 px-4 sm:px-6 lg:px-8 py-4">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          {/* Search */}
-          <div className="relative w-full sm:w-60 flex-shrink-0">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search templates..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-full border border-slate-200 focus:border-[#4AB7A6] focus:outline-none focus:ring-2 focus:ring-[#4AB7A6]/20 text-sm"
-            />
-          </div>
-
-          {/* Category tabs */}
-          <div className="flex items-center gap-1.5 flex-wrap flex-1">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                  activeCategory === cat ? "text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-                style={activeCategory === cat ? { backgroundColor: '#4AB7A6' } : {}}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Free-only toggle */}
-          <label className="flex items-center gap-2 cursor-pointer flex-shrink-0">
-            <span className="text-sm text-slate-600 select-none">Free only</span>
-            <button
-              role="switch"
-              aria-checked={showFreeOnly}
-              onClick={() => setShowFreeOnly(!showFreeOnly)}
-              className="relative w-10 h-5 rounded-full transition-colors duration-200 focus:outline-none"
-              style={{ backgroundColor: showFreeOnly ? '#4AB7A6' : '#e2e8f0' }}
-            >
-              <span
-                className={`absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform duration-200 ${
-                  showFreeOnly ? "translate-x-5" : "translate-x-0.5"
-                }`}
-              />
-            </button>
-          </label>
-
-          <p className="text-sm text-slate-400 shrink-0">
-            {filtered.length} template{filtered.length !== 1 ? "s" : ""}
-          </p>
-        </div>
-      </div>
-
-      {/* Template grid */}
-      <section className="py-10 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          {filtered.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
-              {filtered.map((template, idx) => (
-                <div
-                  key={template.id}
-                  className="group flex flex-col rounded-2xl border border-slate-200 overflow-hidden card-hover bg-white animate-fade-up"
-                  style={{
-                    boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-                    '--stagger-delay': `${(idx % 12) * 40}ms`,
-                  } as React.CSSProperties}
-                >
-                  {/* Preview with doc-frame bg */}
-                  <div className="relative overflow-hidden doc-frame" style={{ height: "220px" }}>
-                    {/* Chrome bar */}
-                    <div className="relative z-10 flex items-center gap-1 px-2.5 py-1.5" style={{ backgroundColor: 'rgba(255,255,255,0.75)', backdropFilter: 'blur(6px)', borderBottom: '1px solid rgba(0,0,0,0.06)' }}>
-                      <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-yellow-400" />
-                      <div className="w-1.5 h-1.5 rounded-full bg-green-400" />
-                      <div className="flex-1 mx-2 h-3 rounded bg-slate-200/60" />
-                    </div>
-                    {/* Document */}
-                    <div className="absolute inset-0 top-[22px] z-10 p-2">
-                      <div
-                        className="w-full h-full rounded-lg overflow-hidden transition-transform duration-300 group-hover:scale-[1.03]"
-                        style={{ boxShadow: "0 4px 20px rgba(0,0,0,0.15), 0 1px 4px rgba(0,0,0,0.08)" }}
-                      >
-                        <TemplateThumbnail layout={template.layout} accent={template.accent} />
-                      </div>
-                    </div>
-
-                    {/* Hover overlay */}
-                    <div className="absolute inset-0 z-20 bg-black/0 group-hover:bg-black/30 transition-all duration-200 flex items-center justify-center">
-                      <button
-                        type="button"
-                        onClick={(e) => { e.stopPropagation(); handleUseTemplate(template); }}
-                        disabled={creatingTemplate === template.id}
-                        className="opacity-0 group-hover:opacity-100 scale-90 group-hover:scale-100 transition-all duration-200 bg-white font-semibold rounded-full px-5 py-2 text-sm shadow-lg flex items-center gap-1.5 disabled:opacity-70 active:scale-95"
-                        style={{ color: '#4AB7A6' }}
-                      >
-                        {creatingTemplate === template.id ? (
-                          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Opening…</>
-                        ) : (
-                          <>✏ Use Template</>
-                        )}
-                      </button>
-                    </div>
-
-                    {/* PRO badge */}
-                    {template.pro && (
-                      <div className="absolute top-8 left-3 z-30 text-[10px] font-bold bg-amber-400 text-amber-900 rounded-full px-2 py-0.5 shadow-sm animate-badge-pop">
-                        PRO
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Footer */}
-                  <div className="px-4 py-3 bg-white border-t border-slate-100 flex items-start justify-between gap-2">
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold text-slate-900 truncate leading-tight">{template.name}</p>
-                      <p className="text-xs text-slate-400 mt-0.5 truncate">{template.description}</p>
-                    </div>
-                    <span
-                      className={`text-[10px] font-bold px-2 py-1 rounded-full flex-shrink-0 mt-0.5 ${
-                        template.pro ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"
-                      }`}
-                    >
-                      {template.pro ? "PRO" : "Free"}
-                    </span>
-                  </div>
-                </div>
-              ))}
+      <section className="mx-auto grid max-w-[1240px] gap-[22px] px-5 pb-[72px] pt-6 [grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))]">
+        {filtered.map((t) => (
+          <div key={t.id} className="flex flex-col gap-3">
+            <div className="relative flex justify-center rounded-[18px] bg-[#F2EFE7] py-[22px]">
+              <ResumeThumb layout={t.layout} accent={t.accent} width={252} className="rounded-md shadow-[0_12px_28px_rgba(13,27,25,.14)]" />
+              <span className={`absolute right-3.5 top-3.5 rounded-full px-[11px] py-[5px] text-xs font-extrabold ${t.pro ? "bg-sun text-ink" : "bg-mint-soft text-brand-dark"}`}>
+                {t.pro ? "Pro" : "Free"}
+              </span>
             </div>
-          ) : (
-            <div className="text-center py-20">
-              <div className="w-14 h-14 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-4">
-                <Search className="w-6 h-6 text-slate-400" />
-              </div>
-              <p className="text-slate-700 font-semibold text-lg mb-1">No templates found</p>
-              <p className="text-slate-400 text-sm mb-5">Try adjusting your search or filters</p>
+            <div className="flex items-center justify-between gap-2">
+              <span>
+                <b className="text-[17px]">{t.name}</b>
+                <br />
+                <span className="text-sm text-text-muted">{t.description}</span>
+              </span>
               <button
-                onClick={() => { setSearch(""); setActiveCategory("All"); setShowFreeOnly(false); }}
-                className="text-sm font-semibold rounded-full px-5 py-2 border transition-colors hover:bg-slate-50"
-                style={{ color: '#4AB7A6', borderColor: '#4AB7A6' }}
+                type="button"
+                onClick={() => handleUseTemplate(t)}
+                disabled={creatingTemplate === t.id}
+                aria-label={`Use the ${t.name} template`}
+                className="min-h-[44px] flex-none rounded-[10px] bg-ink px-4 text-sm font-bold text-white hover:bg-ink-soft disabled:opacity-70"
               >
-                Clear all filters
+                {creatingTemplate === t.id ? "Opening..." : "Use this"}
               </button>
             </div>
-          )}
-        </div>
+          </div>
+        ))}
       </section>
 
-      {/* CTA */}
-      <section className="py-14 px-4 sm:px-6 lg:px-8 border-t border-slate-100">
-        <div className="max-w-7xl mx-auto">
-          <div className="bg-teal-50 border border-teal-100 rounded-2xl p-10 text-center">
-            <h2 className="text-2xl font-bold text-slate-900 mb-3">Can&apos;t find the right template?</h2>
-            <p className="text-slate-500 mb-7 text-sm">New templates added every month. Start building for free with any template.</p>
-            <Link
-              href="/builder/resume/new"
-              className="inline-flex items-center gap-2 text-white font-semibold rounded-full px-7 py-3 text-sm"
-              style={{ backgroundColor: '#4AB7A6' }}
-            >
-              Start Building Free <ArrowRight className="w-4 h-4" />
-            </Link>
+      <section className="px-5 pb-[72px]">
+        <div className="mx-auto box-border flex max-w-[1200px] flex-wrap items-center gap-5 rounded-3xl border border-line bg-white p-8">
+          <div className="min-w-[280px] flex-[1_1_320px]">
+            <h2 className="font-display m-0 text-[28px] font-bold">Can&apos;t decide? Start with Classic Professional.</h2>
+            <p className="mb-0 mt-1.5 text-text-muted">It reads cleanly for every industry and every applicant tracking system.</p>
           </div>
+          <Link
+            href={authed ? "/builder/resume/new?template=classic" : "/signup?template=classic"}
+            className="rounded-[14px] bg-brand px-[22px] py-4 font-extrabold text-white no-underline hover:bg-brand-dark"
+          >
+            Start with Classic, free
+          </Link>
         </div>
       </section>
     </>

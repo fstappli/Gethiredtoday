@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!process.env.RESEND_API_KEY) {
-      console.warn('[email] RESEND_API_KEY not set — skipping welcome email');
+      console.warn('[email] RESEND_API_KEY not set, skipping welcome email');
       return NextResponse.json({ success: true, skipped: true });
     }
 

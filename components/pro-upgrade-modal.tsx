@@ -1,14 +1,14 @@
 'use client';
 
 /**
- * Pro Upgrade modal — shown when a free user tries to download a Pro template
+ * Pro Upgrade modal, shown when a free user tries to download a Pro template
  * or a Pro-gated feature (Word export).
  *
  * Design principles:
- *   • One clear primary action (Upgrade to Pro — $9.99/mo).
+ *   • One clear primary action (Upgrade to Pro, $9.99/mo).
  *   • One clear escape (switch to the free Classic template), so the user is
  *     never trapped.
- *   • SEO-aware, benefit-rich copy — mirrors the positioning used across the
+ *   • SEO-aware, benefit-rich copy, mirrors the positioning used across the
  *     homepage and blog so the brand story is consistent wherever users land.
  *   • Accessible: role="dialog", aria-modal, ESC closes, backdrop click closes,
  *     focus is trapped inside the modal while open.
@@ -22,7 +22,7 @@ import { X, Check, Sparkles, Crown, Download, FileText, ShieldCheck } from 'luci
 
 interface ProUpgradeModalProps {
   open: boolean;
-  /** What the user tried to do — shown in the heading for context. */
+  /** What the user tried to do, shown in the heading for context. */
   trigger?: 'pdf' | 'word' | 'template';
   /** Human-readable template name, shown so the user knows which template is Pro. */
   templateLabel?: string;
@@ -35,7 +35,7 @@ const PRO_FEATURES: { icon: React.ReactNode; label: string; description: string 
   {
     icon: <Sparkles className="w-4 h-4" />,
     label: 'All 14 premium templates',
-    description: 'Modern, Executive, Creative, Photo Card, Timeline, and 9 more — unlock every layout.',
+    description: 'Modern, Executive, Creative, Photo Card, Timeline, and 9 more, unlock every layout.',
   },
   {
     icon: <FileText className="w-4 h-4" />,
@@ -96,10 +96,10 @@ export default function ProUpgradeModal({
 
   const subheading =
     trigger === 'word'
-      ? 'Download editable Microsoft Word (.doc) files — included with your Pro subscription at $9.99/month.'
+      ? 'Download editable Microsoft Word (.doc) files, included with your Pro subscription at $9.99/month.'
       : templateLabel
       ? `The ${templateLabel} template is part of our Pro collection. Unlock it, along with all 60+ templates, AI writing, ATS checking, and Auto-Apply for just $9.99/month.`
-      : 'Unlock all 60+ premium templates, AI writing, ATS checking, and Auto-Apply for $9.99/month — less than your morning coffee.';
+      : 'Unlock all 60+ premium templates, AI writing, ATS checking, and Auto-Apply for $9.99/month, less than your morning coffee.';
 
   return (
     <div
@@ -200,7 +200,7 @@ export default function ProUpgradeModal({
             <span>Secure checkout</span>
           </div>
 
-          {/* Primary CTA — route directly to Gumroad checkout carrying the
+          {/* Primary CTA, route directly to Gumroad checkout carrying the
               current page as `from` so the user lands right back here after
               payment with Pro status already active. */}
           <Link
@@ -218,7 +218,7 @@ export default function ProUpgradeModal({
             }}
           >
             <Crown className="w-4 h-4" />
-            Upgrade to Pro — $9.99/mo
+            Upgrade to Pro, $9.99/mo
           </Link>
 
           {/* Secondary action */}

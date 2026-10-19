@@ -1,15 +1,15 @@
 /**
  * HiredTodayApp brand mark + wordmark.
  *
- * Single source of truth for the logo — used in navbar, footer, dashboard
+ * Single source of truth for the logo, used in navbar, footer, dashboard
  * sidebar, auth pages, and anywhere else the brand appears. Keep the typography
  * and mark geometry identical everywhere so the identity is consistent.
  *
  * Variants:
- *   • default  — full logo (mark + wordmark) for navbar/footer
- *   • icon     — just the mark (square, e.g. for app icon, dashboard sidebar
+ *   • default , full logo (mark + wordmark) for navbar/footer
+ *   • icon    , just the mark (square, e.g. for app icon, dashboard sidebar
  *                collapsed, or tight spaces)
- *   • wordmark — just the text
+ *   • wordmark, just the text
  *
  * The text uses the site's Inter font (loaded in `app/layout.tsx`). The mark is
  * a stylized "G" inside a rounded teal square, chosen to stay legible at

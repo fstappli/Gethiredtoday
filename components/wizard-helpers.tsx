@@ -209,9 +209,9 @@ export const SECTION_TIPS: Record<string, { title: string; sectionName: string; 
     title: "Let's get in touch",
     sectionName: 'Contact Information',
     tips: [
-      'Employers need to reach you fast — include a professional email and phone number.',
+      'Employers need to reach you fast, include a professional email and phone number.',
       'Adding a LinkedIn URL signals you\u2019re active and easy to verify.',
-      'City and region are enough for location — no need for your full street address.',
+      'City and region are enough for location, no need for your full street address.',
     ],
     proTip: 'Use a professional email format (firstname.lastname@…). Skip old nicknames or numbers.',
   },
@@ -221,7 +221,7 @@ export const SECTION_TIPS: Record<string, { title: string; sectionName: string; 
     tips: [
       'Write a 2-4 sentence elevator pitch focused on value, not responsibilities.',
       'Lead with your role, years of experience, and one signature achievement.',
-      'Close with what you bring to your next role — quantify when you can.',
+      'Close with what you bring to your next role, quantify when you can.',
     ],
     proTip: 'Hiring managers read the summary first. Front-load your strongest, most relevant headline.',
   },
@@ -230,8 +230,8 @@ export const SECTION_TIPS: Record<string, { title: string; sectionName: string; 
     sectionName: 'Work history',
     tips: [
       'Employers scan your resume to see if you\u2019re a match.',
-      'Lead each bullet with a strong action verb — Built, Led, Reduced, Delivered.',
-      'Quantify impact: %, $, users, time saved — specifics win interviews.',
+      'Lead each bullet with a strong action verb, Built, Led, Reduced, Delivered.',
+      'Quantify impact: %, $, users, time saved, specifics win interviews.',
       'We\u2019ll suggest expert-written bullets tailored to your title.',
     ],
     proTip: 'Reverse-chronological order is the ATS-friendly standard. Start with your most recent role and work backward.',
@@ -241,16 +241,16 @@ export const SECTION_TIPS: Record<string, { title: string; sectionName: string; 
     sectionName: 'Education',
     tips: [
       'Employers quickly scan the education section for the degree and school.',
-      'If you graduated more than 10 years ago, the degree line is enough — skip dates.',
+      'If you graduated more than 10 years ago, the degree line is enough, skip dates.',
       'Adding a GPA above 3.5 is a plus; otherwise leave it off.',
     ],
-    proTip: 'If your degree is still in progress, list the expected graduation year — employers expect it.',
+    proTip: 'If your degree is still in progress, list the expected graduation year, employers expect it.',
   },
   skills: {
     title: "Next, let's take care of your",
     sectionName: 'Skills',
     tips: [
-      'ATS systems scan for skill keywords — match the ones in the job description.',
+      'ATS systems scan for skill keywords, match the ones in the job description.',
       'Mix hard skills (tools, software, methodologies) with 2-3 soft skills.',
       'We\u2019ll suggest the top skills recruiters look for in your role.',
     ],
@@ -260,7 +260,7 @@ export const SECTION_TIPS: Record<string, { title: string; sectionName: string; 
     title: 'Certifications & credentials',
     sectionName: 'Certifications',
     tips: [
-      'Industry certs signal real expertise — especially in regulated fields.',
+      'Industry certs signal real expertise, especially in regulated fields.',
       'Include the issuer and year. If it\u2019s still active, mention the expiry.',
       'List the most relevant first, then the rest in reverse-chronological order.',
     ],
@@ -274,24 +274,24 @@ export const SECTION_TIPS: Record<string, { title: string; sectionName: string; 
       'Include your proficiency level (Native, Fluent, Professional, Intermediate).',
       'If the role is global, languages can be a strong differentiator.',
     ],
-    proTip: 'Be accurate with proficiency — recruiters may test. "Professional" means business-meeting level.',
+    proTip: 'Be accurate with proficiency, recruiters may test. "Professional" means business-meeting level.',
   },
   projects: {
     title: 'Projects',
     sectionName: 'Projects',
     tips: [
-      'Perfect for entry-level or career changers — show work you\u2019ve done even without a job title.',
+      'Perfect for entry-level or career changers, show work you\u2019ve done even without a job title.',
       'Lead with the problem and outcome; keep it tight.',
       'Link to a GitHub repo, portfolio, or case study if possible.',
     ],
-    proTip: 'Quantify project impact the same way you would a job bullet — users, growth, time saved.',
+    proTip: 'Quantify project impact the same way you would a job bullet, users, growth, time saved.',
   },
   volunteer: {
     title: 'Volunteer work',
     sectionName: 'Volunteer',
     tips: [
       'Great signal for leadership and community involvement, especially at non-profits.',
-      'Treat it like a job entry — use action verbs and quantify impact.',
+      'Treat it like a job entry, use action verbs and quantify impact.',
       'Recent or multi-year commitments read stronger than one-off events.',
     ],
     proTip: 'Volunteer roles can also demonstrate transferable skills if your career is shifting industries.',
@@ -302,7 +302,7 @@ export const SECTION_TIPS: Record<string, { title: string; sectionName: string; 
     tips: [
       'Use this for Publications, Awards, Speaking, Patents, or industry-specific sections.',
       'Keep the format consistent with the rest of your resume.',
-      'If a category isn\u2019t helping your case, cut it — less is more.',
+      'If a category isn\u2019t helping your case, cut it, less is more.',
     ],
     proTip: 'Only add a custom section if it meaningfully differentiates you. Otherwise, strengthen existing sections.',
   },

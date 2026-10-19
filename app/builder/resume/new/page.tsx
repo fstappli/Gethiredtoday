@@ -18,6 +18,8 @@ import {
 import Link from "next/link";
 import { v4 as uuidv4 } from "uuid";
 import type { ResumeData, WorkExperience, Education, Skill } from "@/types";
+import UpgradePrompt from "@/components/upgrade-prompt";
+import { readLazyDraft, saveLazyDraft, clearLazyDraft } from "@/lib/lazy-draft";
 
 // ─── Default empty resume ─────────────────────────────────────────────────────
 
@@ -206,6 +208,11 @@ function ResumeEditorInner() {
   // OR with a generic starter when only ?template= is passed,
   // OR with an empty resume if neither is present.
   const initialResume: ResumeData = (() => {
+    // Lazy registration: after sign-up we land here with ?claim=1 and carry over the first-step work.
+    if (searchParams.get("claim") === "1" && typeof window !== "undefined") {
+      const draft = readLazyDraft();
+      if (draft && draft.kind === "builder" && draft.data) return { ...DEFAULT_RESUME, ...(draft.data as unknown as ResumeData) };
+    }
     try {
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { RESUME_EXAMPLES } = require("@/lib/resume-examples-data") as typeof import("@/lib/resume-examples-data");
@@ -215,7 +222,7 @@ function ResumeEditorInner() {
         const found = RESUME_EXAMPLES.find((e) => e.slug === exampleSlug);
         if (found) return exampleToResumeData(found);
       }
-      // Template was selected without an example — give a polished starter.
+      // Template was selected without an example, give a polished starter.
       if (searchParams.get("template")) return getTemplateStarterData();
     } catch {}
     return DEFAULT_RESUME;
@@ -236,6 +243,8 @@ function ResumeEditorInner() {
   const [resume, setResume] = useState<ResumeData>(initialResume);
   const [title, setTitle] = useState(initialTitle);
   const [saving, setSaving] = useState(false);
+  const [showSecondResumePrompt, setShowSecondResumePrompt] = useState(false);
+
   const [aiLoading, setAiLoading] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"edit" | "preview">("edit");
   const [saveMsg, setSaveMsg] = useState<string | null>(null);
@@ -370,13 +379,21 @@ function ResumeEditorInner() {
       });
       if (res.ok) {
         const { resume: saved } = await res.json();
-        setSaveMsg("Saved!");
+        clearLazyDraft();
+        setSaveMsg("Saved");
         // Redirect to the edit page so future saves use PATCH
         setTimeout(() => {
           router.replace(`/builder/resume/${saved.id}`);
         }, 800);
       } else if (res.status === 401) {
-        router.push("/login?next=/builder/resume/new?template=" + template);
+        // Keep their work, ask for a one-tap sign-up, then claim it.
+        saveLazyDraft({ kind: "builder", templateId: template, data: resume as unknown as Record<string, unknown>, savedAt: Date.now() });
+        router.push("/signup?next=" + encodeURIComponent("/builder/resume/new?claim=1&template=" + template));
+      } else if (res.status === 403) {
+        setShowSecondResumePrompt(true);
+      } else {
+        setSaveMsg("Could not save. Please try again.");
+        setTimeout(() => setSaveMsg(null), 3000);
       }
     } catch {}
     setSaving(false);
@@ -433,6 +450,7 @@ function ResumeEditorInner() {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <UpgradePrompt trigger="second_resume" open={showSecondResumePrompt} onClose={() => setShowSecondResumePrompt(false)} />
       {/* Top bar */}
       <div className="sticky top-0 z-30 bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between gap-4">

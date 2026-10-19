@@ -37,7 +37,7 @@ export default async function UnsubscribePage({ searchParams }: { searchParams: 
           <>
             <h1 className="text-2xl font-bold text-gray-900 mb-3">You&apos;ve been unsubscribed</h1>
             <p className="text-gray-500 mb-6">
-              Sorry to see you go. Your account is still active — you just won&apos;t get any more emails from us.
+              Sorry to see you go. Your account is still active, you just won&apos;t get any more emails from us.
             </p>
           </>
         )}

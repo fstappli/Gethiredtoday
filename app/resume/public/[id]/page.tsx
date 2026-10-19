@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   if (!r) return { title: 'Resume not found' };
   const name = r.data?.contact?.full_name || r.title;
   return {
-    title: `${name} — Resume`,
+    title: `${name}, Resume`,
     description: r.data?.summary?.slice(0, 160) || `Professional resume of ${name}.`,
     robots: { index: false, follow: false },
   };
@@ -177,7 +177,7 @@ export default async function PublicResumePage({ params }: { params: Promise<{ i
               {d.certifications.map((c, i: number) => (
                 <li key={i}>
                   <span className="font-medium text-slate-900">{c.name}</span>
-                  {c.issuer ? ` — ${c.issuer}` : ''}
+                  {c.issuer ? `, ${c.issuer}` : ''}
                   {c.date_issued ? ` (${c.date_issued})` : ''}
                 </li>
               ))}

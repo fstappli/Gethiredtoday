@@ -1,103 +1,59 @@
 import Link from "next/link";
-import { FileText, Sparkles, Target, Users, ArrowRight } from "lucide-react";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
+import { RESUME_EXAMPLES } from "@/lib/resume-examples-data";
 
 export const metadata = {
-  title: "About - GetHiredToday",
-  description: "Learn about GetHiredToday's mission to help job seekers build better resumes with AI.",
+  title: "About",
+  description: "Friendly, honest tools that help people present their best work and spend less time on applications.",
 };
 
-const values = [
-  {
-    icon: Sparkles,
-    title: "AI That Actually Helps",
-    description: "We built GetHiredToday because generic resume advice fails people. Our AI is trained to write real, specific, impactful content — not filler.",
-  },
-  {
-    icon: Target,
-    title: "ATS-First Design",
-    description: "Over 90% of large companies filter resumes automatically. Every template and feature is built to pass those filters, not just look good.",
-  },
-  {
-    icon: Users,
-    title: "Accessible to Everyone",
-    description: "Career tools shouldn't cost a fortune. At $9.99/month, professional-grade resume help is available to everyone, not just those who can afford career coaches.",
-  },
+const VALUES = [
+  { t: "Free means free", d: "Your first resume and PDF never sit behind a paywall or a surprise trial." },
+  { t: "You stay in control", d: "Nothing is sent in your name without your say. Cancel in two clicks." },
+  { t: "Your data is yours", d: "Export or delete everything from your account at any time." },
 ];
 
 export default function AboutPage() {
+  const stats = [
+    { v: "50K+", l: "resumes built" },
+    { v: "60+", l: "templates" },
+    { v: String(RESUME_EXAMPLES.length), l: "resume examples" },
+    { v: "[Year]", l: "founded" },
+  ];
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex min-h-screen flex-col bg-ground-site text-ink">
       <Navbar />
       <main className="flex-1">
-        {/* Hero */}
-        <section className="bg-gradient-to-b from-[var(--teal-50)] to-white py-20 lg:py-28">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <div className="flex items-center justify-center gap-2 mb-8">
-              <div className="w-14 h-14 rounded-2xl gradient-teal flex items-center justify-center">
-                <FileText className="w-7 h-7 text-white" />
+        <section className="mx-auto flex max-w-[980px] flex-col gap-5 px-5 pb-10 pt-[72px]">
+          <span className="text-sm font-extrabold tracking-[1px] text-brand">ABOUT US</span>
+          <h1 className="font-display m-0 text-[42px] font-bold leading-none tracking-[-2px] min-[761px]:text-[62px]">Job hunting is hard enough. Your tools shouldn&apos;t be.</h1>
+          <p className="m-0 max-w-[760px] text-xl leading-[1.6] text-text-muted">
+            We build friendly, honest tools that help people present their best work and spend less time on applications. [Add your founding story in 2 or 3 sentences.]
+          </p>
+        </section>
+        <section className="mx-auto grid max-w-[1240px] gap-[18px] px-5 pb-16 pt-6 [grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))]">
+          {VALUES.map((v) => (
+            <div key={v.t} className="flex flex-col gap-2 rounded-[20px] border border-line bg-white p-6">
+              <b className="font-display text-[22px]">{v.t}</b>
+              <span className="leading-[1.55] text-text-muted">{v.d}</span>
+            </div>
+          ))}
+        </section>
+        <section className="border-y border-line bg-white">
+          <dl className="m-0 mx-auto grid max-w-[1240px] gap-6 px-5 py-14 [grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))]">
+            {stats.map((s) => (
+              <div key={s.l}>
+                <dd className="font-display m-0 text-[40px] font-extrabold">{s.v}</dd>
+                <dt className="text-text-muted">{s.l}</dt>
               </div>
-            </div>
-            <h1 className="text-4xl sm:text-5xl font-bold text-gray-900 mb-6">
-              We&apos;re on a mission to help everyone land their dream job
-            </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              GetHiredToday was built by job seekers, for job seekers. We know how painful the resume process can be — so we built the tool we always wished existed.
-            </p>
-          </div>
+            ))}
+          </dl>
         </section>
-
-        {/* Story */}
-        <section className="bg-white py-20">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-6">Our Story</h2>
-            <div className="space-y-4 text-gray-600 leading-relaxed">
-              <p>
-                Applying for jobs is one of the most stressful experiences in a person&apos;s career. You spend hours crafting the perfect resume, only to get silence. You don&apos;t know if the ATS rejected it before a human even saw it. You don&apos;t know if your bullet points are strong enough.
-              </p>
-              <p>
-                We built GetHiredToday to fix that. Our AI analyzes job descriptions, suggests powerful bullet points, scores your resume for ATS compatibility, and helps you write a cover letter tailored to each application — all in minutes.
-              </p>
-              <p>
-                Your resume is your professional life story — we help you tell it in the most compelling way possible. No fabricated metrics, no invented achievements, no keyword-stuffing that breaks down in interviews. Just your real work, written clearly enough to get past the robots and into a recruiter&apos;s hands.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Values */}
-        <section className="bg-gray-50 py-20">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-            <h2 className="text-3xl font-bold text-gray-900 text-center mb-12">What We Stand For</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {values.map(({ icon: Icon, title, description }) => (
-                <div key={title} className="bg-white rounded-2xl p-8 card-shadow text-center">
-                  <div className="w-12 h-12 rounded-xl bg-[var(--teal-50)] flex items-center justify-center mx-auto mb-5">
-                    <Icon className="w-6 h-6 text-teal" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-3">{title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed">{description}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="bg-white py-20">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to build your resume?</h2>
-            <p className="text-gray-500 mb-8">Join thousands of job seekers using GetHiredToday to land interviews faster.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/builder/resume/new" className="btn-teal inline-flex items-center gap-2">
-                Build Your Resume Free
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link href="/contact" className="btn-teal-outline inline-flex items-center gap-2">
-                Get in Touch
-              </Link>
-            </div>
+        <section className="px-5 pb-[72px] pt-16">
+          <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-3.5 rounded-[28px] bg-brand px-6 py-[52px] text-center text-white">
+            <h2 className="font-display m-0 text-[32px] font-bold tracking-[-1.1px] min-[761px]:text-[40px]">Come build your resume with us.</h2>
+            <Link href="/signup" className="rounded-[14px] bg-sun px-[26px] py-[17px] font-extrabold text-ink no-underline">Create free account</Link>
           </div>
         </section>
       </main>

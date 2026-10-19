@@ -2,149 +2,58 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { ArrowLeft, Loader2, MailCheck } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { AuthLogo } from '@/components/auth-bits';
+import { Field } from '@/components/gh-ui';
 import { createClient } from '@/lib/supabase';
 
-const forgotSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-});
-
-type ForgotFormValues = z.infer<typeof forgotSchema>;
-
 export default function ForgotPasswordPage() {
+  const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
-  const [serverError, setServerError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [busy, setBusy] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    formState: { errors, isSubmitting },
-  } = useForm<ForgotFormValues>({
-    resolver: zodResolver(forgotSchema),
-  });
-
-  const onSubmit = async (values: ForgotFormValues) => {
-    setServerError(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.resetPasswordForEmail(values.email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
-    });
-
-    if (error) {
-      setServerError(error.message);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      setError('Please enter a valid email address.');
       return;
     }
-
-    setSent(true);
+    setBusy(true);
+    const supabase = createClient();
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    });
+    setBusy(false);
+    if (err) setError(err.message);
+    else setSent(true);
   };
 
-  if (sent) {
-    return (
-      <div className="flex flex-col items-center text-center gap-5 py-8">
-        <div
-          className="w-16 h-16 rounded-full flex items-center justify-center"
-          style={{ backgroundColor: '#f0fdf9' }}
-        >
-          <MailCheck className="w-8 h-8" style={{ color: '#4AB7A6' }} />
-        </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-slate-900">Check your inbox</h2>
-          <p className="text-slate-500 text-sm max-w-xs">
-            We sent a password reset link to{' '}
-            <span className="font-semibold text-slate-700">{getValues('email')}</span>
-          </p>
-        </div>
-        <p className="text-xs text-slate-400">
-          Didn&apos;t receive it? Check your spam folder or{' '}
-          <button
-            type="button"
-            className="underline hover:no-underline text-[#4AB7A6]"
-            onClick={() => setSent(false)}
-          >
-            try again
-          </button>
-          .
-        </p>
-        <Link href="/login">
-          <Button
-            variant="outline"
-            className="mt-2 rounded-full border-slate-200 text-slate-700 hover:bg-slate-50"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1.5" />
-            Back to sign in
-          </Button>
-        </Link>
-      </div>
-    );
-  }
-
   return (
-    <div className="space-y-8">
-      {/* Heading */}
-      <div>
-        <h1 className="text-3xl font-bold text-slate-900">Reset your password</h1>
-        <p className="mt-2 text-slate-500">
-          Enter your email and we&apos;ll send you a reset link.
-        </p>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
-        {serverError && (
-          <div className="p-3 rounded-xl bg-red-50 border border-red-100 text-sm text-red-600">
-            {serverError}
+    <div className="flex min-h-screen flex-col items-center px-5 py-8">
+      <AuthLogo />
+      <div className="mt-12 flex w-[min(440px,100%)] flex-col gap-4 rounded-3xl border border-line bg-white p-8 shadow-[0_24px_48px_rgba(13,27,25,.08)]">
+        {sent ? (
+          <div role="status" className="flex flex-col items-center gap-3 text-center">
+            <h1 className="font-display m-0 text-[30px] tracking-[-.8px]">Check your inbox</h1>
+            <p className="m-0 text-text-muted">We sent a password reset link to <b className="text-ink">{email}</b>.</p>
+            <button type="button" onClick={() => setSent(false)} className="min-h-[44px] font-bold text-brand">Try a different email</button>
           </div>
+        ) : (
+          <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
+            <div>
+              <h1 className="font-display m-0 text-[30px] tracking-[-.8px]">Reset your password</h1>
+              <p className="mt-2 text-text-muted">Enter your email and we will send you a reset link.</p>
+            </div>
+            <Field label="Email" type="email" autoComplete="email" placeholder="you@example.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
+            {error && <p role="alert" className="m-0 rounded-xl bg-danger-soft px-3.5 py-3 text-sm font-semibold text-danger-ink">{error}</p>}
+            <button type="submit" disabled={busy} className="min-h-[48px] rounded-xl bg-brand p-[15px] font-extrabold text-white hover:bg-brand-dark disabled:opacity-60">
+              {busy ? 'Sending...' : 'Send reset link'}
+            </button>
+          </form>
         )}
-
-        <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-sm font-medium text-slate-700">
-            Email address
-          </Label>
-          <Input
-            id="email"
-            type="email"
-            autoComplete="email"
-            placeholder="you@example.com"
-            className={`h-12 rounded-xl border-slate-200 focus-visible:ring-[#4AB7A6] ${
-              errors.email ? 'border-red-400 focus-visible:ring-red-300' : ''
-            }`}
-            {...register('email')}
-          />
-          {errors.email && (
-            <p className="text-xs text-red-500">{errors.email.message}</p>
-          )}
-        </div>
-
-        <Button
-          type="submit"
-          className="w-full h-12 font-semibold rounded-full text-white"
-          style={{ backgroundColor: '#4AB7A6' }}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Sending reset link…
-            </>
-          ) : (
-            'Send Reset Link'
-          )}
-        </Button>
-      </form>
-
-      <Link
-        href="/login"
-        className="flex items-center justify-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Back to sign in
-      </Link>
+      </div>
+      <Link href="/login" className="mt-5 py-3 font-bold text-brand">Back to log in</Link>
     </div>
   );
 }

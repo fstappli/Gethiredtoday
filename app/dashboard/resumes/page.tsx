@@ -1,33 +1,18 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import { FileText, Plus, Edit, Trash2, Copy, Loader2 } from 'lucide-react';
+import { Suspense, useState, useEffect, useCallback } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { truncate } from '@/lib/utils';
-import { TemplatePreview, previewFromResumeData } from '@/components/template-preview';
-import type { TemplateLayout } from '@/components/template-preview';
+import { previewFromResumeData } from '@/components/template-preview';
+import ResumeThumb from '@/components/resume-thumb';
+import UpgradePrompt from '@/components/upgrade-prompt';
+import { btnClass } from '@/components/gh-ui';
+import { createClient } from '@/lib/supabase';
+import { isProActive } from '@/lib/subscription';
+import { scoreResume } from '@/lib/ats';
+import { atsPill, templateMeta, TEMPLATE_META, timeAgo } from '@/lib/template-meta';
+import type { UpgradeTrigger } from '@/lib/upgrade-triggers';
 import type { ResumeData } from '@/types';
-
-const TEMPLATE_META: Record<string, { layout: TemplateLayout; accent: string }> = {
-  classic:        { layout: 'classic',      accent: '#4AB7A6' },
-  modern:         { layout: 'sidebar',      accent: '#1e293b' },
-  minimal:        { layout: 'minimal',      accent: '#1d4ed8' },
-  executive:      { layout: 'executive',    accent: '#0f172a' },
-  creative:       { layout: 'creative',     accent: '#7c3aed' },
-  simple:         { layout: 'centered',     accent: '#0891b2' },
-  // New pro layouts
-  'bold-header':  { layout: 'bold-header',  accent: '#4AB7A6' },
-  'split-right':  { layout: 'split-right',  accent: '#1d4ed8' },
-  timeline:       { layout: 'timeline',     accent: '#7c3aed' },
-  mono:           { layout: 'mono',         accent: '#0d9488' },
-  'photo-card':   { layout: 'photo-card',   accent: '#2563eb' },
-  compact:        { layout: 'compact',      accent: '#475569' },
-  serif:          { layout: 'serif',        accent: '#9f1239' },
-  'split-accent': { layout: 'split-accent', accent: '#7c3aed' },
-};
 
 interface ResumeRow {
   id: string;
@@ -38,177 +23,184 @@ interface ResumeRow {
   data?: ResumeData;
 }
 
-function formatEdited(dateStr: string): string {
-  const d = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - d.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return 'today';
-  if (diffDays === 1) return 'yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-}
-
-function atsColor(score: number | null): string {
-  if (score == null) return '#9ca3af';
-  if (score >= 80) return '#16a34a';
-  if (score >= 60) return '#eab308';
-  return '#ef4444';
-}
-
-export default function ResumesPage() {
+function ResumesInner() {
   const router = useRouter();
+  const params = useSearchParams();
   const [resumes, setResumes] = useState<ResumeRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [creating] = useState(false);
+  const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [isPro, setIsPro] = useState(false);
+  const [prompt, setPrompt] = useState<UpgradeTrigger | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
-  const fetchResumes = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const load = useCallback(async () => {
     try {
       const res = await fetch('/api/resume');
-      if (res.status === 401) {
-        router.push('/login');
-        return;
-      }
-      if (!res.ok) throw new Error('Failed to fetch');
-      const data = await res.json();
-      setResumes(data.resumes ?? []);
+      if (res.status === 401) { router.push('/login'); return; }
+      if (!res.ok) throw new Error('bad status');
+      const json = await res.json();
+      setResumes(json.resumes ?? []);
+      setState('ready');
     } catch {
-      setError('Failed to load your resumes. Please refresh.');
-    } finally {
-      setLoading(false);
+      setState('error');
     }
   }, [router]);
 
-  useEffect(() => { fetchResumes(); }, [fetchResumes]);
+  useEffect(() => { load(); }, [load]);
 
-  const handleNewResume = async () => {
-    // Route to the new guided wizard — it handles template picking + creation.
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data: profile } = await supabase.from('profiles').select('subscription_status, subscription_ends_at').eq('id', user.id).single();
+      setIsPro(isProActive(profile));
+    });
+  }, []);
+
+  // /dashboard/resumes?new=1 comes from "+ New resume" on the dashboard for free users.
+  useEffect(() => {
+    if (params.get('new') === '1' && state === 'ready') {
+      if (!isPro && resumes.length >= 1) setPrompt('second_resume');
+      else router.replace('/builder/wizard');
+    }
+  }, [params, state, isPro, resumes.length, router]);
+
+  const flash = (msg: string) => { setNotice(msg); setTimeout(() => setNotice(null), 3500); };
+
+  const handleNew = () => {
+    if (!isPro && resumes.length >= 1) { setPrompt('second_resume'); return; }
     router.push('/builder/wizard');
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this resume? This cannot be undone.')) return;
-    setResumes((prev) => prev.filter((r) => r.id !== id));
+    setResumes((p) => p.filter((r) => r.id !== id));
     try {
       const res = await fetch(`/api/resume/${id}`, { method: 'DELETE' });
-      if (!res.ok) fetchResumes();
-    } catch {
-      fetchResumes();
-    }
+      if (!res.ok) load();
+    } catch { load(); }
   };
 
   const handleDuplicate = async (r: ResumeRow) => {
+    if (!isPro) { setPrompt('second_resume'); return; }
     try {
       const res = await fetch(`/api/resume/${r.id}`);
       if (!res.ok) return;
       const { resume: full } = await res.json();
-      const createRes = await fetch('/api/resume', {
+      const create = await fetch('/api/resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          title: `${r.title} (Copy)`,
-          template_id: r.template_id,
-          data: full.data ?? {},
-        }),
+        body: JSON.stringify({ title: `${r.title} (Copy)`, template_id: r.template_id, data: full.data ?? {} }),
       });
-      if (createRes.ok) fetchResumes();
-    } catch {}
+      if (create.ok) load(); else flash('Could not duplicate this resume.');
+    } catch { flash('Could not duplicate this resume.'); }
+  };
+
+  const handleRename = async (r: ResumeRow) => {
+    const title = window.prompt('Rename resume', r.title)?.trim();
+    if (!title || title === r.title) return;
+    setResumes((p) => p.map((x) => (x.id === r.id ? { ...x, title } : x)));
+    const res = await fetch(`/api/resume/${r.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ title }) });
+    if (!res.ok) { flash('Could not rename.'); load(); }
+  };
+
+  const handleShare = async (r: ResumeRow) => {
+    const res = await fetch(`/api/resume/${r.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ is_public: true }) });
+    if (!res.ok) { flash('Could not create a share link.'); return; }
+    const link = `${window.location.origin}/resume/public/${r.id}`;
+    try { await navigator.clipboard.writeText(link); flash('Share link copied.'); } catch { flash(link); }
+  };
+
+  const handleWord = async (r: ResumeRow) => {
+    if (!isPro) { setPrompt('word_export'); return; }
+    try {
+      const res = await fetch(`/api/resume/${r.id}/word`);
+      if (res.status === 402 || res.status === 403) { setPrompt('word_export'); return; }
+      if (!res.ok) { flash('Word download failed.'); return; }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (res.headers.get('Content-Disposition') || '').match(/filename="?([^"]+)"?/)?.[1] ?? 'resume.doc';
+      document.body.appendChild(a); a.click(); a.remove();
+      URL.revokeObjectURL(url);
+    } catch { flash('Word download failed.'); }
   };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8">
-      <div className="flex items-center justify-between mb-6 sm:mb-8">
+    <div className="mx-auto flex w-full max-w-[1240px] flex-col gap-5 px-5 pb-14 pt-7">
+      {notice && <div role="status" className="fixed bottom-24 left-1/2 z-50 -translate-x-1/2 rounded-full bg-ink px-5 py-3 text-sm font-semibold text-white min-[761px]:bottom-6">{notice}</div>}
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">My Resumes</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Manage your AI-powered resumes</p>
+          <h1 className="font-display m-0 text-[34px] tracking-[-0.8px]">My resumes</h1>
+          <p className="mt-1 text-text-muted">Keep one per role you are targeting. Each one is scored separately.</p>
         </div>
-        <Button onClick={handleNewResume} disabled={creating} className="rounded-full font-medium text-white text-sm" style={{ backgroundColor: '#4AB7A6' }}>
-          {creating ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Plus className="w-4 h-4 mr-1.5" />}
-          <span className="hidden sm:inline">New </span>Resume
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Link href="/onboarding" className={btnClass('outline')}>Upload</Link>
+          <button type="button" onClick={handleNew} className={btnClass('primary', 'font-extrabold')}>+ New resume</button>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+      {state === 'loading' ? (
+        <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))]" aria-busy="true">
+          {[0, 1, 2].map((i) => <div key={i} className="h-[420px] animate-pulse rounded-[20px] bg-[#ECE9E0]" />)}
         </div>
-      ) : error ? (
-        <Card className="border-red-100 shadow-none">
-          <CardContent className="py-10 text-center text-sm text-red-500">{error}</CardContent>
-        </Card>
-      ) : resumes.length === 0 ? (
-        <Card className="border-2 border-dashed border-gray-200 shadow-none">
-          <CardContent className="py-14 flex flex-col items-center text-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-teal-50 flex items-center justify-center">
-              <FileText className="w-6 h-6 text-teal-400" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-700">No resumes yet</p>
-              <p className="text-sm text-gray-400 mt-0.5">Build an ATS-optimized resume in minutes</p>
-            </div>
-            <Button onClick={handleNewResume} disabled={creating} className="mt-1 rounded-full font-medium text-white" style={{ backgroundColor: '#4AB7A6' }}>
-              {creating ? <Loader2 className="w-4 h-4 mr-1.5 animate-spin" /> : <Plus className="w-4 h-4 mr-1.5" />}
-              Build Resume
-            </Button>
-          </CardContent>
-        </Card>
+      ) : state === 'error' ? (
+        <div className="flex items-center justify-between gap-3 rounded-[20px] border border-line bg-white p-6">
+          <span className="text-text-muted">We could not load your resumes.</span>
+          <button type="button" onClick={() => { setState('loading'); load(); }} className={btnClass('outline')}>Try again</button>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
+        <div className="grid gap-[18px] [grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr))]">
           {resumes.map((r) => {
-            const meta = TEMPLATE_META[r.template_id] ?? TEMPLATE_META.classic;
+            const meta = templateMeta(r.template_id);
+            const pill = atsPill(r.data ? scoreResume(r.data) : r.ats_score);
             return (
-              <Card key={r.id} className="border-0 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                <div className="aspect-[8.5/11] w-full border-b border-slate-100 overflow-hidden bg-slate-50">
-                  <Link href={`/builder/resume/${r.id}`} className="block h-full">
-                    <TemplatePreview
-                      layout={meta.layout}
-                      accent={meta.accent}
-                      content={previewFromResumeData(r.data)}
-                    />
-                  </Link>
-                </div>
-                <CardContent className="p-4 flex flex-col gap-3">
-                  <div className="flex items-start justify-between gap-2 min-w-0">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-gray-900 text-sm leading-tight truncate">
-                        {truncate(r.title, 32)}
-                      </p>
-                      <p className="text-xs text-gray-400 mt-0.5">Edited {formatEdited(r.updated_at)}</p>
+              <article key={r.id} className="flex flex-col overflow-hidden rounded-[20px] border border-line bg-white">
+                <Link href={`/builder/resume/${r.id}`} aria-label={`Edit ${r.title}`} className="flex h-[230px] justify-center overflow-hidden bg-[#F2EFE7] pt-5">
+                  <ResumeThumb layout={meta.layout} accent={meta.accent} content={previewFromResumeData(r.data)} width={210} className="rounded-t shadow-[0_10px_24px_rgba(13,27,25,.12)]" />
+                </Link>
+                <div className="flex flex-col gap-3 p-4">
+                  <div className="flex items-start gap-2.5">
+                    <span className="min-w-0 flex-1">
+                      <b className="block truncate text-[17px]">{r.title}</b>
+                      <span className="text-[13px] text-text-muted">{TEMPLATE_META[r.template_id]?.label ?? 'Classic'} · {timeAgo(r.updated_at)}</span>
+                    </span>
+                    <span className="rounded-full px-2.5 py-1 text-[13px] font-extrabold" style={{ background: pill.bg, color: pill.fg }}>{pill.label}</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    <Link href={`/builder/resume/${r.id}`} className="grid min-h-[44px] place-items-center rounded-[10px] bg-ink text-sm font-bold text-white no-underline">Edit</Link>
+                    <Link href={`/builder/resume/${r.id}?download=1`} className="grid min-h-[44px] place-items-center rounded-[10px] border border-line-strong bg-white text-sm font-bold text-ink no-underline">PDF</Link>
+                    <button type="button" onClick={() => handleWord(r)} className="min-h-[44px] rounded-[10px] border border-line-strong bg-white text-sm font-bold text-ink">{isPro ? 'Word' : 'Word · Pro'}</button>
+                  </div>
+                  <details>
+                    <summary className="flex min-h-[44px] cursor-pointer items-center text-sm font-bold text-text-muted">More actions</summary>
+                    <div className="mt-1 flex flex-col text-sm">
+                      <button type="button" onClick={() => handleDuplicate(r)} className="min-h-[44px] bg-transparent text-left">Duplicate for another role</button>
+                      <button type="button" onClick={() => handleShare(r)} className="min-h-[44px] bg-transparent text-left">Copy share link</button>
+                      <button type="button" onClick={() => handleRename(r)} className="min-h-[44px] bg-transparent text-left">Rename</button>
+                      <button type="button" onClick={() => handleDelete(r.id)} className="min-h-[44px] bg-transparent text-left text-danger-ink">Delete</button>
                     </div>
-                    {r.ats_score != null && (
-                      <div className="flex flex-col items-end shrink-0">
-                        <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">ATS</span>
-                        <span className="text-sm font-bold" style={{ color: atsColor(r.ats_score) }}>{r.ats_score}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1.5 pt-1">
-                    <Link href={`/builder/resume/${r.id}`} className="flex-1">
-                      <Button size="sm" className="w-full h-8 text-xs font-medium rounded-lg text-white" style={{ backgroundColor: '#4AB7A6' }}>
-                        <Edit className="w-3.5 h-3.5 mr-1" />
-                        Edit
-                      </Button>
-                    </Link>
-                    <Button size="sm" variant="outline" className="h-8 w-8 p-0 rounded-lg border-gray-200" title="Duplicate" onClick={() => handleDuplicate(r)}>
-                      <Copy className="w-3.5 h-3.5 text-gray-500" />
-                    </Button>
-                    <Button size="sm" variant="outline" className="h-8 w-8 p-0 rounded-lg border-gray-200 hover:border-red-200 hover:text-red-500" title="Delete" onClick={() => handleDelete(r.id)}>
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </details>
+                </div>
+              </article>
             );
           })}
-          <button onClick={handleNewResume} disabled={creating} className="rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center gap-2 text-gray-400 hover:border-[#4AB7A6] hover:text-[#4AB7A6] transition-colors disabled:opacity-50 min-h-[320px]">
-            {creating ? <Loader2 className="w-6 h-6 animate-spin" /> : <Plus className="w-6 h-6" />}
-            <span className="text-sm font-medium">New Resume</span>
+          <button type="button" onClick={handleNew} className="flex min-h-[360px] flex-col items-center justify-center gap-2.5 rounded-[20px] border-2 border-dashed border-[#C9C4B6] bg-transparent p-5 text-center text-ink">
+            <span className="grid h-14 w-14 place-items-center rounded-2xl bg-mint-soft text-[28px] font-extrabold text-brand" aria-hidden="true">+</span>
+            <b>{resumes.length === 0 ? 'Create your first resume' : 'Create another resume'}</b>
+            <span className="text-sm text-text-muted">Tailor a version for each type of role</span>
           </button>
         </div>
       )}
+      <UpgradePrompt trigger={prompt ?? 'second_resume'} open={prompt !== null} onClose={() => setPrompt(null)} />
     </div>
+  );
+}
+
+export default function ResumesPage() {
+  return (
+    <Suspense fallback={null}>
+      <ResumesInner />
+    </Suspense>
   );
 }

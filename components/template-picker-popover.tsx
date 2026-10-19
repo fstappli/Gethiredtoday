@@ -41,7 +41,7 @@ export function TemplatePickerPopover({ templates, currentId, onChange, isPro }:
 
   return (
     <div className="relative" ref={ref}>
-      {/* Trigger button — shows a mini preview of the current template */}
+      {/* Trigger button, shows a mini preview of the current template */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
@@ -67,7 +67,7 @@ export function TemplatePickerPopover({ templates, currentId, onChange, isPro }:
         >
           <div className="px-5 pt-4 pb-3 border-b border-slate-100">
             <div className="font-bold text-slate-900 text-sm">Choose a template</div>
-            <div className="text-xs text-slate-500 mt-0.5">Switch anytime — your content stays intact.</div>
+            <div className="text-xs text-slate-500 mt-0.5">Switch anytime, your content stays intact.</div>
           </div>
 
           <div className="max-h-[420px] overflow-y-auto p-4 grid grid-cols-3 gap-3">
@@ -114,7 +114,7 @@ export function TemplatePickerPopover({ templates, currentId, onChange, isPro }:
           {!isPro && (
             <div className="px-5 py-3 bg-amber-50 border-t border-amber-100 flex items-center justify-between gap-3">
               <div className="text-xs text-amber-800">
-                <span className="font-semibold">Unlock all {templates.filter((t) => t.isPro).length} Pro templates</span> — just $9.99/mo
+                <span className="font-semibold">Unlock all {templates.filter((t) => t.isPro).length} Pro templates</span>, just $9.99/mo
               </div>
               <a
                 href={`/upgrade${

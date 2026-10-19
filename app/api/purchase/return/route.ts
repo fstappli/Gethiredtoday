@@ -3,7 +3,7 @@
  *
  * Responsibilities:
  *   1. Verify the authenticated user actually has an active Gumroad
- *      subscriber (doesn't blindly trust the redirect — someone could paste
+ *      subscriber (doesn't blindly trust the redirect, someone could paste
  *      the URL).
  *   2. If verified, flip profiles.subscription_status = 'active'
  *      synchronously so the user doesn't have to wait on the webhook.

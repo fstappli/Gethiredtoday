@@ -1,10 +1,10 @@
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { isProActive } from '@/lib/subscription';
+import { isTemplateAllowed } from '@/lib/subscription';
+import { getCaller, canCreateResume, upgradeRequired } from '@/lib/plan-guard';
 import { NextResponse } from 'next/server';
 
-const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
 
-// GET /api/resume — list all resumes for the authenticated user
+// GET /api/resume, list all resumes for the authenticated user
 export async function GET() {
   try {
     const supabase = await createServerSupabaseClient();
@@ -32,7 +32,7 @@ export async function GET() {
   }
 }
 
-// POST /api/resume — create a new resume
+// POST /api/resume, create a new resume
 export async function POST(req: Request) {
   try {
     const supabase = await createServerSupabaseClient();
@@ -42,24 +42,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Enforce free-tier resume limit server-side
-    if (user.email !== ADMIN_EMAIL) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('subscription_status, subscription_ends_at')
-        .eq('id', user.id)
-        .single();
-      if (!isProActive(profile)) {
-        const { count } = await supabase
-          .from('resumes')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id);
-        if ((count ?? 0) >= 1) {
-          return NextResponse.json(
-            { error: 'Free plan is limited to 1 resume. Upgrade to Pro for unlimited resumes.' },
-            { status: 403 }
-          );
-        }
+    // Enforce free-tier resume limit and template set server-side
+    const caller = await getCaller();
+    if (caller.plan === 'free') {
+      const { count } = await supabase
+        .from('resumes')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id);
+      if (!canCreateResume('free', count ?? 0)) {
+        return upgradeRequired('second_resume', 'Free plan is limited to 1 resume. Upgrade to Pro for unlimited resumes.');
       }
     }
 
@@ -73,6 +64,10 @@ export async function POST(req: Request) {
       font_size = 'medium',
       is_public = false,
     } = body;
+
+    if (!isTemplateAllowed(caller.plan, template_id)) {
+      return upgradeRequired('templates', 'That template is on Pro. Pick a free template or upgrade.');
+    }
 
     const { data: resume, error } = await supabase
       .from('resumes')

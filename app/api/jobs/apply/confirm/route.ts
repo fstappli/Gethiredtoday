@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 
-// POST /api/jobs/apply/confirm — user confirms they completed external application
+// POST /api/jobs/apply/confirm, user confirms they completed external application
 export async function POST(req: NextRequest) {
   try {
     const supabase = await createServerSupabaseClient();
