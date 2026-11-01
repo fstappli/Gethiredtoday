@@ -347,6 +347,7 @@ export const INTERVIEW_POSTS: BlogPost[] = [
 <h2>How do you ask questions in a video or phone interview?</h2>
 <p>The same questions work, but the setting changes how you deliver them. On a call, you cannot rely on body language, so speak clearly and pause after each question. Keep your list visible on the desk so you do not have to remember it, and use the interviewer's name when you thank them. If time is short, choose your two most important questions in advance, such as what success looks like and what the next steps are. If the interviewer runs out of time, you can send your remaining questions by email afterwards, which also gives you a natural reason to follow up.</p>
 <p>In panel interviews, direct each question to the person best placed to answer it. Ask the hiring manager about priorities and management style, and ask potential teammates about daily collaboration. This shows that you understand who knows what.</p>
+<p>Related reading: send a <a href="/resources/thank-you-email-after-interview">thank-you email after the interview</a>, practise <a href="/resources/how-to-answer-why-do-you-want-to-work-here">"Why do you want to work here?"</a> and <a href="/resources/where-do-you-see-yourself-in-5-years">"Where do you see yourself in 5 years?"</a>, and use the <a href="/resources/how-to-prepare-for-a-job-interview">interview preparation checklist</a> for everything else.</p>
     `,
   },
   {
@@ -678,6 +679,86 @@ export const INTERVIEW_POSTS: BlogPost[] = [
 <h2>What if the interviewer follows up?</h2>
 <p>Common follow-ups include "What would you need from a manager to get there?" and "What if that path is not available?" Answer honestly and constructively. It is fine to say you would want regular feedback and chances to take on stretch projects, and that if a specific route was not open you would talk with your manager about alternatives.</p>
 <p>For more preparation, read <a href="/resources/how-to-answer-why-do-you-want-to-work-here">how to answer "Why do you want to work here?"</a>, which pairs naturally with this question, and the <a href="/resources/how-to-prepare-for-a-job-interview">interview preparation checklist</a>. You can also browse current openings on <a href="/jobs">the job search page</a> to see which roles have the growth you are looking for.</p>
+    `,
+  },
+  {
+    slug: "how-to-answer-tell-me-about-a-time-you-failed",
+    title: "How to Answer \"Tell Me About a Time You Failed\" (With Examples)",
+    description: "Why interviewers ask about failure, a four-step structure for answering honestly, how to pick the right story, and example answers you can adapt.",
+    date: "2026-11-01",
+    readTime: "7 min read",
+    category: "Interview Tips",
+    gradient: "from-rose-500 to-orange-600",
+    quickAnswer:
+      "Pick a real, work-relevant mistake with modest stakes, say plainly what happened and what you owned, explain what you did to fix it, and finish with the specific habit you changed. Interviewers are testing honesty, accountability and learning, not looking for a flawless record.",
+    faqs: [
+      { q: "What is a good answer to \"Tell me about a time you failed\"?", a: "A good answer names a real mistake, takes ownership without excuses, shows how you limited the damage and ends with a concrete change you made afterwards. The learning matters more than the failure itself." },
+      { q: "Is it okay to say I have never failed?", a: "No. It sounds either dishonest or unreflective. Everyone has missed a deadline, misjudged a situation or made a poor call. Choose a smaller, genuine example instead of claiming a perfect record." },
+      { q: "Should I use a work failure or a personal one?", a: "Use a work or school example whenever you can, because it shows how you behave in a professional setting. A personal story is acceptable only if it clearly demonstrates a skill relevant to the job." },
+      { q: "How long should my answer be?", a: "Aim for about 90 seconds to two minutes. Spend roughly a quarter of it on the situation and most of the rest on what you did and what changed, since that is the part the interviewer cares about." },
+    ],
+    content: `
+<h2>Why do interviewers ask about failure?</h2>
+<p>This question is rarely about the mistake. It is a quick way to see how you behave when something goes wrong, because that is what the interviewer will rely on once you are on the team. They are listening for three things: whether you can be honest about a problem, whether you take responsibility instead of blaming others, and whether you actually learn from it.</p>
+<p>Candidates often fear the question because it feels like an invitation to confess. In practice, a calm and specific answer builds trust. People who cannot name any failure usually make interviewers more nervous, not less.</p>
+
+<h2>What structure should your answer follow?</h2>
+<p>A reliable structure has four parts. It is a variation on the approach in our guide to the <a href="/resources/star-method-interview-answers">STAR method</a>, with extra weight on the ending.</p>
+<ol>
+  <li><strong>Set the scene briefly.</strong> One or two sentences on the project, your role and what was at stake.</li>
+  <li><strong>Own the mistake.</strong> Say what went wrong and what you did or failed to do. Use "I", not "we" or "the team", for the part that was yours.</li>
+  <li><strong>Describe the fix.</strong> Explain what you did once you noticed: who you told, how you limited the damage, how you repaired it.</li>
+  <li><strong>Show what changed.</strong> Finish with a specific habit, check or process you now use, ideally with a later example where it helped.</li>
+</ol>
+<p>Spend only about a quarter of your time on the first two parts. The last two are where the answer earns its value.</p>
+
+<h2>How do you choose the right story?</h2>
+<p>The best story has four qualities.</p>
+<ul>
+  <li><strong>It was genuinely your mistake.</strong> Failures caused entirely by someone else sound like deflection.</li>
+  <li><strong>The stakes were real but recoverable.</strong> A missed deadline, a misjudged estimate or a poor handover works. Anything that suggests dishonesty, safety problems or serious harm does not.</li>
+  <li><strong>It is relevant to the job.</strong> A project management failure suits a project role. A communication slip suits almost any role.</li>
+  <li><strong>You can show a clear improvement.</strong> If you cannot say what you do differently now, pick another story.</li>
+</ul>
+<p>Avoid the fake failure, such as "I work too hard" or "I care too much". Interviewers hear it constantly and it signals evasion. If you are choosing between several honest examples, pick the one with the clearest lesson. You can review other behavioural stories in our guide to <a href="/resources/how-to-prepare-for-a-job-interview">preparing for a job interview</a>.</p>
+
+<h2>What does a strong answer sound like?</h2>
+<h3>Example for an experienced candidate</h3>
+<blockquote>"On a product launch I coordinated, I committed to a delivery date based on what one supplier told me, without confirming it in writing. They slipped by a week, and we missed the date we had promised a key customer. I told my manager the same day, called the customer myself to explain, and rebuilt the plan so we delivered the most important items first. Since then I get written confirmation from suppliers before I promise any date externally, and I add a buffer to the schedule. On my next launch that check caught a delay early, and we adjusted before anyone outside the team noticed."</blockquote>
+
+<h3>Example for an early-career candidate</h3>
+<blockquote>"In a group project at university I took on the data analysis and did not tell anyone I was falling behind, hoping I could catch up. When I finally said something, we had two days left. I apologised, asked a teammate to help with the charts and we finished, but the quality suffered. After that I started giving short progress updates and asking for help early. In my internship I flagged a slow task on day two instead of day five, and my supervisor was able to reassign part of it."</blockquote>
+<p>Notice what both answers avoid: no blame, no long justification and no dramatic detail. Each states the mistake in plain words and gets to the improvement quickly.</p>
+
+<h2>What mistakes should you avoid?</h2>
+<ul>
+  <li><strong>Blaming other people.</strong> Even if others contributed, describe only your part.</li>
+  <li><strong>Choosing a failure that is really a success.</strong> "I almost missed the deadline but delivered early" does not answer the question.</li>
+  <li><strong>Over-apologising.</strong> Be matter of fact. You are showing maturity, not asking for forgiveness.</li>
+  <li><strong>Skipping the lesson.</strong> If the story ends at the mistake, the interviewer is left with the wrong impression.</li>
+  <li><strong>Picking something disqualifying.</strong> Do not choose a failure that touches core requirements of the job you want.</li>
+  <li><strong>Memorising a script.</strong> Know the story beats, then tell it in your own words.</li>
+</ul>
+
+<h2>What if you have limited work experience?</h2>
+<p>Use a school project, volunteer role, part-time job or personal commitment. The same structure applies. What matters is that you can describe your decision, the consequence and the change. If you are still building your background, our guide to a <a href="/resources/how-to-write-a-resume-with-no-experience">resume with no experience</a> shows how to present these experiences on paper, and the same stories often work in both places.</p>
+
+<h2>How do you prepare this answer?</h2>
+<p>Write down three or four moments when something went wrong, then test each against the four qualities above. Choose one main story and keep a second in reserve, since interviewers sometimes ask a follow-up such as "Can you give another example?" Practise telling it out loud, timed at around two minutes. Then check how the stories connect with your resume: your <a href="/resume-templates">resume templates</a> and achievements should support the same strengths, such as reliability or communication, that your failure story demonstrates. You can also run your resume through the free <a href="/ats-checker">ATS checker</a> against a job posting so your written and spoken versions point to the same skills.</p>
+
+<h2>Quick checklist</h2>
+<ul>
+  <li>Choose a real mistake with recoverable stakes.</li>
+  <li>Keep the setup to a couple of sentences.</li>
+  <li>Say "I" for the part you owned.</li>
+  <li>Explain exactly how you fixed or contained it.</li>
+  <li>End with a specific change in how you work now.</li>
+  <li>Keep it to about two minutes and practise it aloud.</li>
+  <li>Have a second story ready for follow-ups.</li>
+</ul>
+
+<h2>What if the interviewer follows up?</h2>
+<p>Common follow-ups include "What would you do differently?" and "How did your manager react?" Answer honestly and calmly. It is fine to say that your manager was frustrated but appreciated being told early. Related questions often come next, so read how to handle <a href="/resources/how-to-answer-what-is-your-greatest-weakness">the greatest weakness question</a>, which uses the same honest, improvement-focused approach. When you are ready to put your skills to work, browse current openings on <a href="/jobs">the job search page</a>.</p>
     `,
   },
 ];
