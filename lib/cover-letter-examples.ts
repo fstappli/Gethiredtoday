@@ -377,6 +377,42 @@ export const COVER_LETTER_EXAMPLES: CoverLetterExample[] = [
       { q: "Can I mention a difficult employee situation?", a: "Only in general terms, without identifying anyone, and focus on how you handled it fairly and what you learned." },
     ],
   },
+  {
+    slug: "financial-analyst",
+    resumeSlug: "financial-analyst",
+    title: "Financial Analyst",
+    quickAnswer:
+      "A financial analyst cover letter should show accuracy, clear communication and business judgement. Describe one analysis or model you built, what decision it supported and the tools you used, and explain why you want to work on this company's numbers. Keep it to one page.",
+    intro:
+      "Finance hiring managers expect precision, so a letter full of loose claims will stand out for the wrong reasons. Pick one piece of analysis, explain it plainly and show that you can turn numbers into a recommendation.",
+    letter: [
+      "Dear [Hiring Manager Name],",
+      "I am applying for the Financial Analyst position at [Company]. I have [number] years of experience in [areas, e.g. budgeting, forecasting and financial reporting], and I am drawn to [Company] because of [specific reason, e.g. its growth in a particular market or a recent announcement].",
+      "At [Current or Previous Company], I built [model or report, e.g. a rolling forecast for a business unit] using [tools, e.g. Excel and SQL]. Leaders were struggling to see [problem], so I [what you did, e.g. standardised the inputs, added scenario views and documented the assumptions]. This helped the team [real outcome, e.g. review variances faster and discuss options with clearer figures].",
+      "I check my work carefully, document my assumptions and explain results in plain language to people outside finance. Your job description mentions [requirement from the ad], and I have experience with [matching work].",
+      "I would welcome the chance to discuss how I can support [Company]'s finance team. Thank you for your time and consideration.",
+      "Sincerely,\n[Your Name]\n[Phone] | [Email] | [Certifications or LinkedIn]",
+    ],
+    include: [
+      "One analysis or model described as problem, method and the decision it supported.",
+      "The tools named in the job ad that you have genuinely used, such as Excel, SQL or reporting systems.",
+      "How you check accuracy and document assumptions.",
+      "An example of explaining numbers to non-finance colleagues.",
+      "Relevant qualifications or study in progress, stated accurately.",
+    ],
+    mistakes: [
+      "Listing software without showing what you did with it.",
+      "Sharing confidential figures from a past employer.",
+      "Describing duties instead of a result or decision.",
+      "Using jargon the reader may not need.",
+      "Writing more than one page.",
+    ],
+    faqs: [
+      { q: "Should I include numbers in a financial analyst cover letter?", a: "Yes, if they are accurate and not confidential. If you cannot share exact figures, describe the scale or outcome in general terms instead." },
+      { q: "Do I need to mention certifications?", a: "Mention relevant qualifications you hold or are actively working towards, and be clear about which. Never imply you have one that you do not." },
+      { q: "What if I am applying for my first finance role?", a: "Use a project from study, an internship or a personal analysis. Show your method, your accuracy and how you explained the result." },
+    ],
+  },
 ];
 
 export function getCoverLetterExample(slug: string): CoverLetterExample | undefined {

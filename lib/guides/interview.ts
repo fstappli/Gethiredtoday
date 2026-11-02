@@ -250,6 +250,7 @@ export const INTERVIEW_POSTS: BlogPost[] = [
   <li>Logistics confirmed and materials ready.</li>
   <li>One full rehearsal completed.</li>
 </ul>
+<p>If your first conversation is a screening call, read our <a href="/resources/phone-interview-tips">phone interview tips</a> too.</p>
     `,
   },
   {
@@ -759,6 +760,104 @@ export const INTERVIEW_POSTS: BlogPost[] = [
 
 <h2>What if the interviewer follows up?</h2>
 <p>Common follow-ups include "What would you do differently?" and "How did your manager react?" Answer honestly and calmly. It is fine to say that your manager was frustrated but appreciated being told early. Related questions often come next, so read how to handle <a href="/resources/how-to-answer-what-is-your-greatest-weakness">the greatest weakness question</a>, which uses the same honest, improvement-focused approach. When you are ready to put your skills to work, browse current openings on <a href="/jobs">the job search page</a>.</p>
+    `,
+  },
+  {
+    slug: "phone-interview-tips",
+    title: "Phone Interview Tips: How to Prepare and What to Say",
+    description: "How to prepare for a phone screen, what recruiters listen for, how to sound confident on the call and what to do in the first five minutes.",
+    date: "2026-11-02",
+    readTime: "7 min read",
+    category: "Interview Tips",
+    gradient: "from-sky-500 to-indigo-600",
+    quickAnswer:
+      "To do well in a phone interview, keep your resume and the job ad in front of you, prepare a 60-second introduction and three short examples, take the call somewhere quiet, and speak slowly with a clear reason you want this role. The interviewer cannot see you, so your voice and structure do all the work.",
+    faqs: [
+      { q: "What should I do to prepare for a phone interview?", a: "Read the job ad and mark the three or four requirements that matter most, then prepare a short introduction and one example for each. Have your resume, notes and questions open in front of you, test your phone or headset, and choose a quiet spot with good signal." },
+      { q: "Can I use notes during a phone interview?", a: "Yes. A phone screen is one of the few interviews where notes are normal and unseen. Use bullet points to jog your memory, not a script, because reading word for word sounds flat." },
+      { q: "How long does a phone interview usually last?", a: "Screening calls are often short, around 15 to 30 minutes, but the length varies by company. Ask the recruiter when they schedule it so you can plan your answers and your day." },
+      { q: "What do recruiters listen for on a phone screen?", a: "They check that your experience matches the role, that you communicate clearly, that your salary and availability fit, and that you are genuinely interested. Concise answers with a specific example usually land better than long, general ones." },
+    ],
+    content: `
+<h2>What is a phone interview and why do employers use it?</h2>
+<p>A phone interview, often called a phone screen, is a short first conversation used to decide who moves on to a longer interview. The person calling is usually a recruiter or a hiring manager, and they want quick answers to practical questions: do you have the right experience, can you explain it clearly, do your expectations fit the role, and are you really interested?</p>
+<p>It feels informal, but it is a real interview. Many candidates are filtered out here, so a little preparation goes a long way. The good news is that the format works in your favour: you can have notes in front of you and nobody sees your nerves.</p>
+
+<h2>How should you prepare before the call?</h2>
+<p>Preparation for a phone screen takes about an hour and covers four things.</p>
+<ol>
+  <li><strong>Re-read the job ad.</strong> Mark the three or four requirements that appear first or most often. Those are the topics the recruiter will test.</li>
+  <li><strong>Re-read your own resume.</strong> The caller will have it open. Be ready to talk about every line, especially dates, job titles and results. If your resume needs sharpening, our guide to <a href="/resources/tailor-resume-to-job-description">tailoring your resume to a job description</a> shows how, and the free <a href="/ats-checker">ATS checker</a> can confirm it is easy to read.</li>
+  <li><strong>Prepare a 60-second introduction.</strong> This is your answer to the usual opener. Use the structure in our guide to <a href="/resources/how-to-answer-tell-me-about-yourself">answering "Tell me about yourself"</a>.</li>
+  <li><strong>Prepare three short examples.</strong> Each should show a skill the job needs, told as a situation, your action and the result. The <a href="/resources/star-method-interview-answers">STAR method</a> keeps them tight.</li>
+</ol>
+<p>Also research the company enough to explain why you want to work there. If that question worries you, see how to answer <a href="/resources/how-to-answer-why-do-you-want-to-work-here">"Why do you want to work here?"</a>.</p>
+
+<h2>How do you set up your space and your phone?</h2>
+<p>Small technical problems are the most avoidable way to lose points. Do these the day before and again an hour before the call:</p>
+<ul>
+  <li>Charge your phone fully, or plug it in, and check the signal where you will sit.</li>
+  <li>Use a landline or headset if you can, so your hands are free to take notes.</li>
+  <li>Turn off notifications and tell people at home that you cannot be disturbed.</li>
+  <li>Choose a quiet room. Avoid cars, cafes and anywhere with echo or background noise.</li>
+  <li>Keep water, a pen, paper, your resume and the job ad within reach.</li>
+  <li>Save the recruiter's number or the company name, so you answer with a professional greeting if they call unannounced.</li>
+</ul>
+
+<h2>What questions should you expect?</h2>
+<p>Screening calls tend to follow a pattern. Expect most of these:</p>
+<ul>
+  <li><strong>Tell me about yourself.</strong> Give your short introduction and stop.</li>
+  <li><strong>Why are you interested in this role?</strong> Name something specific about the work or company.</li>
+  <li><strong>Walk me through a relevant project.</strong> Use one of your prepared examples.</li>
+  <li><strong>Why are you leaving, or why did you leave?</strong> Stay positive and forward looking. If there was a break in your work history, our guide to <a href="/resources/how-to-explain-a-gap-in-your-resume">explaining a gap in your resume</a> helps.</li>
+  <li><strong>What are your salary expectations?</strong> Have a considered answer ready. See <a href="/resources/how-to-answer-salary-expectations">how to answer salary expectations</a>.</li>
+  <li><strong>When can you start, and are you interviewing elsewhere?</strong> Be truthful and brief.</li>
+  <li><strong>Do you have any questions?</strong> Always have two or three.</li>
+</ul>
+
+<h2>How do you sound confident on the phone?</h2>
+<p>Without body language, your voice carries everything. A few habits help a lot.</p>
+<ul>
+  <li><strong>Slow down.</strong> Nervous people speed up. Aim for a steady pace and pause before answering.</li>
+  <li><strong>Smile and sit or stand upright.</strong> It changes your tone, even though nobody sees it.</li>
+  <li><strong>Keep answers to one or two minutes.</strong> Long answers are harder to follow without visual cues. Finish and let the interviewer respond.</li>
+  <li><strong>Use their name and acknowledge points.</strong> Short phrases such as "That makes sense" show you are listening.</li>
+  <li><strong>Ask for repetition if needed.</strong> "Could you repeat that last part?" is better than guessing.</li>
+  <li><strong>Avoid filler and typing noise.</strong> Take notes by hand if your keyboard is loud.</li>
+</ul>
+
+<h2>What should you do in the first five minutes?</h2>
+<p>The opening sets the tone. Answer with a calm, clear greeting, confirm you have time to talk, and ask roughly how long the call will take if they have not said. Then listen carefully to how they describe the role, because they often reveal what they care about most. You can refer back to those priorities when you answer later questions.</p>
+
+<h2>What questions should you ask at the end?</h2>
+<p>Good questions show genuine interest and help you decide if the role fits. Ask about what a successful first few months looks like, how the team works, and what the next steps and timeline are. Avoid opening with pay or benefits unless the recruiter raises them. For more ideas, see our list of <a href="/resources/questions-to-ask-the-interviewer">questions to ask the interviewer</a>.</p>
+
+<h2>What should you do after the call?</h2>
+<p>Write down what you discussed while it is fresh, including names and the stated next steps. Send a short thank-you email the same day, which our guide to a <a href="/resources/thank-you-email-after-interview">thank-you email after an interview</a> covers with templates. If you do not hear back by the date they gave, you can follow up politely once. Meanwhile, keep applying to other roles on the <a href="/jobs">jobs page</a> so one conversation does not hold up your whole search.</p>
+
+<h2>Common mistakes to avoid</h2>
+<ul>
+  <li>Taking the call while walking, driving or in a noisy place.</li>
+  <li>Reading a script word for word.</li>
+  <li>Giving very long answers or interrupting the interviewer.</li>
+  <li>Knowing nothing about the company or the role.</li>
+  <li>Being vague about your own experience when asked for detail.</li>
+  <li>Skipping questions at the end.</li>
+</ul>
+
+<h2>Phone interview checklist</h2>
+<ul>
+  <li>Job ad marked with the key requirements.</li>
+  <li>Resume in front of you and every line understood.</li>
+  <li>60-second introduction rehearsed aloud.</li>
+  <li>Three STAR examples written as bullet points.</li>
+  <li>Salary and availability answers decided.</li>
+  <li>Two or three questions for the interviewer.</li>
+  <li>Phone charged, signal checked, room quiet.</li>
+  <li>Thank-you email ready to send afterwards.</li>
+</ul>
+<p>A phone interview is a short conversation with a clear purpose. If you are prepared, calm and specific, you give the recruiter an easy reason to say yes to the next round.</p>
     `,
   },
 ];
