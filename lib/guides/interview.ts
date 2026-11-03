@@ -834,7 +834,7 @@ export const INTERVIEW_POSTS: BlogPost[] = [
 <p>Good questions show genuine interest and help you decide if the role fits. Ask about what a successful first few months looks like, how the team works, and what the next steps and timeline are. Avoid opening with pay or benefits unless the recruiter raises them. For more ideas, see our list of <a href="/resources/questions-to-ask-the-interviewer">questions to ask the interviewer</a>.</p>
 
 <h2>What should you do after the call?</h2>
-<p>Write down what you discussed while it is fresh, including names and the stated next steps. Send a short thank-you email the same day, which our guide to a <a href="/resources/thank-you-email-after-interview">thank-you email after an interview</a> covers with templates. If you do not hear back by the date they gave, you can follow up politely once. Meanwhile, keep applying to other roles on the <a href="/jobs">jobs page</a> so one conversation does not hold up your whole search.</p>
+<p>Write down what you discussed while it is fresh, including names and the stated next steps. Send a short thank-you email the same day, which our guide to a <a href="/resources/thank-you-email-after-interview">thank-you email after an interview</a> covers with templates. If you do not hear back by the date they gave, you can follow up politely once. Meanwhile, keep applying to other roles on the <a href="/jobs">jobs page</a> so one conversation does not hold up your whole search. If the next round is on camera, read our <a href="/resources/video-interview-tips">video interview tips</a>.</p>
 
 <h2>Common mistakes to avoid</h2>
 <ul>
@@ -858,6 +858,94 @@ export const INTERVIEW_POSTS: BlogPost[] = [
   <li>Thank-you email ready to send afterwards.</li>
 </ul>
 <p>A phone interview is a short conversation with a clear purpose. If you are prepared, calm and specific, you give the recruiter an easy reason to say yes to the next round.</p>
+    `,
+  },
+  {
+    slug: "video-interview-tips",
+    title: "Video Interview Tips: How to Prepare, Set Up and Stand Out",
+    description: "How to prepare for a video interview: test your tech, set up lighting and background, look natural on camera and handle problems calmly.",
+    date: "2026-11-03",
+    readTime: "7 min read",
+    category: "Interview Tips",
+    gradient: "from-violet-500 to-fuchsia-600",
+    quickAnswer:
+      "To do well in a video interview, test your camera, microphone and connection beforehand, sit in a quiet, well-lit spot with a plain background, look at the camera when you speak, and keep notes just out of view. Prepare the same answers you would for an in-person interview, and have a backup plan if the technology fails.",
+    faqs: [
+      { q: "How should I prepare for a video interview?", a: "Prepare your answers as you would for any interview, then add a technical check. Test the platform link, your camera, microphone and internet connection, set up good lighting, and join a few minutes early. Keep your resume, the job ad and a few bullet-point notes within reach." },
+      { q: "Where should I look during a video interview?", a: "Look at the camera when you are speaking, because that is what feels like eye contact to the other person. Glance at the faces on screen when you are listening. If it feels awkward, place a small sticker next to the camera lens as a reminder." },
+      { q: "What should I do if my internet drops during a video interview?", a: "Rejoin straight away, and if you cannot, send a short message or email to the interviewer explaining what happened and offering to continue by phone or reschedule. Staying calm and communicating quickly matters more than the glitch itself. Keep the interviewer's phone number or email handy beforehand." },
+      { q: "Can I use notes in a video interview?", a: "Usually yes, if you use them lightly. Short bullet points on a sheet beside your screen can help you remember examples and questions. Avoid reading full sentences, which sounds flat and makes your eyes drift away from the camera." },
+    ],
+    content: `
+<h2>How is a video interview different from an in-person one?</h2>
+<p>The questions are the same, but the delivery is not. On video the interviewer sees only your face and shoulders, hears you through a microphone and reads your energy through a small window. Small things such as a dark room, a delayed connection or looking at the wrong spot on the screen can distract from good answers. The aim of preparation is to remove those distractions so your experience is what people notice.</p>
+<p>Video interviews come in two forms. A live video call is a conversation with a person. A recorded video interview asks you to answer questions on camera with a time limit, and nobody is present. Most of the advice below applies to both, and there are extra tips for recorded interviews further down.</p>
+
+<h2>What should you prepare before the day?</h2>
+<p>Start with the content, because a perfect setup cannot rescue vague answers.</p>
+<ol>
+  <li><strong>Mark the job ad.</strong> Highlight the three or four requirements that appear most. Those are the topics you will be tested on.</li>
+  <li><strong>Know your resume.</strong> Be ready to talk about every line. If it needs work, read how to <a href="/resources/tailor-resume-to-job-description">tailor your resume to a job description</a> and run it through the free <a href="/ats-checker">ATS checker</a>.</li>
+  <li><strong>Prepare a short introduction.</strong> Use the structure in our guide to <a href="/resources/how-to-answer-tell-me-about-yourself">answering "Tell me about yourself"</a>.</li>
+  <li><strong>Prepare three examples.</strong> Tell each as a situation, your action and the result. The <a href="/resources/star-method-interview-answers">STAR method</a> keeps stories tight.</li>
+  <li><strong>Prepare questions.</strong> Have two or three ready from our list of <a href="/resources/questions-to-ask-the-interviewer">questions to ask the interviewer</a>.</li>
+</ol>
+
+<h2>How do you set up your technology?</h2>
+<p>Do a full test the day before and a quick one an hour before.</p>
+<ul>
+  <li>Open the meeting link early and install any app or update it needs.</li>
+  <li>Check that your camera and microphone work, and record a short clip to hear how you sound.</li>
+  <li>Use a wired headset or earbuds if you can, since they usually give clearer audio than a laptop speaker.</li>
+  <li>Plug in your laptop and close other apps and browser tabs.</li>
+  <li>Use a wired connection or sit close to your router. Ask others in the home to avoid heavy streaming during the call.</li>
+  <li>Turn off notifications and silence your phone.</li>
+  <li>Save the interviewer's email or phone number in case you need to contact them.</li>
+</ul>
+
+<h2>What should your space and appearance look like?</h2>
+<p>Aim for simple and tidy. Light should come from in front of you, such as a window or a lamp behind the screen, not from behind your head, which turns you into a silhouette. Raise the laptop on books so the camera sits at eye level instead of looking up at your chin. Choose a plain or neutral background, and if you use a virtual background, pick a subtle one and check that it does not blur your shoulders.</p>
+<p>Dress as you would for the same interview in person, at least from the waist up. Solid, medium colours usually look better on camera than busy patterns. Dressing properly also helps you feel more focused.</p>
+
+<h2>How do you look natural on camera?</h2>
+<ul>
+  <li><strong>Look at the camera when you speak.</strong> That is what feels like eye contact to the other person. Glance at the screen when you listen.</li>
+  <li><strong>Sit upright and slightly forward.</strong> Keep your hands visible and use natural gestures.</li>
+  <li><strong>Speak a little slower than usual.</strong> Audio delay makes people talk over each other, so pause briefly before you answer.</li>
+  <li><strong>Show you are listening.</strong> Nod and smile when it fits. On video, small reactions count for more.</li>
+  <li><strong>Keep answers to one or two minutes.</strong> Long answers are harder to follow on a screen.</li>
+  <li><strong>Keep notes out of the way.</strong> A few bullet points beside the screen are fine. Do not read paragraphs.</li>
+</ul>
+
+<h2>How do you handle a recorded video interview?</h2>
+<p>In a recorded interview you see a question, get a short time to think and then record your answer. It feels strange to talk to a camera with no reaction, so practise out loud first. Record yourself on your phone and watch it back, checking your pace, framing and filler words.</p>
+<p>Treat each question as a mini presentation: a direct first sentence, one example, and a clear ending. Read the instructions to learn whether you can retake an answer and how much time you have. Do not memorise a script, because it will sound stiff. Memorise your three or four key points instead.</p>
+
+<h2>What if something goes wrong?</h2>
+<p>Technical trouble happens to everyone, and interviewers expect it. How you react is what they remember.</p>
+<ul>
+  <li><strong>Audio or video freezes:</strong> say so calmly, turn off your camera briefly if that helps the connection, or rejoin.</li>
+  <li><strong>You are disconnected:</strong> rejoin immediately. If you cannot, email or call and offer to continue by phone or reschedule.</li>
+  <li><strong>Someone interrupts:</strong> apologise briefly and carry on. Do not over explain.</li>
+  <li><strong>You lose your train of thought:</strong> take a sip of water and say "Let me gather my thoughts for a moment."</li>
+</ul>
+
+<h2>What should you do afterwards?</h2>
+<p>Write down what was discussed and the next steps while you remember them. Send a short thank-you message the same day, using the templates in our guide to a <a href="/resources/thank-you-email-after-interview">thank-you email after an interview</a>. If your first conversation was a screening call, our <a href="/resources/phone-interview-tips">phone interview tips</a> cover that stage. While you wait, keep applying through the <a href="/jobs">jobs page</a> so one interview does not hold up your search.</p>
+
+<h2>Video interview checklist</h2>
+<ul>
+  <li>Meeting link opened and app updated.</li>
+  <li>Camera, microphone and connection tested.</li>
+  <li>Laptop plugged in and notifications off.</li>
+  <li>Light in front of you, camera at eye level.</li>
+  <li>Plain background and interview-ready outfit.</li>
+  <li>Resume, job ad, notes and questions within reach.</li>
+  <li>Water nearby and phone silenced.</li>
+  <li>Interviewer's contact details saved as a backup.</li>
+  <li>Thank-you message ready to send afterwards.</li>
+</ul>
+<p>A video interview rewards the candidate who has removed every avoidable problem. Prepare strong answers, test your setup, and then focus on having a clear, friendly conversation.</p>
     `,
   },
 ];
