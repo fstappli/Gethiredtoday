@@ -1,7 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { monthFromNow } from '@/lib/subscription';
-import { ilikeExact } from '@/lib/gumroad-reconcile';
+import { activatePro, ilikeExact } from '@/lib/pro-activation';
 
 export const runtime = 'nodejs';
 
@@ -83,16 +83,8 @@ export async function POST(req: Request) {
         );
       }
 
-      const { data: upgraded } = await getSupabaseAdmin()
-        .from('profiles')
-        .update({
-          subscription_status: 'active',
-          subscription_ends_at: monthFromNow(),
-          ...(subscriberId && { subscription_id: subscriberId }),
-        })
-        .ilike('email', ilikeExact(email))
-        .select('id');
-      if (!upgraded?.length) {
+      const { matched } = await activatePro({ email }, { subscriptionId: subscriberId });
+      if (!matched) {
         // Paid before a profile existed (or under another email). The login-time
         // reconcile in the dashboard layout will pick this up.
         console.error(`[webhook] Sale for ${email} matched no profile; will reconcile at login`);

@@ -5,7 +5,7 @@ import { reconcileGumroadPurchase } from '@/lib/gumroad-reconcile';
 
 export const runtime = 'nodejs';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const supabase = await createServerSupabaseClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -19,7 +19,9 @@ export async function GET() {
 
     let isPro = user.email === ADMIN_EMAIL || isProActive(profile);
     if (!isPro && user.email && (profile?.subscription_status ?? 'free') === 'free') {
-      isPro = await reconcileGumroadPurchase(user.id, user.email);
+      isPro = await reconcileGumroadPurchase(user.id, user.email, {
+        force: new URL(req.url).searchParams.get('refresh') === '1',
+      });
     }
 
     return NextResponse.json({

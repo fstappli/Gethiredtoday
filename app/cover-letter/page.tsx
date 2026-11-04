@@ -38,7 +38,7 @@ export default function CoverLetterLandingPage() {
           <div aria-hidden="true" className="flex flex-col gap-3 rounded-2xl border border-line bg-white p-9 text-[15px] leading-[1.6] shadow-[0_24px_48px_rgba(13,27,25,.1)]">
             <div>
               <b className="font-display text-[22px]">Sarah Ahmed</b>
-              <div className="text-[13px] font-semibold text-brand">Senior Product Designer · Dubai, UAE</div>
+              <div className="text-[13px] font-semibold text-brand">Senior Product Designer · Amsterdam, Netherlands</div>
             </div>
             <div className="h-0.5 w-10 bg-brand" />
             <p className="m-0">Dear Hiring Team at Northwind,</p>

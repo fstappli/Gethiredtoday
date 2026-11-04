@@ -49,7 +49,7 @@ export default function AutoApplyLandingPage() {
               <div className="flex flex-col gap-2.5 rounded-[14px] bg-ink p-3.5">
                 <div className="flex items-center gap-3">
                   <span className="grid h-10 w-10 place-items-center rounded-[10px] bg-[#EDE9FF] font-extrabold text-[#4B3BA8]">N</span>
-                  <span className="flex-1"><b>Senior Product Designer</b><br /><span className="text-[13px] text-on-dark-muted">Northwind · Dubai</span></span>
+                  <span className="flex-1"><b>Senior Product Designer</b><br /><span className="text-[13px] text-on-dark-muted">Northwind · Amsterdam</span></span>
                   <b className="text-mint-bright">91%</b>
                 </div>
                 <div className="grid grid-cols-2 gap-2">

@@ -1,4 +1,4 @@
-import { SITE, SITE_URL, PRICING } from '@/lib/site-config';
+import { SITE, SITE_URL, PRICING, PRO_FEATURES } from '@/lib/site-config';
 
 const brand = {
   color: '#0B6E5F',
@@ -253,6 +253,23 @@ export function leadChecklistEmail(ctx?: EmailCtx): { subject: string; html: str
       ${btn('Check my resume free', emailLink('/ats-checker', 'lead_checklist'))}
       ${divider()}
       <p style="margin:0;font-size:15px;color:#3f4d49;">The ${brand.name} team</p>
+    `, ctx),
+  };
+}
+
+
+// ─── Transactional: Pro activated ──────────────────────────────────────────
+export function proWelcomeEmail(firstName: string, ctx?: EmailCtx): { subject: string; html: string } {
+  return {
+    subject: `You are now a ${brand.name} Pro member`,
+    html: base(`
+      ${h1(`You are Pro, ${firstName || 'there'}!`)}
+      ${p('Your payment went through and your Pro plan is active now. Everything below is unlocked on your account, with nothing else to set up.')}
+      ${list([...PRO_FEATURES])}
+      ${btn('Open your dashboard', emailLink('/dashboard', 'pro_welcome'))}
+      ${divider()}
+      ${p(`You can see your plan or cancel in two clicks any time from <a href="${emailLink('/dashboard/billing', 'pro_welcome')}" style="color:${brand.color};">Billing</a>. Your payment receipt comes separately from Gumroad.`)}
+      ${p(`Anything not working as expected? Reply to this email or use <a href="${emailLink('/dashboard/help', 'pro_welcome')}" style="color:${brand.color};">Help</a> in your dashboard and a real person will answer.`)}
     `, ctx),
   };
 }

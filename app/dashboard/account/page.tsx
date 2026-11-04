@@ -176,7 +176,7 @@ export default function AccountPage() {
             <label className={lbl}>First name<input value={first} onChange={(e) => setFirst(e.target.value)} autoComplete="given-name" className={input} /></label>
             <label className={lbl}>Last name<input value={last} onChange={(e) => setLast(e.target.value)} autoComplete="family-name" className={input} /></label>
             <label className={lbl}>Email<input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" className={input} /></label>
-            <label className={lbl}>Phone (optional)<input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="+971" className={input} /></label>
+            <label className={lbl}>Phone (optional)<input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" placeholder="+31" className={input} /></label>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <button type="submit" className="min-h-[46px] rounded-xl bg-ink px-[18px] font-extrabold text-white">Save changes</button>

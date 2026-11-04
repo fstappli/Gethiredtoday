@@ -1,21 +1,6 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { monthFromNow } from '@/lib/subscription';
+import { activatePro, ilikeExact } from '@/lib/pro-activation';
 
-let _admin: SupabaseClient | null = null;
-function getAdmin(): SupabaseClient {
-  if (!_admin) {
-    _admin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-  }
-  return _admin;
-}
-
-/** Escape LIKE wildcards so an email can be matched with ilike (case-insensitive equality). */
-export function ilikeExact(value: string): string {
-  return value.replace(/[\\%_]/g, (c) => `\\${c}`);
-}
+export { ilikeExact };
 
 // A live subscription renews monthly, so its latest sale is recent.
 const RECENT_SALE_DAYS = 35;
@@ -84,22 +69,12 @@ export async function reconcileGumroadPurchase(
   const sale = await findActiveGumroadSale(email, accessToken);
   if (!sale) return false;
 
-  const { data, error } = await getAdmin()
-    .from('profiles')
-    .update({
-      subscription_status: 'active',
-      subscription_id: sale.subscriptionId ?? sale.saleId,
-      subscription_ends_at: monthFromNow(),
-    })
-    .eq('id', userId)
-    .select('id');
-  if (error) {
-    console.error(`[reconcile] update failed for ${userId}:`, error.message);
+  try {
+    const { matched, newlyPro } = await activatePro({ userId }, { subscriptionId: sale.subscriptionId ?? sale.saleId });
+    if (newlyPro) console.warn(`[reconcile] upgraded ${email} from a missed webhook (sale ${sale.saleId})`);
+    return matched > 0;
+  } catch (err) {
+    console.error(`[reconcile] update failed for ${userId}:`, err);
     return false;
   }
-  if (data?.length) {
-    console.warn(`[reconcile] upgraded ${email} from a missed webhook (sale ${sale.saleId})`);
-    return true;
-  }
-  return false;
 }
