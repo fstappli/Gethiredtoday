@@ -55,7 +55,11 @@ export async function PATCH(
   if (title !== undefined) updatePayload.title = title;
   if (data !== undefined) updatePayload.data = data;
   if (template_id !== undefined) updatePayload.template_id = template_id;
-  if (ats_score !== undefined) updatePayload.ats_score = ats_score;
+  if (ats_score !== undefined) {
+    const n = Number(ats_score);
+    if (!Number.isFinite(n)) return NextResponse.json({ error: 'ats_score must be a number' }, { status: 400 });
+    updatePayload.ats_score = Math.max(0, Math.min(100, Math.round(n)));
+  }
   if (color_scheme !== undefined) updatePayload.color_scheme = color_scheme;
   if (font_size !== undefined) updatePayload.font_size = font_size;
   if (is_public !== undefined) updatePayload.is_public = is_public;

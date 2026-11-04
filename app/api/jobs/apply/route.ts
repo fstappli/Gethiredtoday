@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
 
     // Ensure job exists in DB, insert only if not cached; never overwrite
     // a well-populated row with potentially incomplete frontend data.
-    if (job_data) {
+    const isHttpUrl = (u: unknown): u is string => typeof u === 'string' && /^https?:\/\//i.test(u) && u.length < 2000;
+    if (job_data && isHttpUrl(job_data.redirect_url)) {
       await admin.from('jobs').upsert({
         id: job_id,
         source: job_data.source ?? 'adzuna',
@@ -55,7 +56,8 @@ export async function POST(req: NextRequest) {
       .eq('id', job_id)
       .single();
 
-    const finalRedirectUrl = job?.redirect_url ?? redirect_url ?? job_data?.redirect_url;
+    const candidate = job?.redirect_url ?? redirect_url ?? job_data?.redirect_url;
+    const finalRedirectUrl = isHttpUrl(candidate) ? candidate : null;
     if (!finalRedirectUrl) {
       return NextResponse.json({ error: 'Job not found' }, { status: 404 });
     }
@@ -73,7 +75,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Get user's active resume
-    let activeResumeId = resume_id ?? null;
+    let activeResumeId: string | null = null;
+    if (typeof resume_id === 'string' && resume_id) {
+      // Only the caller's own resume may be attached to their application.
+      const { data: own } = await supabase.from('resumes').select('id').eq('id', resume_id).eq('user_id', user.id).maybeSingle();
+      activeResumeId = own?.id ?? null;
+    }
     if (!activeResumeId) {
       const { data: resume } = await supabase
         .from('resumes')

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { verifyUnsubscribeToken } from '@/lib/unsubscribe-token';
 import { createClient } from '@supabase/supabase-js';
 import Link from 'next/link';
 
@@ -7,11 +8,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-type SearchParams = Promise<{ email?: string; uid?: string }>;
+type SearchParams = Promise<{ email?: string; uid?: string; t?: string }>;
 
-async function markUnsubscribed(params: { email?: string; uid?: string }): Promise<'success' | 'error' | 'missing'> {
-  const { email, uid } = params;
+async function markUnsubscribed(params: { email?: string; uid?: string; t?: string }): Promise<'success' | 'error' | 'missing'> {
+  const { email, uid, t } = params;
   if (!email && !uid) return 'missing';
+  // Links in our emails are signed; an unsigned or altered link cannot unsubscribe anyone.
+  if (!verifyUnsubscribeToken(uid ? { uid } : { email }, t)) return 'missing';
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -21,7 +24,7 @@ async function markUnsubscribed(params: { email?: string; uid?: string }): Promi
   const query = supabase.from('profiles').update({ unsubscribed_at: new Date().toISOString() });
   const { error } = uid
     ? await query.eq('id', uid)
-    : await query.eq('email', email ?? '');
+    : await query.ilike('email', (email ?? '').replace(/[\\%_]/g, (c) => `\\${c}`));
 
   if (email) {
     // Also stop the lead checklist list; the table may not exist yet, so ignore errors.

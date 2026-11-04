@@ -200,7 +200,7 @@ export function resumeDataToText(data: ResumeData): string {
 
   if (Array.isArray(data.skills) && data.skills.length) {
     parts.push('Skills');
-    parts.push(data.skills.map((s) => s.name).filter(Boolean).join(', '));
+    parts.push(data.skills.map((s) => s?.name).filter(Boolean).join(', '));
   }
 
   if (data.certifications?.length) {
@@ -212,7 +212,7 @@ export function resumeDataToText(data: ResumeData): string {
 
   if (data.languages?.length) {
     parts.push('Languages');
-    parts.push(data.languages.map((l) => l.name).filter(Boolean).join(', '));
+    parts.push(data.languages.map((l) => l?.name).filter(Boolean).join(', '));
   }
 
   if (data.projects?.length) {
@@ -232,7 +232,89 @@ export function resumeDataToText(data: ResumeData): string {
     }
   }
 
+  if (Array.isArray(data.custom_sections)) {
+    for (const sec of data.custom_sections) {
+      if (!sec) continue;
+      if (sec.title) parts.push(sec.title);
+      for (const it of sec.items ?? []) {
+        if (!it) continue;
+        parts.push([it.title, it.subtitle, it.date].filter(Boolean).join(' '));
+        if (it.description) parts.push(it.description);
+      }
+    }
+  }
+
   return parts.filter(Boolean).join('\n');
+}
+
+/* ─── Scoring helpers (all linear-time; safe on hostile input) ──────────── */
+
+/** Hard cap so a huge paste can never stall a request. Callers should reject earlier with a 413. */
+export const MAX_ATS_TEXT_CHARS = 60_000;
+export const MAX_ATS_JD_CHARS = 20_000;
+
+const EMAIL_TOKEN = /^[\w.+-]{1,64}@[\w-]{1,63}(?:\.[\w-]{1,63})*\.[a-z]{2,}$/i;
+
+/** Token scan instead of one big regex: a regex like [\w.-]+@... goes quadratic on a long token without "@". */
+function hasEmailAddress(text: string): boolean {
+  for (const raw of text.split(/\s+/)) {
+    if (raw.length < 6 || raw.length > 320 || !raw.includes('@')) continue;
+    const tok = raw.replace(/^[<([{"'`:;,|]+|[>)\]}"'`:;,.|]+$/g, '');
+    if (EMAIL_TOKEN.test(tok)) return true;
+  }
+  return false;
+}
+
+// US-style numbers need separators or brackets; international numbers need a leading +; or a "phone/tel/mobile" label.
+const PHONE_US = /\(\d{3}\)\s?\d{3}[\s.-]?\d{4}|\b\d{3}[\s.-]\d{3}[\s.-]\d{4}\b/;
+const PHONE_INTL = /\+\d{1,3}[\s.-]?\(?\d{1,4}\)?(?:[\s.-]?\d{2,5}){2,4}/;
+const PHONE_LABELLED = /(?:phone|tel|mobile|cell|whatsapp)[^\d\n]{0,12}\+?\d[\d\s().-]{6,16}\d/;
+
+function hasPhoneNumber(text: string): boolean {
+  return PHONE_US.test(text) || PHONE_INTL.test(text) || PHONE_LABELLED.test(text);
+}
+
+/** True when a short line looks like a section heading ("Work Experience", "SKILLS:") or starts "Skills: ...". */
+function hasHeading(lines: string[], words: string): boolean {
+  const inHeading = new RegExp(`\\b(?:${words})\\b`);
+  const labelled = new RegExp(`^(?:${words})\\s*[:\\-\u2013\\u2014]`);
+  return lines.some((l) => (l.length <= 40 && inHeading.test(l)) || labelled.test(l));
+}
+
+function hasTableLikeText(text: string): boolean {
+  if (text.includes('colspan') || text.includes('rowspan') || text.includes('<table')) return true;
+  const lines = text.split('\n');
+  let pipes = 0;
+  let tabs = 0;
+  for (const l of lines) {
+    if ((l.match(/\|/g) ?? []).length >= 2) pipes++;
+    if ((l.match(/\t/g) ?? []).length >= 2) tabs++;
+  }
+  return pipes >= 2 || tabs >= 3;
+}
+
+const JD_STOPWORDS = new Set([
+  'about', 'above', 'after', 'again', 'ability', 'across', 'being', 'candidate', 'company', 'could', 'every', 'first', 'great',
+  'having', 'including', 'looking', 'might', 'other', 'others', 'people', 'please', 'preferred', 'required', 'requirements',
+  'responsibilities', 'should', 'since', 'strong', 'their', 'there', 'these', 'those', 'through', 'under', 'until', 'using',
+  'where', 'which', 'while', 'whose', 'within', 'without', 'would', 'years', 'year', 'experience', 'skills', 'working', 'team',
+  'role', 'position', 'applicants', 'applicant', 'benefits', 'opportunity', 'excellent', 'must', 'will',
+]);
+// Short but meaningful tokens that the length filter would otherwise drop.
+const SHORT_KEYWORDS = new Set([
+  'aws', 'sql', 'php', 'css', 'html', 'api', 'apis', 'ux', 'ui', 'sap', 'crm', 'seo', 'sem', 'erp', 'qa', 'ml', 'ai', 'ios', 'gcp',
+  'git', 'nlp', 'bi', 'etl', 'c++', 'c#', '.net', 'go', 'r', 'sas', 'vba', 'ci/cd', 'b2b', 'b2c', 'saas', 'java', 'ruby', 'rust',
+  'node', 'react', 'excel', 'agile', 'scrum', 'jira',
+]);
+
+function tokenize(s: string): string[] {
+  return s.toLowerCase().match(/[a-z0-9][a-z0-9+#./-]*[a-z0-9+#]|[a-z0-9]/g) ?? [];
+}
+const stem = (w: string) => (w.length > 4 && w.endsWith('s') ? w.slice(0, -1) : w);
+
+/** Text of a saved resume exactly as the card, builder and dashboard score it (starter-template placeholders removed). */
+export function resumeDataToScoreText(data: ResumeData): string {
+  return resumeDataToText(stripPlaceholders(data));
 }
 
 /** The core 30-point ATS rubric. Pure function, no IO, no state. */
@@ -240,24 +322,28 @@ export function calculateATSScore(
   resumeText: string,
   jobDescription?: string
 ): ATSCheckResult {
-  const text = resumeText.toLowerCase();
+  const text = (resumeText ?? '').slice(0, MAX_ATS_TEXT_CHARS).toLowerCase();
+  const jd = jobDescription ? jobDescription.slice(0, MAX_ATS_JD_CHARS) : undefined;
+  const lines = text.split('\n').map((l) => l.trim().replace(/^[\s\u2022*#>_=-]+|[\s*_=-]+$/g, '')).filter(Boolean);
   const issues: string[] = [];
   const suggestions: string[] = [];
   let score = 0;
 
   // Contact info checks
-  const hasEmail = /[\w.-]+@[\w.-]+\.\w+/.test(text);
-  const hasPhone = /(\+?1?\s?)?(\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4})/.test(text);
-  const hasLinkedIn = text.includes('linkedin');
+  const hasEmail = hasEmailAddress(text);
+  const hasPhone = hasPhoneNumber(text);
+  const hasLinkedIn = /linkedin\.com\/(?:in|pub|company)\//.test(text);
 
-  // Section checks
-  const hasSummary = text.includes('summary') || text.includes('objective') || text.includes('profile');
-  const hasExperience = text.includes('experience') || text.includes('employment') || text.includes('work history');
-  const hasEducation = text.includes('education') || text.includes('degree') || text.includes('university') || text.includes('college');
-  const hasSkills = text.includes('skills') || text.includes('technologies') || text.includes('proficiencies');
+  // Section checks (headings, not words that merely appear in prose)
+  const hasSummary = hasHeading(lines, 'summary|objective|profile|about me|professional profile');
+  const hasExperience = hasHeading(lines, 'experience|employment|work history|career history');
+  const hasEducation =
+    hasHeading(lines, 'education|academic background|qualifications') ||
+    /\b(?:university|college|bachelor|master of|b\.?sc|m\.?sc|ph\.?d|mba)\b/.test(text);
+  const hasSkills = hasHeading(lines, 'skills|technologies|proficiencies|competencies|tools');
 
   // Formatting red flags
-  const hasTableKeywords = text.includes('colspan') || text.includes('rowspan');
+  const hasTableKeywords = hasTableLikeText(text);
   const hasGraphicKeywords = text.includes('<svg') || text.includes('<img');
 
   // Score calculation
@@ -271,8 +357,9 @@ export function calculateATSScore(
   if (!hasTableKeywords) score += 8;
   if (!hasGraphicKeywords) score += 5;
 
-  // Length check
-  const wordCount = text.split(/\s+/).filter(Boolean).length;
+  // Length check (CJK text has no spaces: count roughly two characters per word)
+  const cjkChars = (text.match(/[\u3040-\u30ff\u3400-\u9fff\uac00-\ud7af]/g) ?? []).length;
+  const wordCount = text.split(/\s+/).filter(Boolean).length + Math.round(cjkChars / 2);
   if (wordCount >= 300 && wordCount <= 800) score += 10;
   else if (wordCount < 300) {
     issues.push('Resume appears too short (under 300 words)');
@@ -281,27 +368,40 @@ export function calculateATSScore(
     suggestions.push('Resume may be too long for ATS, aim for 1-2 pages');
   }
 
-  // Keyword matching
+  // Keyword matching: distinct meaningful words from the job ad, matched as whole words
   let keywordScore = 0;
-  if (jobDescription) {
-    const jobWords = jobDescription.toLowerCase().split(/\s+/).filter((w) => w.length > 4);
-    const matches = jobWords.filter((w) => text.includes(w));
-    keywordScore = Math.min(20, Math.round((matches.length / Math.max(jobWords.length, 1)) * 20));
+  let jobWords: string[] = [];
+  if (jd) {
+    const seen = new Set<string>();
+    for (const w of tokenize(jd)) {
+      const k = stem(w);
+      if (JD_STOPWORDS.has(w) || JD_STOPWORDS.has(k)) continue;
+      if (w.length > 4 || SHORT_KEYWORDS.has(w)) seen.add(k);
+    }
+    jobWords = [...seen];
+  }
+  if (jobWords.length) {
+    const resumeTokens = new Set(tokenize(text).map(stem));
+    const matches = jobWords.filter((w) => resumeTokens.has(w));
+    keywordScore = Math.min(20, Math.round((matches.length / jobWords.length) * 20));
     score += keywordScore;
     if (keywordScore < 10) suggestions.push('Add more keywords from the job description');
   } else {
-    score += 10; // neutral if no job description
+    score += 10; // neutral if no usable job description
   }
 
-  score = Math.max(0, Math.min(100, score));
+  // Weights add up to 110 without a job ad (the neutral 10 stands in for keywords) and 120 with one.
+  // Scale to 100 so a missing section always costs points instead of hiding under a cap.
+  const maxPoints = jobWords.length ? 120 : 110;
+  score = Math.max(0, Math.min(100, Math.round((score / maxPoints) * 100)));
 
   return {
     overall_score: score,
     sections: {
       keywords: {
-        score: jobDescription ? keywordScore * 5 : 70,
+        score: jobWords.length ? keywordScore * 5 : 70,
         issues: [],
-        suggestions: jobDescription ? [] : ['Paste a job description for targeted keyword analysis'],
+        suggestions: jobWords.length ? [] : ['Paste a job description for targeted keyword analysis'],
       },
       formatting: {
         score: !hasTableKeywords && !hasGraphicKeywords ? 90 : 50,

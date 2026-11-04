@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
+import { clientIp, rateLimit } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -19,6 +20,7 @@ const TO = process.env.CONTACT_INBOX ?? 'kreativecasaentertainment@gmail.com';
 
 // Max messages one email address can send per hour.
 const HOURLY_LIMIT = 5;
+const GLOBAL_HOURLY_LIMIT = 60;
 
 let _admin: SupabaseClient | null = null;
 function getAdmin(): SupabaseClient {
@@ -32,6 +34,9 @@ function getAdmin(): SupabaseClient {
 }
 
 export async function POST(request: NextRequest) {
+  if (!rateLimit(`contact:${clientIp(request)}`, 5, 10 * 60_000)) {
+    return NextResponse.json({ error: 'Too many messages. Please try again later.' }, { status: 429 });
+  }
   try {
     const { name, email, subject, message, source, website } = await request.json();
 
@@ -77,6 +82,14 @@ export async function POST(request: NextRequest) {
         .select('id', { count: 'exact', head: true })
         .ilike('email', email.replace(/[\\%_]/g, (c: string) => `\\${c}`))
         .gte('created_at', since);
+      // Also a site-wide ceiling, so rotating emails cannot flood the inbox.
+      const { count: total } = await admin
+        .from('contact_messages')
+        .select('id', { count: 'exact', head: true })
+        .gte('created_at', since);
+      if ((total ?? 0) >= GLOBAL_HOURLY_LIMIT) {
+        return NextResponse.json({ error: 'We are receiving a lot of messages. Please try again later or email hello@hiredtodayapp.com.' }, { status: 429 });
+      }
       if ((count ?? 0) >= HOURLY_LIMIT) {
         return NextResponse.json({ error: 'Too many messages. Please try again later.' }, { status: 429 });
       }

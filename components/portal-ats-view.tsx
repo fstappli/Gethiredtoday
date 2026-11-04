@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import UpgradePrompt from '@/components/upgrade-prompt';
 import { clearLazyDraft, readLazyDraft } from '@/lib/lazy-draft';
-import { resumeDataToText } from '@/lib/ats';
+import { resumeDataToScoreText } from '@/lib/ats';
 import type { ATSCheckResult, ResumeData } from '@/types';
 
 interface ResumeRow { id: string; title: string; data: ResumeData; ats_score: number | null; finalized_at: string | null }
@@ -55,7 +55,8 @@ export default function PortalAtsView() {
         setResult(data);
         track('ats_check_complete', { score: data.overall_score, logged_in: true });
         setLastTitle(title);
-        if (id) {
+        // Only the plain score is stored; a score tuned to one job ad must not overwrite the resume's baseline.
+        if (id && !jd.trim()) {
           fetch(`/api/resume/${id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ats_score: data.overall_score }) }).catch(() => undefined);
           setResumes((rs) => rs.map((r) => (r.id === id ? { ...r, ats_score: data.overall_score } : r)));
         }
@@ -98,7 +99,7 @@ export default function PortalAtsView() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const picked = resumes.find((x) => x.id === resumeId);
-    const text = picked?.data ? resumeDataToText(picked.data) : pasted;
+    const text = picked?.data ? resumeDataToScoreText(picked.data) : pasted;
     run(text, job, picked?.title ?? 'Your resume', picked?.id ?? '');
   };
 

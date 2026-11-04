@@ -135,7 +135,7 @@ export default function PublicAtsChecker() {
                 <input
                   ref={fileRef}
                   type="file"
-                  accept=".docx,.txt,.md,.pdf"
+                  accept=".docx,.txt,.md"
                   className="absolute h-px w-px opacity-0"
                   onChange={(e) => onFile(e.target.files?.[0])}
                 />

@@ -1,8 +1,13 @@
 import { NextResponse } from 'next/server';
 import { calculateATSScore } from '@/lib/ats';
 import { getCaller, limitAtsReport } from '@/lib/plan-guard';
+import { MAX_ATS_TEXT_CHARS, MAX_ATS_JD_CHARS } from '@/lib/ats';
+import { clientIp, rateLimit } from '@/lib/rate-limit';
 
 export async function POST(req: Request) {
+  if (!rateLimit(`ats-check:${clientIp(req)}`, 30, 60_000)) {
+    return NextResponse.json({ error: 'Too many checks. Please wait a minute and try again.' }, { status: 429 });
+  }
   let body: unknown;
   try {
     body = await req.json();
@@ -26,6 +31,13 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { error: 'Please provide resume text with at least 50 characters.' },
       { status: 400 }
+    );
+  }
+
+  if (resumeText.length > MAX_ATS_TEXT_CHARS || (jobDescription?.length ?? 0) > MAX_ATS_JD_CHARS) {
+    return NextResponse.json(
+      { error: 'That text is too long to check. Keep the resume under 60,000 characters and the job ad under 20,000.' },
+      { status: 413 }
     );
   }
 

@@ -2,6 +2,15 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { monthFromNow } from '@/lib/subscription';
 import { activatePro, ilikeExact } from '@/lib/pro-activation';
+import { verifyGumroadSale } from '@/lib/gumroad-reconcile';
+import { timingSafeEqual } from 'crypto';
+
+function sameSecret(given: string | null, secret: string): boolean {
+  if (!given) return false;
+  const a = Buffer.from(given);
+  const b = Buffer.from(secret);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 export const runtime = 'nodejs';
 
@@ -33,11 +42,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Invalid body' }, { status: 400 });
   }
 
-  // Gumroad verifies webhooks via a 'ping' field in the POST body (not a header).
-  // The ping value must match the secret configured in Gumroad product settings.
-  const ping = params.get('ping');
-  if (!ping || ping !== secret) {
-    console.error('Webhook ping verification failed');
+  // The shared secret may arrive as a 'ping' field in the POST body, or as ?ping= / ?secret= on the
+  // webhook URL (Gumroad pings carry no signature of their own, so putting the secret in the URL
+  // configured in Gumroad is the reliable way). Every sale is additionally confirmed with Gumroad below.
+  const url = new URL(req.url);
+  const given = params.get('ping') ?? url.searchParams.get('ping') ?? url.searchParams.get('secret');
+  if (!sameSecret(given, secret)) {
+    console.error(
+      `Webhook ping verification failed (body ping: ${params.has('ping')}, url secret: ${url.searchParams.has('ping') || url.searchParams.has('secret')})`
+    );
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
   }
 
@@ -74,13 +87,21 @@ export async function POST(req: Request) {
         .from('profiles')
         .select('subscription_status')
         .ilike('email', ilikeExact(email))
-        .single();
+        .limit(1)
+        .maybeSingle();
       if (existing?.subscription_status === 'cancelled') {
         console.error(
           `[webhook] Re-charge detected for cancelled user: ${email}. ` +
           `Gumroad subscription was not cancelled successfully. ` +
           `subscription_id in payload: ${subscriberId ?? 'none'}`
         );
+      }
+
+      // Confirm with Gumroad that this sale is real, paid and for this email before granting Pro.
+      const saleId = params.get('sale_id') || params.get('order_number') || '';
+      if ((await verifyGumroadSale(saleId, email)) === 'invalid') {
+        console.error(`[webhook] Gumroad does not confirm sale ${saleId || '(none)'} for ${email}; ignoring`);
+        return NextResponse.json({ received: true });
       }
 
       const { matched } = await activatePro({ email }, { subscriptionId: subscriberId });
@@ -102,7 +123,8 @@ export async function POST(req: Request) {
         .from('profiles')
         .select('subscription_ends_at')
         .ilike('email', ilikeExact(email))
-        .single();
+        .limit(1)
+        .maybeSingle();
       const endsAt = (existing?.subscription_ends_at as string | null) || monthFromNow();
       await getSupabaseAdmin()
         .from('profiles')

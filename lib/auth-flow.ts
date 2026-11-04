@@ -1,8 +1,8 @@
 /** Shared helpers for sign-up, log-in and the post-auth hand-off. Client-safe. */
+import { safeInternalPath } from '@/lib/safe-path';
 
 export function safeNext(raw: string | null | undefined, fallback = '/dashboard'): string {
-  if (!raw || !raw.startsWith('/') || raw.startsWith('//')) return fallback;
-  return raw;
+  return safeInternalPath(raw, fallback);
 }
 
 /**

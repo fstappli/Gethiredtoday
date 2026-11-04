@@ -73,6 +73,11 @@ function adzunaJobToJob(j: AdzunaJob, country: string): Job {
   };
 }
 
+/** Country goes into the URL path, so only a two-letter code may pass. */
+function safeCountry(c: string): string {
+  return /^[a-z]{2}$/i.test(c) ? c.toLowerCase() : 'us';
+}
+
 export async function searchJobs(
   filters: JobSearchFilters,
   page = 1
@@ -117,7 +122,7 @@ export async function searchJobs(
   }
 
   try {
-    const url = `${BASE_URL}/${country}/search/${page}?${params}`;
+    const url = `${BASE_URL}/${safeCountry(country)}/search/${page}?${params}`;
     const res = await fetch(url, {
       headers: { Accept: 'application/json' },
       cache: 'no-store',
@@ -149,7 +154,7 @@ export async function fetchCategories(country = 'us'): Promise<AdzunaCategory[]>
 
   try {
     const params = new URLSearchParams({ app_id: appId!, app_key: appKey! });
-    const res = await fetch(`${BASE_URL}/${country}/categories?${params}`, {
+    const res = await fetch(`${BASE_URL}/${safeCountry(country)}/categories?${params}`, {
       headers: { Accept: 'application/json' },
       next: { revalidate: 3600 },
     });

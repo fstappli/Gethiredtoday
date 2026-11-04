@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isAuthorizedCron } from '@/lib/cron-auth';
 import { createClient } from '@supabase/supabase-js';
 import {
   welcomeEmail,
@@ -63,9 +64,7 @@ function firstNameFromProfile(row: ProfileRow): string {
 }
 
 export async function GET(request: NextRequest) {
-  // Auth check
-  const authHeader = request.headers.get('authorization');
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  if (!isAuthorizedCron(request)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

@@ -46,6 +46,33 @@ export async function findActiveGumroadSale(
   }
 }
 
+/**
+ * Confirms a webhook's sale with Gumroad. 'invalid' = Gumroad says this sale is not a paid sale for that email;
+ * 'unknown' = could not check (no token, API down), in which case callers should not drop a real payment.
+ */
+export async function verifyGumroadSale(saleId: string, email: string): Promise<'valid' | 'invalid' | 'unknown'> {
+  const accessToken = process.env.GUMROAD_ACCESS_TOKEN;
+  if (!accessToken || !saleId) return 'unknown';
+  try {
+    const res = await fetch(`https://api.gumroad.com/v2/sales/${encodeURIComponent(saleId)}`, {
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+    if (res.status === 404) return 'invalid';
+    if (!res.ok) return 'unknown';
+    const json = (await res.json()) as { success?: boolean; sale?: GumroadSale & { email?: string } };
+    if (!json.success || !json.sale) return 'invalid';
+    const s = json.sale;
+    const PRODUCT_PERMALINK = process.env.GUMROAD_PRODUCT_PERMALINK ?? 'kxtcbs';
+    const ok =
+      !!s.paid && !s.refunded && !s.chargedback &&
+      s.product_permalink === PRODUCT_PERMALINK &&
+      (s.email ?? '').toLowerCase() === email.toLowerCase();
+    return ok ? 'valid' : 'invalid';
+  } catch {
+    return 'unknown';
+  }
+}
+
 // Best-effort per-instance throttle so free users don't hit Gumroad on every page load.
 const lastChecked = new Map<string, number>();
 const THROTTLE_MS = 5 * 60 * 1000;

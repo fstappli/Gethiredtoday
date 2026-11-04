@@ -15,14 +15,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { reconcileGumroadPurchase } from '@/lib/gumroad-reconcile';
+import { safeInternalPath } from '@/lib/safe-path';
 
 export const runtime = 'nodejs';
 
 // Only allow returning the user to safe in-app paths.
 function safeReturnPath(raw: string | null): string {
-  if (!raw) return '/dashboard';
-  if (!raw.startsWith('/') || raw.startsWith('//')) return '/dashboard';
-  return raw;
+  return safeInternalPath(raw, '/dashboard');
 }
 
 export async function GET(req: NextRequest) {

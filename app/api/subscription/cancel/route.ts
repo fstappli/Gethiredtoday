@@ -11,7 +11,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { monthFromNow } from '@/lib/subscription';
+import { isProActive, monthFromNow } from '@/lib/subscription';
 
 export const runtime = 'nodejs';
 
@@ -134,13 +134,17 @@ export async function POST() {
     let subscriptionId: string | null = null;
     let profileEmail: string | null = null;
     let existingEndsAt: string | null = null;
+    let profileStatus: string | null = null;
+    let profileLoaded = false;
     try {
       const { data: profile } = await writer
         .from('profiles')
-        .select('subscription_id, email, subscription_ends_at')
+        .select('subscription_id, email, subscription_ends_at, subscription_status')
         .eq('id', user.id)
         .single();
+      profileLoaded = Boolean(profile);
       if (profile) {
+        profileStatus = (profile.subscription_status as string | null) ?? null;
         subscriptionId = (profile.subscription_id as string | null) ?? null;
         profileEmail = (profile.email as string | null) ?? null;
         existingEndsAt = (profile.subscription_ends_at as string | null) ?? null;
@@ -150,6 +154,14 @@ export async function POST() {
     }
 
     const email = user.email || profileEmail || null;
+
+    // Cancelling must never create Pro access: only someone who is currently Pro can cancel.
+    if (!profileLoaded) {
+      return NextResponse.json({ ok: false, error: 'We could not load your subscription. Please try again.' }, { status: 503 });
+    }
+    if (!isProActive({ subscription_status: profileStatus, subscription_ends_at: existingEndsAt })) {
+      return NextResponse.json({ ok: false, error: 'You do not have an active subscription to cancel.' }, { status: 400 });
+    }
 
     // Commit the local cancellation FIRST, before touching Gumroad. This
     // guarantees the UI flips regardless of what Gumroad does.

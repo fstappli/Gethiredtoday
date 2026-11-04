@@ -17,6 +17,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { getAnthropicClient } from '@/lib/ai';
 import { scoreResume } from '@/lib/ats';
+import { getCaller } from '@/lib/plan-guard';
+import { isTemplateAllowed } from '@/lib/subscription';
 import type { ResumeData } from '@/types';
 
 export const runtime = 'nodejs';
@@ -234,7 +236,9 @@ export async function POST(req: NextRequest) {
 
     const formData = await req.formData();
     const file = formData.get('file');
-    const templateId = ((formData.get('template_id') as string) || 'classic').trim() || 'classic';
+    let templateId = ((formData.get('template_id') as string) || 'classic').trim() || 'classic';
+    // Pro templates are not available to free accounts through import either.
+    if (!isTemplateAllowed((await getCaller()).plan, templateId)) templateId = 'classic';
 
     if (!file || !(file instanceof File)) {
       return NextResponse.json({ error: 'Please choose a file to upload.' }, { status: 400 });

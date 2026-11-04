@@ -35,7 +35,7 @@ function LoginForm() {
     });
     setBusy(false);
     if (err) {
-      setError(/signups not allowed|not found/i.test(err.message) ? 'We could not find an account with that email. Create a free account instead.' : err.message);
+      setError(/signups not allowed|not found/i.test(err.message) ? 'We could not send a sign-in link to that email. Check the address, or create a free account.' : err.message);
       return;
     }
     router.push(`/check-email${carryParams(sp, { email, mode: 'login', next })}`);

@@ -1,4 +1,5 @@
 import { SITE, SITE_URL, PRICING, PRO_FEATURES } from '@/lib/site-config';
+import { unsubscribeToken } from '@/lib/unsubscribe-token';
 
 const brand = {
   color: '#0B6E5F',
@@ -13,9 +14,14 @@ export interface EmailCtx {
   email?: string;
 }
 
+/** Names come from user-controlled profile data; never let them inject markup into an email. */
+function esc(s: string): string {
+  return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 function unsubscribeUrl(ctx?: EmailCtx): string {
-  if (ctx?.userId) return `${brand.url}/unsubscribe?uid=${encodeURIComponent(ctx.userId)}`;
-  if (ctx?.email) return `${brand.url}/unsubscribe?email=${encodeURIComponent(ctx.email)}`;
+  if (ctx?.userId) return `${brand.url}/unsubscribe?uid=${encodeURIComponent(ctx.userId)}&t=${unsubscribeToken({ uid: ctx.userId })}`;
+  if (ctx?.email) return `${brand.url}/unsubscribe?email=${encodeURIComponent(ctx.email)}&t=${unsubscribeToken({ email: ctx.email })}`;
   return `${brand.url}/unsubscribe`;
 }
 
@@ -80,7 +86,7 @@ export function welcomeEmail(firstName: string, ctx?: EmailCtx): { subject: stri
   return {
     subject: "Your resume is waiting, let's make it interview-ready",
     html: base(`
-      ${h1(`Welcome to ${brand.name}, ${firstName || 'there'}!`)}
+      ${h1(`Welcome to ${brand.name}, ${esc(firstName || 'there')}!`)}
       ${p("You are one step away from a resume that is easy for both people and applicant tracking systems to read.")}
       ${p("Here is what you can do right now, free:")}
       ${list([
@@ -102,7 +108,7 @@ export function atsEducationEmail(firstName: string, ctx?: EmailCtx): { subject:
   return {
     subject: 'The most common reasons resumes get filtered out',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, here is why good resumes get skipped.`)}
+      ${h1(`${esc(firstName || 'Hey')}, here is why good resumes get skipped.`)}
       ${p('Many employers use applicant tracking systems (ATS) to sort applications before a person reads them. A resume can be strong and still be hard for that software to read.')}
       ${p('The most common problems:')}
       ${list([
@@ -124,7 +130,7 @@ export function featureRevealEmail(firstName: string, ctx?: EmailCtx): { subject
   return {
     subject: 'Turn your duties into results with the AI bullet writer',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, have you tried this yet?`)}
+      ${h1(`${esc(firstName || 'Hey')}, have you tried this yet?`)}
       ${p('Recruiters skim. Bullets that start with a strong verb and show a result get read. The AI bullet writer helps you get there.')}
       ${p('How it works:')}
       <ol style="margin:0 0 16px;padding-left:20px;color:#3f4d49;font-size:15px;line-height:2;">
@@ -149,7 +155,7 @@ export function upgradeOfferEmail(firstName: string, ctx?: EmailCtx): { subject:
   return {
     subject: 'What Pro adds when you are ready to apply',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, ready to apply more widely?`)}
+      ${h1(`${esc(firstName || 'Hey')}, ready to apply more widely?`)}
       ${p('Your free plan already includes one resume, PDF download, your ATS score with the top 3 fixes, job search and 5 AI rewrites a day. Pro is for when you start applying to several roles.')}
       ${list([
         '<strong>Unlimited resumes</strong>, so you can tailor one to each kind of role',
@@ -171,7 +177,7 @@ export function day10LastChanceEmail(firstName: string, ctx?: EmailCtx): { subje
   return {
     subject: 'Tailoring your resume to each job',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, a quick tip for your job search.`)}
+      ${h1(`${esc(firstName || 'Hey')}, a quick tip for your job search.`)}
       ${p('Each job ad asks for slightly different skills and keywords. A resume tailored to each ad is easier for ATS software to match and easier for a recruiter to scan.')}
       ${p('On the free plan you have one resume and 5 AI rewrites a day. If you are applying to several jobs, Pro lets you keep a tailored version for each, with unlimited AI rewrites and the full ATS report to check each one against its job ad.')}
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#fbfaf6;border-radius:12px;padding:20px;text-align:center;">
@@ -195,7 +201,7 @@ export function subscriptionEndingEmail(
   return {
     subject: `Important: your ${brand.name} Pro subscription`,
     html: base(`
-      ${h1(`Hi ${firstName || 'there'}, a quick update on your Pro plan.`)}
+      ${h1(`Hi ${esc(firstName || 'there')}, a quick update on your Pro plan.`)}
       ${p("We are making a change to how subscriptions work. <strong>Automatic billing is being removed</strong>, so your subscription will <strong>not</strong> auto-renew.")}
       ${p(`Your Pro access is active until <strong>${endsAt}</strong>. After that date your account moves to the free plan.`)}
       <div style="background:#e3f4ee;border-radius:12px;padding:20px;margin:0 0 16px;">
@@ -221,7 +227,7 @@ export function day14WinbackEmail(firstName: string, ctx?: EmailCtx): { subject:
   return {
     subject: 'One quick question',
     html: base(`
-      ${h1(`${firstName || 'Hey'}, one quick question`)}
+      ${h1(`${esc(firstName || 'Hey')}, one quick question`)}
       ${p(`It has been two weeks since you joined ${brand.name}. Before we stop emailing you, we would like to know one thing.`)}
       <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;"><tr><td style="background:#fff1cc;border-left:4px solid #ffd166;padding:20px;border-radius:4px;">
         <div style="font-size:17px;font-weight:700;color:#0d1b19;line-height:1.5;">What would make ${brand.name} more useful for your job search?</div>
@@ -263,7 +269,7 @@ export function proWelcomeEmail(firstName: string, ctx?: EmailCtx): { subject: s
   return {
     subject: `You are now a ${brand.name} Pro member`,
     html: base(`
-      ${h1(`You are Pro, ${firstName || 'there'}!`)}
+      ${h1(`You are Pro, ${esc(firstName || 'there')}!`)}
       ${p('Your payment went through and your Pro plan is active now. Everything below is unlocked on your account, with nothing else to set up.')}
       ${list([...PRO_FEATURES])}
       ${btn('Open your dashboard', emailLink('/dashboard', 'pro_welcome'))}

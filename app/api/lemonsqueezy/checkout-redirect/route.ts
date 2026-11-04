@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
 import { createClient } from '@supabase/supabase-js';
 import { isUpgradeTrigger } from '@/lib/upgrade-triggers';
+import { safeInternalPath } from '@/lib/safe-path';
 
 const CHECKOUT_URL = 'https://kreativecasa.gumroad.com/l/kxtcbs';
 
@@ -16,9 +17,7 @@ function getAdminClient() {
 // slash, no protocol-relative URLs, no absolute URLs). Anything else falls
 // back to /dashboard.
 function safeReturnPath(raw: string | null): string {
-  if (!raw) return '/dashboard';
-  if (!raw.startsWith('/') || raw.startsWith('//')) return '/dashboard';
-  return raw;
+  return safeInternalPath(raw, '/dashboard');
 }
 
 export async function GET(req: NextRequest) {

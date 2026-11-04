@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminSupabaseClient } from '@/lib/supabase-admin';
 import { leadChecklistEmail } from '@/lib/email-templates';
 import { SITE } from '@/lib/site-config';
+import { clientIp, rateLimit } from '@/lib/rate-limit';
 
 export const dynamic = 'force-dynamic';
 
@@ -9,17 +10,6 @@ const FROM = process.env.EMAIL_FROM ?? `${SITE.name} <${SITE.email}>`;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const WINDOW_MS = 60 * 60 * 1000;
 const MAX_PER_WINDOW = 5;
-const hits = new Map<string, number[]>();
-
-function limited(ip: string): boolean {
-  const now = Date.now();
-  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
-  recent.push(now);
-  hits.set(ip, recent);
-  if (hits.size > 5000) hits.clear();
-  return recent.length > MAX_PER_WINDOW;
-}
-
 const clip = (v: unknown, n: number): string | null => (typeof v === 'string' && v.trim() ? v.trim().slice(0, n) : null);
 
 export async function POST(req: NextRequest) {
@@ -43,8 +33,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Please confirm you want to receive the email.' }, { status: 400 });
   }
 
-  const ip = (req.headers.get('x-forwarded-for') ?? 'unknown').split(',')[0].trim();
-  if (limited(ip)) {
+  if (!rateLimit(`leads:${clientIp(req)}`, MAX_PER_WINDOW, WINDOW_MS)) {
     return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429 });
   }
 
