@@ -176,6 +176,9 @@ export const JOB_SEARCH_POSTS: BlogPost[] = [
 <h2>How do you follow up on a referral or networking contact?</h2>
 <p>If someone referred you, keep them informed. Send a short thank-you after they pass on your details, and let them know if you are invited to interview. Do not ask them to push for a decision, as it puts them in an awkward position. If a contact promised to introduce you and you have not heard anything for a week or two, a brief reminder with a one-line summary of the role is fine. Make it easy for them to forward, for example by attaching your resume and a two-sentence description they can copy into an email.</p>
 <p>Referral relationships are worth maintaining even if the role does not work out. A friendly note about how things turned out keeps the connection warm for the next opportunity.</p>
+<h2>Related guides</h2>
+<p>Following up works best when the rest of your search is organised. See our <a href="/resources/job-search-plan-first-30-days">30-day job search plan</a>, learn <a href="/resources/tailor-resume-to-job-description">how to tailor your resume to a job description</a>, and prepare for the next step with the <a href="/resources/how-to-prepare-for-a-job-interview">interview preparation checklist</a>. If you need to discuss pay once you reach an offer, read how to <a href="/resources/how-to-answer-salary-expectations">answer salary expectation questions</a>.</p>
+<p>After an interview, send a <a href="/resources/thank-you-email-after-interview">thank you email</a> within a day, and see <a href="/resources/how-to-prepare-for-a-job-interview">how to prepare for a job interview</a> and <a href="/resources/linkedin-job-search-tips">LinkedIn job search tips</a> for the next steps of your search.</p>
     `,
   },
   {
@@ -341,6 +344,85 @@ export const JOB_SEARCH_POSTS: BlogPost[] = [
   <li>You had at least one live conversation by phone or video.</li>
   <li>You have not shared sensitive documents early.</li>
 </ul>
+    `,
+  },
+  {
+    slug: "how-to-answer-salary-expectations",
+    title: "How to Answer \"What Are Your Salary Expectations?\" (With Scripts)",
+    description: "How to answer salary expectation questions on applications, in recruiter calls and in interviews, with word-for-word scripts and a research checklist.",
+    date: "2026-10-29",
+    readTime: "8 min read",
+    category: "Job Search",
+    gradient: "from-amber-500 to-orange-600",
+    quickAnswer:
+      "Research the market range for the role and location, then give a range you would be happy with, with the lower end at a number you could accept. If you are asked too early, you can politely turn the question back to the role's budget before naming a figure.",
+    faqs: [
+      { q: "Should I give a number or a range when asked about salary expectations?", a: "A range is usually safer, because it shows flexibility while protecting you. Make sure the bottom of the range is a figure you would genuinely accept, since employers often anchor on it." },
+      { q: "Can I refuse to answer the salary question?", a: "You can decline politely and ask about the budget for the role first. If the employer insists, give a researched range rather than refusing again, so the conversation keeps moving." },
+      { q: "What if the application form requires a salary figure?", a: "Enter a researched figure or a range midpoint if the field is numeric, or write \"Negotiable\" if text is allowed. Avoid entering zero, which can look like a placeholder or hurt your chances." },
+      { q: "Is it okay to ask for more than the posted range?", a: "It can be, if your experience clearly exceeds the requirements and you can explain why. Expect the employer to weigh it against their budget, and be ready to discuss total compensation, not only base pay." },
+    ],
+    content: `
+<h2>Why do employers ask about salary expectations?</h2>
+<p>Employers ask early because they want to know whether your expectations fit the budget before everyone spends hours in interviews. It is a practical screening question, not a trap. It is also a chance for you to set the frame of the negotiation, so a prepared answer is worth more than an improvised one.</p>
+<p>The right answer depends on where you are in the process. A recruiter call, an application form and a final interview each call for a slightly different response.</p>
+
+<h2>How do you research a fair salary range?</h2>
+<p>Do this before any conversation, ideally before you apply. You need a range you can defend, not a number you hope for.</p>
+<ul>
+  <li><strong>Check the job posting.</strong> Many postings include a pay range, and in some places employers are required to publish one. If it is there, work from it.</li>
+  <li><strong>Compare similar roles.</strong> Look at postings for the same title, level and location, and note how the ranges differ by company size.</li>
+  <li><strong>Ask people in the field.</strong> Former colleagues, mentors and professional communities can tell you what is realistic. Our <a href="/resources/linkedin-job-search-tips">LinkedIn job search tips</a> explain how to start those conversations politely.</li>
+  <li><strong>Factor in your own situation.</strong> Your skills, years of experience, certifications, commute or remote setup and the cost of living where you work all matter.</li>
+  <li><strong>Decide your three numbers.</strong> Your ideal figure, your realistic target, and the minimum you would accept. Never share the minimum, but know it.</li>
+</ul>
+<p>The <a href="/jobs">jobs page</a> is a handy place to see how similar roles are described and what pay information employers choose to include.</p>
+
+<h2>How do you answer on an application form?</h2>
+<p>Forms are the least flexible setting. If the field is optional, you can leave it blank and raise the topic later. If it is required and numeric, enter a figure in the middle of your researched range. If you can type text, "Negotiable, depending on the full role and benefits" is a common and accepted answer.</p>
+<p>Keep your resume free of salary information. It does not belong there, and it can limit your options. Build your resume in the <a href="/resume-templates">resume builder</a> and keep the focus on your achievements instead.</p>
+
+<h2>What do you say when a recruiter asks on the first call?</h2>
+<p>This is the moment most people dread. You have three reasonable options.</p>
+<h3>Option 1: Turn the question back</h3>
+<p><em>"I would like to learn more about the role first. Could you share the budget or range you have for this position?"</em></p>
+<p>If the recruiter answers, you can respond with whether it fits. If they will not, move to Option 2.</p>
+<h3>Option 2: Give a researched range</h3>
+<p><em>"Based on my experience and what I am seeing for similar roles in this area, I am looking at a range of X to Y, and I am open to discussing the full package."</em></p>
+<p>Replace X and Y with your own researched numbers. Choose X so that you would be satisfied to receive it.</p>
+<h3>Option 3: Mention your current pay only if you choose to</h3>
+<p>You are not obliged to share what you earn now. In some places employers are legally restricted from asking. If asked, you can say: <em>"I would rather focus on the value of this role and what the market pays for it."</em> Keep your tone friendly and calm.</p>
+
+<h2>How do you answer in a formal interview?</h2>
+<p>By the interview stage, the hiring manager usually has a budget in mind. Be direct and confident:</p>
+<p><em>"I have researched this role and I am looking for a range of X to Y, depending on the responsibilities and the benefits. I am more interested in finding the right fit, so I am happy to discuss what works on both sides."</em></p>
+<p>Then stop talking. Silence is not a problem to fix. Let the interviewer respond.</p>
+
+<h2>What if the offer is lower than you hoped?</h2>
+<p>A lower first offer is not a failure, it is a starting point. Thank them, say you are excited about the role, and ask for time to review. Then consider the whole package: base pay, bonus, benefits, remote flexibility, learning budget, holidays, and review dates. If you want to ask for more, tie your request to the value you bring, such as specific results from your resume, rather than to personal needs.</p>
+<p>Strong evidence helps here. A resume with measurable achievements gives you something concrete to point to. If you have not tightened yours recently, try the <a href="/ats-checker">ATS checker</a> and review our guide on <a href="/resources/resume-mistakes-costing-you-interviews">resume mistakes that cost interviews</a>.</p>
+
+<h2>What mistakes should you avoid?</h2>
+<ul>
+  <li><strong>Naming a number before you understand the role.</strong> Scope changes the value of the job.</li>
+  <li><strong>Giving a range with a bottom you would not accept.</strong> Employers often offer near the low end.</li>
+  <li><strong>Apologising or over-explaining.</strong> State the range plainly.</li>
+  <li><strong>Discussing only base pay.</strong> Total compensation is often larger than the headline number.</li>
+  <li><strong>Lying about your current pay.</strong> It can be checked and can cost you the offer.</li>
+  <li><strong>Accepting on the spot.</strong> It is fine to take a day or two to respond.</li>
+</ul>
+
+<h2>Salary expectations checklist</h2>
+<ul>
+  <li>I researched ranges for my title, level and location.</li>
+  <li>I know my ideal, target and minimum numbers.</li>
+  <li>I prepared a range with a bottom figure I would accept.</li>
+  <li>I practised my script out loud.</li>
+  <li>I know which benefits matter to me besides base pay.</li>
+  <li>I have evidence of results ready to support my number.</li>
+  <li>I will ask for time before accepting any offer.</li>
+</ul>
+<p>Salary questions often arrive in the same conversations as other tricky prompts. If you want to prepare for the rest, read our guide on <a href="/resources/how-to-answer-what-is-your-greatest-weakness">answering the greatest weakness question</a> and our overview of <a href="/resources/how-to-prepare-for-a-job-interview">how to prepare for a job interview</a>.</p>
     `,
   },
 ];

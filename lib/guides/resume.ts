@@ -222,7 +222,7 @@ export const RESUME_POSTS: BlogPost[] = [
   <li>Experience in reverse-chronological order, with bullets rewritten for relevance</li>
   <li>Education, certifications and relevant projects</li>
 </ol>
-<p>Choose a clean template that does not use tables or complex columns. You can find ATS-friendly options in the <a href="/resume-templates">template library</a>.</p>
+<p>Choose a clean template that does not use tables or complex columns. You can find ATS-friendly options in the <a href="/resume-templates">template library</a>. If you are unsure how much to include, read our guide to <a href="/resources/one-page-vs-two-page-resume">one page vs two page resumes</a>.</p>
 
 <h2>Step 4: Write a targeted summary</h2>
 <p>The summary is where you explain the move. Name the new role, mention your background and give one or two relevant strengths.</p>
@@ -377,6 +377,110 @@ export const RESUME_POSTS: BlogPost[] = [
   <li>Search for roles that fit on the <a href="/jobs">jobs page</a> and tailor each application.</li>
 </ul>
 <p>A gap is part of your story, not the whole of it. If you tell it clearly and move on to your strengths, most employers will do the same.</p>
+    `,
+  },
+  {
+    slug: "one-page-vs-two-page-resume",
+    title: "One Page vs Two Page Resume: Which Length Is Right for You?",
+    description: "Not sure whether your resume should be one page or two? Learn how to decide based on your experience, what to cut, and how to format either length so it reads well and passes ATS.",
+    date: "2026-11-04",
+    readTime: "8 min read",
+    category: "Resume Writing",
+    gradient: "from-sky-500 to-indigo-600",
+    quickAnswer:
+      "Use one page if you have under roughly ten years of relevant experience or are changing fields, and two pages if you have a longer record of relevant achievements that a single page would crush. Length matters less than relevance: every line should help you win this specific job.",
+    faqs: [
+      { q: "Is a one page or two page resume better?", a: "Neither is better by default. One page suits students, early-career applicants and career changers. Two pages suit experienced professionals with a long list of relevant achievements. Choose the shorter option that still shows your strongest, most relevant proof." },
+      { q: "Is it okay to have a resume that is one and a half pages?", a: "Yes, as long as the second page has meaningful content. A page with only three or four lines looks unfinished, so either tighten your wording to fit one page or add relevant material, such as another achievement or a certification, to make the second page worthwhile." },
+      { q: "Do applicant tracking systems care about resume length?", a: "Applicant tracking systems read text, not page count. What matters is a clean layout, standard headings and keywords that match the job. A two page resume with clear structure parses as well as a one page resume." },
+      { q: "What should I cut to fit my resume on one page?", a: "Remove old or unrelated roles, duties that every person in the job does, an objective statement, references and anything you would not be proud to discuss. Keep the achievements that best match the job posting." },
+    ],
+    content: `
+<h2>Should your resume be one page or two?</h2>
+<p>There is no rule written in stone, but there is a sensible default. If you are a student, a recent graduate, an early-career professional or a career changer, one page is usually the right length. If you have a long, relevant career with several roles, results and credentials that a recruiter would genuinely want to see, two pages is reasonable. What decides it is not your age or how many years you have worked. It is how much relevant proof you have for the job in front of you.</p>
+<p>Recruiters often scan quickly before deciding whether to read closely. A tight resume that gets to the point helps them see your fit. A long resume full of filler hides it. This guide shows you how to decide, what to cut, and how to format either length well.</p>
+
+<h2>When is a one page resume the right choice?</h2>
+<p>A single page is the better choice when:</p>
+<ul>
+  <li>You are a student or recent graduate with limited work history.</li>
+  <li>You have a few years of experience and all of it is relevant to the target role.</li>
+  <li>You are changing careers and only part of your past is relevant. See our guide to a <a href="/resources/how-to-write-a-career-change-resume">career change resume</a> for how to choose what to keep.</li>
+  <li>You are applying for a role where the posting asks for brevity or a short application.</li>
+</ul>
+<p>One page forces you to choose your best material, and that discipline often improves the writing. If you have to squeeze, you probably have too much of the wrong content, not too little space.</p>
+
+<h2>When is a two page resume the right choice?</h2>
+<p>Two pages can make sense when:</p>
+<ul>
+  <li>You have many years of experience with clear, relevant achievements in each role.</li>
+  <li>You are applying for senior, management or technical roles where projects, tools and certifications matter.</li>
+  <li>You have publications, patents, licences or a long certification list that the employer expects to see.</li>
+  <li>Cutting to one page would remove results that directly match the job description.</li>
+</ul>
+<p>Two pages are not a license to include everything. Put your strongest content on page one, because that is what gets read first, and treat page two as supporting evidence. Never exceed two pages for a standard job application unless the field specifically expects it, such as academic or some government roles.</p>
+
+<h2>How do you decide what stays and what goes?</h2>
+<p>Use the job posting as your filter. Read it and note the top skills, tools and responsibilities. Then ask of every line on your resume: does this help me win this job? If not, shorten it or remove it. Our guide on how to <a href="/resources/tailor-resume-to-job-description">tailor your resume to a job description</a> walks through this process step by step.</p>
+<h3>What to cut first</h3>
+<ul>
+  <li><strong>Old roles.</strong> Jobs from many years ago can often be reduced to a title, employer and dates, or dropped if they are unrelated.</li>
+  <li><strong>Everyday duties.</strong> Lines like "answered emails" or "attended meetings" add length without adding value.</li>
+  <li><strong>Objective statements.</strong> Replace a vague objective with a short, targeted summary, or remove it. See our <a href="/resources/resume-summary-examples-that-get-interviews">resume summary examples</a>.</li>
+  <li><strong>"References available on request."</strong> Employers assume this.</li>
+  <li><strong>Skills you would not want to be tested on.</strong> If you cannot back it up in an interview, leave it off.</li>
+</ul>
+<h3>What to keep</h3>
+<ul>
+  <li>Achievements with a clear outcome, using real numbers only where you actually have them.</li>
+  <li>Skills, tools and certifications that match the posting.</li>
+  <li>Recent, relevant experience in reverse-chronological order.</li>
+</ul>
+
+<h2>How do you make a resume fit without shrinking the font?</h2>
+<p>Shrinking text until it is hard to read is the wrong fix. Squeezed, tiny type is tiring for a person to read and does nothing to improve your content. Instead, try this order:</p>
+<ol>
+  <li>Cut weak bullets first. Aim for the three to five strongest bullets per recent role and fewer for older ones.</li>
+  <li>Shorten long bullets so each fits on one or two lines.</li>
+  <li>Combine related skills into a single tidy line.</li>
+  <li>Adjust margins modestly and use a standard, readable font at a normal size.</li>
+  <li>Remove sections that do not support your case, such as unrelated hobbies.</li>
+</ol>
+<p>If it still does not fit after cutting, consider whether you are really a two page candidate, or whether more editing will make the resume stronger.</p>
+
+<h2>How should you format a two page resume?</h2>
+<ul>
+  <li><strong>Put the best content first.</strong> Your summary, key skills and most relevant recent roles belong on page one.</li>
+  <li><strong>Avoid a nearly empty second page.</strong> A few stray lines look like an accident. Either tighten to one page or build page two out to a sensible length.</li>
+  <li><strong>Break pages cleanly.</strong> Avoid splitting a job entry awkwardly between pages if you can.</li>
+  <li><strong>Add your name and page number to page two</strong> in a plain header, in case the pages are separated when printed.</li>
+  <li><strong>Keep the layout simple.</strong> Single column, standard headings and no text inside images or text boxes keep it readable for ATS.</li>
+</ul>
+
+<h2>Does resume length matter for ATS?</h2>
+<p>Applicant tracking systems read the text on your resume. They generally do not reject you for having two pages. What hurts is a complicated layout, unusual headings, tables or graphics that make parsing unreliable. Whatever length you choose, keep the structure plain and use keywords from the job posting where they honestly apply. Run your draft through the free <a href="/ats-checker">ATS checker</a> to see how it reads, and pick a clean design from the <a href="/resume-templates">resume templates</a> if your current layout is cluttered.</p>
+
+<h2>Common mistakes to avoid</h2>
+<ul>
+  <li><strong>Stretching to two pages with filler.</strong> Padding makes the strong parts harder to find.</li>
+  <li><strong>Cramming one page with tiny text.</strong> If it is hard to read, it will not be read.</li>
+  <li><strong>Using the same long resume for every job.</strong> Trim and reorder for each role.</li>
+  <li><strong>Burying your best achievements on page two.</strong> Lead with your strongest proof.</li>
+  <li><strong>Going past two pages</strong> without a clear field-specific reason.</li>
+</ul>
+
+<h2>Quick checklist</h2>
+<ul>
+  <li>Decide: early career or career change means aim for one page; long relevant record means up to two.</li>
+  <li>Read the job posting and list the top five requirements.</li>
+  <li>Keep only the roles, bullets and skills that support those requirements.</li>
+  <li>Make each bullet one or two lines, starting with a strong verb.</li>
+  <li>Use a readable font and normal margins, not tiny text.</li>
+  <li>If using two pages, put your best material on page one and make page two worthwhile.</li>
+  <li>Check the result with the <a href="/ats-checker">ATS checker</a>.</li>
+  <li>Apply to matching roles from the <a href="/jobs">jobs page</a> with a tailored version each time.</li>
+</ul>
+<p>Pick the length that lets your best proof stand out, and stop there. A focused resume of either length beats a long one that makes the reader hunt for your value.</p>
     `,
   },
 ];

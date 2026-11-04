@@ -1,0 +1,62 @@
+name: Auto-merge organic content PRs
+
+# The scheduled Claude routines for hiredtodayapp.com open pull requests from
+# `organic/*`, `health/auto-*` branches after their own type-check and build pass. This
+# workflow waits for the Vercel preview on the PR and then squash-merges it,
+# so the change goes live hands-off (merging the production branch deploys).
+# Scoped strictly to those branch prefixes: human PRs are never auto-merged.
+#
+# Checks are read through the REST commit-status and check-runs endpoints,
+# which work with GITHUB_TOKEN on private repositories too.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: write
+  checks: read
+  statuses: read
+
+jobs:
+  automerge:
+    if: startsWith(github.head_ref, 'organic/') || startsWith(github.head_ref, 'health/auto-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Wait for the Vercel preview, then squash-merge
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 40); do
+            statuses=$(gh api "repos/$REPO/commits/$SHA/status" \
+              --jq '[.statuses[] | .state | ascii_upcase] | join(" ")')
+            checks=$(gh api "repos/$REPO/commits/$SHA/check-runs" \
+              --jq '[.check_runs[] | select(.name != "automerge")
+                     | (if .status == "completed" then (.conclusion // "FAILURE") else .status end)
+                     | ascii_upcase] | join(" ")')
+            states="$statuses $checks"
+            states="${states# }"; states="${states% }"
+            echo "attempt $i: ${states:-no checks reported yet}"
+            case " $states " in
+              *" FAILURE "*|*" ERROR "*|*" CANCELLED "*|*" TIMED_OUT "*|*" ACTION_REQUIRED "*|*" STARTUP_FAILURE "*)
+                echo "A check failed; leaving the PR open for the owner."; exit 1;;
+            esac
+            if [ -n "$states" ] && ! printf ' %s ' "$states" | grep -qE ' (PENDING|IN_PROGRESS|QUEUED|EXPECTED|WAITING|REQUESTED) '; then
+              echo "All checks passed."; break
+            fi
+            if [ -z "$states" ] && [ "$i" -ge 6 ]; then
+              echo "No checks reported after 3 minutes; the routine already built the site, merging."; break
+            fi
+            if [ "$i" -eq 40 ]; then
+              echo "Checks still pending after 20 minutes; leaving the PR open for the owner."; exit 1
+            fi
+            sleep 30
+          done
+          gh pr merge "$PR" --repo "$REPO" --squash --delete-branch
+
