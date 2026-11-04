@@ -2,6 +2,9 @@ import { createClient } from '@/lib/supabase';
 
 export type Plan = 'free' | 'pro';
 
+/** The owner's account always has full access. */
+export const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
+
 // ─── Pro-status helpers (single source of truth) ──────────────────────────
 
 export type SubscriptionStatus =

@@ -1,6 +1,7 @@
 'use client';
 
 import { Suspense, useState, useEffect, useCallback } from 'react';
+import { usePlan } from '@/components/portal/plan-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { previewFromResumeData } from '@/components/template-preview';
@@ -28,7 +29,8 @@ function ResumesInner() {
   const params = useSearchParams();
   const [resumes, setResumes] = useState<ResumeRow[]>([]);
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [isPro, setIsPro] = useState(false);
+  const plan = usePlan();
+  const [isPro, setIsPro] = useState(plan.isPro);
   const [prompt, setPrompt] = useState<UpgradeTrigger | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
 
@@ -52,7 +54,7 @@ function ResumesInner() {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
       const { data: profile } = await supabase.from('profiles').select('subscription_status, subscription_ends_at').eq('id', user.id).single();
-      setIsPro(isProActive(profile));
+      setIsPro(plan.isPro || isProActive(profile));
     });
   }, []);
 

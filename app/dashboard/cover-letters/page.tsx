@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { usePlan } from '@/components/portal/plan-context';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { btnClass } from '@/components/gh-ui';
@@ -28,11 +29,12 @@ export default function CoverLettersPage() {
   const [letters, setLetters] = useState<CoverLetterRow[]>([]);
   const [excerpts, setExcerpts] = useState<Record<string, Excerpt>>({});
   const [state, setState] = useState<'loading' | 'ready' | 'error'>('loading');
-  const [isPro, setIsPro] = useState(false);
+  const plan = usePlan();
+  const [isPro, setIsPro] = useState(plan.isPro);
   const [creating, setCreating] = useState(false);
 
   useEffect(() => {
-    fetch('/api/user/subscription-status').then((r) => r.json()).then((d) => setIsPro(Boolean(d.isPro))).catch(() => {});
+    fetch('/api/user/subscription-status').then((r) => r.json()).then((d) => setIsPro(plan.isPro || Boolean(d.isPro))).catch(() => {});
   }, []);
 
   const load = useCallback(async () => {

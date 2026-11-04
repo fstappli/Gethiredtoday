@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { upgradeHref } from "@/lib/upgrade-triggers";
 import { FREE_FEATURES, PRO_FEATURES, PRICING } from "@/lib/site-config";
@@ -17,7 +18,15 @@ function Tick({ color }: { color: string }) {
 }
 
 export default function PricingToggle() {
-  
+  // Signed-in Pro users get a dashboard link instead of upgrade buttons.
+  const [isPro, setIsPro] = useState(false);
+  useEffect(() => {
+    fetch("/api/user/subscription-status")
+      .then((r) => (r.ok ? r.json() : { isPro: false }))
+      .then((d) => setIsPro(Boolean(d.isPro)))
+      .catch(() => undefined);
+  }, []);
+
   return (
     <>
       <section className="mx-auto flex max-w-[1140px] flex-col items-center gap-5 px-6 pb-10 pt-[72px] text-center">
@@ -39,7 +48,11 @@ export default function PricingToggle() {
             <span className="font-display text-[52px] font-extrabold">$0</span>
             <span className="text-text-muted"> forever</span>
           </div>
-          <Link href="/signup?from=pricing" onClick={() => track("sign_up_start", { source: "pricing" })} className="flex min-h-[44px] items-center justify-center rounded-[14px] border-[1.5px] border-ink p-4 text-center font-bold text-ink no-underline">Start free</Link>
+          {isPro ? (
+            <Link href="/dashboard" className="flex min-h-[44px] items-center justify-center rounded-[14px] border-[1.5px] border-ink p-4 text-center font-bold no-underline">Go to your dashboard</Link>
+          ) : (
+            <Link href="/signup?from=pricing" onClick={() => track("sign_up_start", { source: "pricing" })} className="flex min-h-[44px] items-center justify-center rounded-[14px] border-[1.5px] border-ink p-4 text-center font-bold text-ink no-underline">Start free</Link>
+          )}
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {FREE.map((f) => (
               <li key={f} className="flex gap-2.5 leading-[1.4]"><Tick color="#0B6E5F" />{f}</li>
@@ -58,6 +71,9 @@ export default function PricingToggle() {
             <span className="text-on-dark-muted"> /month</span>
             <div className="mt-1 text-sm text-on-dark-muted">Billed monthly. Cancel any time.</div>
           </div>
+          {isPro ? (
+            <Link href="/dashboard" className="flex min-h-[44px] items-center justify-center rounded-[14px] bg-mint-bright p-4 text-center font-extrabold text-ink no-underline">You are on Pro. Go to dashboard</Link>
+          ) : (
           <Link
             href={upgradeHref("pricing", "monthly")}
             onClick={() => track("upgrade_prompt_click", { trigger: "pricing", surface: "pricing_card" })}
@@ -65,6 +81,7 @@ export default function PricingToggle() {
           >
             Get Pro
           </Link>
+          )}
           <ul className="m-0 flex list-none flex-col gap-3 p-0">
             {PRO.map((f) => (
               <li key={f} className="flex gap-2.5 leading-[1.4]"><Tick color="#5FD3B3" />{f}</li>

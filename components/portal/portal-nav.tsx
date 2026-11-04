@@ -11,6 +11,7 @@ const TABS = [
   { id: "apps", label: "Applications", href: "/dashboard/applied-jobs" },
   { id: "auto", label: "Auto-Apply", href: "/dashboard/auto-apply" },
   { id: "ats", label: "ATS check", href: "/dashboard/ats-checker" },
+  { id: "help", label: "Help", href: "/dashboard/help" },
 ];
 
 const ICON_PROPS = { width: 22, height: 22, viewBox: "0 0 24 24", fill: "none", stroke: "currentColor", strokeWidth: 2, strokeLinecap: "round" as const, "aria-hidden": true };

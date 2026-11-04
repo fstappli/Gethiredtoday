@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import PortalNav from '@/components/portal/portal-nav';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { isProActive } from '@/lib/subscription';
-
-const ADMIN_EMAIL = 'kreativecasaentertainment@gmail.com';
+import { isProActive, ADMIN_EMAIL } from '@/lib/subscription';
+import { PlanProvider } from '@/components/portal/plan-context';
+import { reconcileGumroadPurchase } from '@/lib/gumroad-reconcile';
 
 export default async function DashboardLayout({ children }: { children: ReactNode }) {
   const ssr = await createServerSupabaseClient();
@@ -18,7 +18,13 @@ export default async function DashboardLayout({ children }: { children: ReactNod
       .select('subscription_status, subscription_ends_at, full_name')
       .eq('id', user.id)
       .single();
-    if (!isAdmin) isPro = isProActive(profile);
+    if (!isAdmin) {
+      isPro = isProActive(profile);
+      // Safety net for a missed webhook: a free user with a live paid sale gets upgraded.
+      if (!isPro && user.email && (profile?.subscription_status ?? 'free') === 'free') {
+        isPro = await reconcileGumroadPurchase(user.id, user.email);
+      }
+    }
     name = (profile as { full_name?: string } | null)?.full_name || '';
   }
   const initial = (name || user?.email || 'U').trim().charAt(0).toUpperCase();
@@ -26,7 +32,9 @@ export default async function DashboardLayout({ children }: { children: ReactNod
   return (
     <div className="flex min-h-[100dvh] flex-col bg-ground-portal text-ink">
       <PortalNav isPro={isPro} isAdmin={isAdmin} initial={initial} />
-      <main className="flex flex-1 flex-col pb-20 min-[761px]:pb-0">{children}</main>
+      <PlanProvider isPro={isPro}>
+        <main className="flex flex-1 flex-col pb-20 min-[761px]:pb-0">{children}</main>
+      </PlanProvider>
     </div>
   );
 }

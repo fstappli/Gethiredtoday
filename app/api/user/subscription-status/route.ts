@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { isProActive } from '@/lib/subscription';
+import { isProActive, ADMIN_EMAIL } from '@/lib/subscription';
+import { reconcileGumroadPurchase } from '@/lib/gumroad-reconcile';
 
 export const runtime = 'nodejs';
 
@@ -16,8 +17,13 @@ export async function GET() {
       .eq('id', user.id)
       .single();
 
+    let isPro = user.email === ADMIN_EMAIL || isProActive(profile);
+    if (!isPro && user.email && (profile?.subscription_status ?? 'free') === 'free') {
+      isPro = await reconcileGumroadPurchase(user.id, user.email);
+    }
+
     return NextResponse.json({
-      isPro: isProActive(profile),
+      isPro,
       accountCreatedAt: profile?.created_at ?? null,
     });
   } catch {

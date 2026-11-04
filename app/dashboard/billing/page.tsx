@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePlan } from '@/components/portal/plan-context';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 import { formatEndsAt, isCancelledWithGrace, isProActive } from '@/lib/subscription';
@@ -10,7 +11,8 @@ interface Meter { label: string; value: string; pct: number; warn?: boolean }
 
 export default function BillingPage() {
   const [loading, setLoading] = useState(true);
-  const [isPro, setIsPro] = useState(false);
+  const plan = usePlan();
+  const [isPro, setIsPro] = useState(plan.isPro);
   const [cancelled, setCancelled] = useState(false);
   const [endsAt, setEndsAt] = useState<string | null>(null);
   const [meters, setMeters] = useState<Meter[]>([]);
@@ -22,7 +24,7 @@ export default function BillingPage() {
       if (!user) return;
       const { data: profile } = await supabase.from('profiles').select('subscription_status, subscription_ends_at').eq('id', user.id).single();
       const pro = isProActive(profile);
-      setIsPro(pro);
+      setIsPro(plan.isPro || pro);
       setCancelled(isCancelledWithGrace(profile) || profile?.subscription_status === 'cancelled');
       setEndsAt((profile?.subscription_ends_at as string | null) ?? null);
       if (!pro) {

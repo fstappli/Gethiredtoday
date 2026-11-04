@@ -13,61 +13,16 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { createServerSupabaseClient } from '@/lib/supabase-server';
-import { monthFromNow } from '@/lib/subscription';
+import { reconcileGumroadPurchase } from '@/lib/gumroad-reconcile';
 
 export const runtime = 'nodejs';
-
-let _adminClient: SupabaseClient | null = null;
-function getAdminClient(): SupabaseClient {
-  if (!_adminClient) {
-    _adminClient = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
-    );
-  }
-  return _adminClient;
-}
 
 // Only allow returning the user to safe in-app paths.
 function safeReturnPath(raw: string | null): string {
   if (!raw) return '/dashboard';
   if (!raw.startsWith('/') || raw.startsWith('//')) return '/dashboard';
   return raw;
-}
-
-// Query Gumroad sales API to verify a paid, non-refunded purchase for this email.
-async function findActiveGumroadSale(
-  email: string,
-  accessToken: string
-): Promise<{ saleId: string; subscriptionId?: string | null } | null> {
-  try {
-    const res = await fetch(
-      `https://api.gumroad.com/v2/sales?email=${encodeURIComponent(email)}`,
-      { headers: { Authorization: `Bearer ${accessToken}` } }
-    );
-    if (!res.ok) return null;
-    const json = (await res.json()) as {
-      success?: boolean;
-      sales?: Array<{
-        id: string;
-        paid?: boolean;
-        refunded?: boolean;
-        chargedback?: boolean;
-        product_permalink?: string;
-        subscription_id?: string | null;
-      }>;
-    };
-    if (!json.success) return null;
-    const PRODUCT_PERMALINK = process.env.GUMROAD_PRODUCT_PERMALINK ?? 'kxtcbs';
-    const valid = (json.sales ?? []).find(
-      (s) => s.paid && !s.refunded && !s.chargedback && s.product_permalink === PRODUCT_PERMALINK
-    );
-    return valid ? { saleId: valid.id, subscriptionId: valid.subscription_id ?? null } : null;
-  } catch {
-    return null;
-  }
 }
 
 export async function GET(req: NextRequest) {
@@ -84,25 +39,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(destination);
   }
 
-  const accessToken = process.env.GUMROAD_ACCESS_TOKEN;
-
-  if (accessToken) {
-    // Verify with Gumroad that this email has a valid paid purchase.
-    const sale = await findActiveGumroadSale(user.email, accessToken);
-    if (sale) {
-      await getAdminClient()
-        .from('profiles')
-        .update({
-          subscription_status: 'active',
-          // Prefer the subscription_id (needed to cancel via Gumroad API later).
-          // Fall back to the sale id only if there is no subscription_id (one-time purchases).
-          subscription_id: sale.subscriptionId ?? sale.saleId,
-          subscription_ends_at: monthFromNow(),
-        })
-        .eq('id', user.id);
-      destination.searchParams.set('upgraded', '1');
-      return NextResponse.redirect(destination);
-    }
+  // Verify with Gumroad that this email has a valid paid purchase.
+  if (await reconcileGumroadPurchase(user.id, user.email, { force: true })) {
+    destination.searchParams.set('upgraded', '1');
+    return NextResponse.redirect(destination);
   }
 
   // Webhook will reconcile shortly. Mark pending so the destination page can

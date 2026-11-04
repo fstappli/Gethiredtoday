@@ -1,6 +1,7 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { monthFromNow } from '@/lib/subscription';
+import { ilikeExact } from '@/lib/gumroad-reconcile';
 
 export const runtime = 'nodejs';
 
@@ -72,7 +73,7 @@ export async function POST(req: Request) {
       const { data: existing } = await getSupabaseAdmin()
         .from('profiles')
         .select('subscription_status')
-        .eq('email', email)
+        .ilike('email', ilikeExact(email))
         .single();
       if (existing?.subscription_status === 'cancelled') {
         console.error(
@@ -82,14 +83,20 @@ export async function POST(req: Request) {
         );
       }
 
-      await getSupabaseAdmin()
+      const { data: upgraded } = await getSupabaseAdmin()
         .from('profiles')
         .update({
           subscription_status: 'active',
           subscription_ends_at: monthFromNow(),
           ...(subscriberId && { subscription_id: subscriberId }),
         })
-        .eq('email', email);
+        .ilike('email', ilikeExact(email))
+        .select('id');
+      if (!upgraded?.length) {
+        // Paid before a profile existed (or under another email). The login-time
+        // reconcile in the dashboard layout will pick this up.
+        console.error(`[webhook] Sale for ${email} matched no profile; will reconcile at login`);
+      }
     } else if (resourceName === 'refund' || refunded) {
       await getSupabaseAdmin()
         .from('profiles')
@@ -97,12 +104,12 @@ export async function POST(req: Request) {
           subscription_status: 'free',
           subscription_ends_at: null,
         })
-        .eq('email', email);
+        .ilike('email', ilikeExact(email));
     } else if (resourceName === 'cancellation') {
       const { data: existing } = await getSupabaseAdmin()
         .from('profiles')
         .select('subscription_ends_at')
-        .eq('email', email)
+        .ilike('email', ilikeExact(email))
         .single();
       const endsAt = (existing?.subscription_ends_at as string | null) || monthFromNow();
       await getSupabaseAdmin()
@@ -111,7 +118,7 @@ export async function POST(req: Request) {
           subscription_status: 'cancelled',
           subscription_ends_at: endsAt,
         })
-        .eq('email', email);
+        .ilike('email', ilikeExact(email));
     } else if (resourceName === 'subscription_ended' || resourceName === 'subscription_cancelled') {
       await getSupabaseAdmin()
         .from('profiles')
@@ -119,7 +126,7 @@ export async function POST(req: Request) {
           subscription_status: 'free',
           subscription_ends_at: null,
         })
-        .eq('email', email);
+        .ilike('email', ilikeExact(email));
     }
   } catch (err) {
     console.error('Error processing webhook:', err);
