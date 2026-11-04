@@ -6,3 +6,4 @@
 2026-11-01 | how-to-answer-tell-me-about-a-time-you-failed | tell me about a time you failed interview answer
 2026-11-02 | phone-interview-tips | phone interview tips
 2026-11-03 | video-interview-tips | video interview tips
+2026-11-04 | one-page-vs-two-page-resume | one page vs two page resume
